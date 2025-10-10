@@ -1,0 +1,287 @@
+{
+  "version": "2.0.0",
+  "last_updated": "2025-01-10T00:00:00Z",
+
+  "devices": {
+    "temp_01": {
+      "device_id": "temp_01",
+      "device_type": "temperature_sensor",
+      "device_name": "Living Room Temperature Sensor",
+      "model": "DHT11",
+      "location": "living_room",
+      "floor": 1,
+      "zone": "indoor",
+      "active": true,
+
+      "mqtt": {
+        "enabled": true,
+        "username": "temp_01",
+        "publish_topics": [
+          "home/devices/temp_01/telemetry",
+          "home/devices/temp_01/status"
+        ],
+        "publish_interval": 30
+      },
+
+      "config": {
+        "temperature_unit": "celsius",
+        "humidity_unit": "percent",
+        "update_interval": 30
+      },
+
+      "metadata": {
+        "mac_address": "AA:BB:CC:DD:EE:01",
+        "ip_address": "192.168.1.101",
+        "firmware_version": "1.0.0",
+        "installed_date": "2025-01-01T00:00:00Z",
+        "last_seen": "2025-01-10T10:00:00Z"
+      }
+    },
+    
+    "fan_01": {
+      "device_id": "fan_01",
+      "device_type": "relay_switch",
+      "device_name": "Living Room Fan",
+      "model": "Relay Module",
+      "location": "living_room",
+      "floor": 1,
+      "zone": "indoor",
+      "active": true,
+
+      "mqtt": {
+        "enabled": true,
+        "username": "fan_01",
+        "subscribe_topics": [
+          "home/devices/fan_01/command"
+        ],
+        "publish_topics": [
+          "home/devices/fan_01/status",
+          "home/devices/fan_01/telemetry"
+        ]
+      },
+
+      "config": {
+        "controllable": true,
+        "auto_mode_enabled": true,
+        "manual_override": true,
+        "power_rating_watts": 60
+      },
+
+      "state": {
+        "power": "off",
+        "auto_mode": true,
+        "last_command": null,
+        "last_command_time": null
+      },
+
+      "metadata": {
+        "mac_address": "AA:BB:CC:DD:EE:02",
+        "ip_address": "192.168.1.102",
+        "firmware_version": "1.0.0",
+        "installed_date": "2025-01-01T00:00:00Z",
+        "last_seen": "2025-01-10T10:00:00Z"
+      }
+    },
+    
+    "passkey_01": {
+      "device_id": "passkey_01",
+      "device_type": "access_control",
+      "device_name": "Front Door Keypad",
+      "model": "Keypad + Servo",
+      "location": "entrance",
+      "floor": 1,
+      "zone": "entry",
+      "active": true,
+
+      "mqtt": {
+        "enabled": true,
+        "username": "passkey_01",
+        "subscribe_topics": [
+          "home/devices/passkey_01/command"
+        ],
+        "publish_topics": [
+          "home/devices/passkey_01/request",
+          "home/devices/passkey_01/status"
+        ]
+      },
+
+      "config": {
+        "max_attempts": 5,
+        "lockout_duration": 300,
+        "password_length_min": 4,
+        "password_length_max": 8,
+        "auto_lock_delay": 5
+      },
+
+      "state": {
+        "locked": true,
+        "last_access": null,
+        "failed_attempts": 0,
+        "locked_out": false
+      },
+
+      "metadata": {
+        "mac_address": "AA:BB:CC:DD:EE:03",
+        "ip_address": "192.168.1.103",
+        "firmware_version": "1.0.0",
+        "installed_date": "2025-01-01T00:00:00Z",
+        "last_seen": "2025-01-10T10:00:00Z"
+      }
+    },
+    
+    "rfid_01": {
+      "device_id": "rfid_01",
+      "device_type": "access_control",
+      "device_name": "Gate RFID Reader",
+      "model": "MFRC522 + LoRa E32",
+      "location": "gate",
+      "floor": 0,
+      "zone": "outdoor",
+      "active": true,
+
+      "lora": {
+        "enabled": true,
+        "device_address": 1,
+        "channel": 23
+      },
+
+      "config": {
+        "read_timeout": 12,
+        "max_retries": 3,
+        "auto_close_delay": 5
+      },
+
+      "state": {
+        "gate_open": false,
+        "last_scan": null,
+        "last_access": null
+      },
+
+      "metadata": {
+        "firmware_version": "1.0.0",
+        "installed_date": "2025-01-01T00:00:00Z",
+        "last_seen": "2025-01-10T10:00:00Z"
+      }
+    }
+  },
+
+  "rfid_cards": {
+    "04a1b2c3": {
+      "uid": "04a1b2c3",
+      "card_name": "Master Card",
+      "user_name": "John Doe",
+      "user_role": "admin",
+      "active": true,
+      "permissions": ["gate", "door", "all"],
+      "added_date": "2025-01-01T00:00:00Z",
+      "expiry_date": null,
+      "last_used": "2025-01-10T09:30:00Z",
+      "usage_count": 42,
+      "notes": "Primary access card"
+    },
+    
+    "05d4e5f6": {
+      "uid": "05d4e5f6",
+      "card_name": "Family Card",
+      "user_name": "Jane Smith",
+      "user_role": "user",
+      "active": true,
+      "permissions": ["gate", "door"],
+      "added_date": "2025-01-02T00:00:00Z",
+      "expiry_date": null,
+      "last_used": "2025-01-09T18:45:00Z",
+      "usage_count": 28,
+      "notes": "Secondary access card"
+    },
+    
+    "06e7f8g9": {
+      "uid": "06e7f8g9",
+      "card_name": "Guest Card",
+      "user_name": "Guest User",
+      "user_role": "guest",
+      "active": true,
+      "permissions": ["gate"],
+      "added_date": "2025-01-05T00:00:00Z",
+      "expiry_date": "2025-02-05T00:00:00Z",
+      "last_used": "2025-01-08T14:20:00Z",
+      "usage_count": 5,
+      "notes": "Temporary guest access, expires in 1 month"
+    },
+    
+    "07a8b9c0": {
+      "uid": "07a8b9c0",
+      "card_name": "Delivery Card",
+      "user_name": "Delivery Service",
+      "user_role": "service",
+      "active": false,
+      "permissions": ["gate"],
+      "added_date": "2024-12-01T00:00:00Z",
+      "expiry_date": "2025-01-01T00:00:00Z",
+      "last_used": "2024-12-28T10:15:00Z",
+      "usage_count": 15,
+      "notes": "Expired - needs renewal"
+    }
+  },
+
+  "passwords": {
+    "pwd_master": {
+      "password_id": "pwd_master",
+      "hash": "a1b2c3d4e5f6",
+      "password_name": "Master Code",
+      "user_name": "Admin",
+      "user_role": "admin",
+      "active": true,
+      "permissions": ["door", "settings"],
+      "added_date": "2025-01-01T00:00:00Z",
+      "expiry_date": null,
+      "last_used": "2025-01-10T08:00:00Z",
+      "usage_count": 35,
+      "notes": "Primary admin password"
+    },
+    
+    "pwd_family": {
+      "password_id": "pwd_family",
+      "hash": "123456789abc",
+      "password_name": "Family Code",
+      "user_name": "Family",
+      "user_role": "user",
+      "active": true,
+      "permissions": ["door"],
+      "added_date": "2025-01-01T00:00:00Z",
+      "expiry_date": null,
+      "last_used": "2025-01-09T22:30:00Z",
+      "usage_count": 56,
+      "notes": "Shared family password"
+    },
+    
+    "pwd_guest": {
+      "password_id": "pwd_guest",
+      "hash": "def456ghi789",
+      "password_name": "Guest Code",
+      "user_name": "Guest",
+      "user_role": "guest",
+      "active": true,
+      "permissions": ["door"],
+      "added_date": "2025-01-08T00:00:00Z",
+      "expiry_date": "2025-01-15T00:00:00Z",
+      "last_used": "2025-01-10T11:20:00Z",
+      "usage_count": 3,
+      "notes": "Temporary guest code, expires in 5 days"
+    },
+    
+    "pwd_emergency": {
+      "password_id": "pwd_emergency",
+      "hash": "xyz789uvw456",
+      "password_name": "Emergency Code",
+      "user_name": "Emergency",
+      "user_role": "emergency",
+      "active": true,
+      "permissions": ["door", "gate"],
+      "added_date": "2025-01-01T00:00:00Z",
+      "expiry_date": null,
+      "last_used": null,
+      "usage_count": 0,
+      "notes": "Emergency access only - notifies admin when used"
+    }
+  }
+}

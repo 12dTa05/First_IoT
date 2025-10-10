@@ -1,0 +1,4 @@
+2025-10-10 16:46:25 - Gateway - ERROR - [main.py:97] - Failed to load config: [Errno 2] No such file or directory: 'config/config.json'
+2025-10-10 16:46:54 - Gateway - ERROR - [main.py:90] - Failed to load config: [Errno 2] No such file or directory: 'config/config.json'
+2025-10-10 16:47:10 - Gateway - ERROR - [main.py:90] - Failed to load config: Expecting value: line 1 column 1 (char 0)
+2025-10-10 20:29:36 - Gateway - ERROR - [database.py:76] - JSON decode error in settings.json: Expecting property name enclosed in double quotes: line 6 column 5 (char 89)
