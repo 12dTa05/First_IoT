@@ -1,0 +1,344 @@
+2025-10-12 17:59:58,793 - gateway - ERROR - Error setting up local broker (attempt 1): [Errno 2] No such file or directory
+2025-10-12 18:00:03,999 - gateway - ERROR - Error setting up local broker (attempt 2): [Errno 2] No such file or directory
+2025-10-12 18:00:09,209 - gateway - ERROR - Error setting up local broker (attempt 3): [Errno 2] No such file or directory
+2025-10-12 18:00:09,210 - gateway - CRITICAL - Failed to connect to local MQTT broker after all retries
+2025-10-12 18:00:46,030 - gateway - ERROR - Error setting up local broker (attempt 1): [Errno 2] No such file or directory
+2025-10-12 18:01:47,599 - gateway - ERROR - Error setting up local broker (attempt 1): [Errno 2] No such file or directory
+2025-10-12 18:01:52,803 - gateway - ERROR - Error setting up local broker (attempt 2): [Errno 2] No such file or directory
+2025-10-12 18:02:47,373 - gateway - INFO - Local MQTT broker connected successfully
+2025-10-12 18:02:47,373 - gateway - INFO - Connected to local MQTT broker
+2025-10-12 18:02:48,297 - gateway - INFO - AWS MQTT connected successfully
+2025-10-12 18:02:48,298 - gateway - ERROR - LoRa connection failed: could not open port 'COM5': FileNotFoundError(2, 'The system cannot find the file specified.', None, 2)
+2025-10-12 18:02:48,298 - gateway - INFO - Gateway started
+2025-10-12 18:02:48,975 - gateway - INFO - Connected to AWS IoT
+2025-10-12 18:04:07,057 - gateway - INFO - Shutting down gateway...
+2025-10-12 18:04:07,058 - gateway - INFO - Cleaning up connections...
+2025-10-12 18:04:08,688 - gateway - INFO - Gateway stopped
+2025-10-12 18:25:28,801 - gateway - INFO - Local MQTT broker connected successfully
+2025-10-12 18:25:28,801 - gateway - INFO - Connected to local MQTT broker
+2025-10-12 18:25:29,911 - gateway - INFO - AWS MQTT connected successfully
+2025-10-12 18:25:29,911 - gateway - ERROR - LoRa connection failed: could not open port 'COM5': FileNotFoundError(2, 'The system cannot find the file specified.', None, 2)
+2025-10-12 18:25:29,911 - gateway - INFO - Gateway started
+2025-10-12 18:25:30,595 - gateway - INFO - Connected to AWS IoT
+2025-10-12 18:27:36,202 - gateway - WARNING - Local MQTT disconnected unexpectedly (rc=7), reconnecting...
+2025-10-12 18:30:34,222 - gateway - INFO - Shutting down gateway...
+2025-10-12 18:30:34,223 - gateway - INFO - Cleaning up connections...
+2025-10-12 18:30:35,773 - gateway - INFO - Gateway stopped
+2025-10-12 18:30:37,207 - gateway - INFO - Local MQTT broker connected successfully
+2025-10-12 18:30:37,209 - gateway - INFO - Connected to local MQTT broker
+2025-10-12 18:30:38,018 - gateway - INFO - AWS MQTT connected successfully
+2025-10-12 18:30:38,018 - gateway - ERROR - LoRa connection failed: could not open port 'COM5': FileNotFoundError(2, 'The system cannot find the file specified.', None, 2)
+2025-10-12 18:30:38,018 - gateway - INFO - Gateway started
+2025-10-12 18:30:38,654 - gateway - INFO - Connected to AWS IoT
+2025-10-12 18:33:47,156 - gateway - WARNING - Local MQTT disconnected unexpectedly (rc=7), reconnecting...
+2025-10-12 18:33:53,192 - gateway - INFO - Connected to local MQTT broker
+2025-10-12 18:36:56,573 - gateway - INFO - Shutting down gateway...
+2025-10-12 18:36:56,573 - gateway - INFO - Cleaning up connections...
+2025-10-12 18:36:57,939 - gateway - INFO - Gateway stopped
+2025-10-12 18:37:01,002 - gateway - INFO - Local MQTT broker connected successfully
+2025-10-12 18:37:01,002 - gateway - INFO - Connected to local MQTT broker
+2025-10-12 18:37:02,265 - gateway - INFO - AWS MQTT connected successfully
+2025-10-12 18:37:02,265 - gateway - ERROR - LoRa connection failed: could not open port 'COM5': FileNotFoundError(2, 'The system cannot find the file specified.', None, 2)
+2025-10-12 18:37:02,272 - gateway - INFO - Gateway started
+2025-10-12 18:37:02,980 - gateway - INFO - Connected to AWS IoT
+2025-10-12 18:43:34,826 - gateway - INFO - Shutting down gateway...
+2025-10-12 18:43:34,827 - gateway - INFO - Cleaning up connections...
+2025-10-12 18:43:35,188 - gateway - INFO - Gateway stopped
+2025-10-12 18:43:36,964 - gateway - INFO - Local MQTT broker connected successfully
+2025-10-12 18:43:36,964 - gateway - INFO - Connected to local MQTT broker
+2025-10-12 18:43:37,768 - gateway - INFO - AWS MQTT connected successfully
+2025-10-12 18:43:37,768 - gateway - ERROR - LoRa connection failed: could not open port 'COM5': FileNotFoundError(2, 'The system cannot find the file specified.', None, 2)
+2025-10-12 18:43:37,768 - gateway - INFO - Gateway started
+2025-10-12 18:43:38,414 - gateway - INFO - Connected to AWS IoT
+2025-10-12 18:47:13,876 - gateway - WARNING - Local MQTT disconnected unexpectedly (rc=7), reconnecting...
+2025-10-12 18:47:19,912 - gateway - INFO - Connected to local MQTT broker
+2025-10-12 18:47:36,101 - gateway - INFO - Shutting down gateway...
+2025-10-12 18:47:36,101 - gateway - INFO - Cleaning up connections...
+2025-10-12 18:47:37,869 - gateway - INFO - Gateway stopped
+2025-10-12 18:49:37,501 - gateway - INFO - Local MQTT broker connected successfully
+2025-10-12 18:49:37,501 - gateway - INFO - Connected to local MQTT broker
+2025-10-12 18:49:39,089 - gateway - INFO - AWS MQTT connected successfully
+2025-10-12 18:49:39,090 - gateway - ERROR - LoRa connection failed: could not open port 'COM5': FileNotFoundError(2, 'The system cannot find the file specified.', None, 2)
+2025-10-12 18:49:39,090 - gateway - INFO - Gateway started
+2025-10-12 18:49:39,727 - gateway - INFO - Connected to AWS IoT
+2025-10-12 18:50:55,866 - gateway - WARNING - Local MQTT disconnected unexpectedly (rc=7), reconnecting...
+2025-10-12 18:51:39,308 - gateway - INFO - Shutting down gateway...
+2025-10-12 18:51:39,309 - gateway - INFO - Cleaning up connections...
+2025-10-12 18:51:40,402 - gateway - INFO - Gateway stopped
+2025-10-12 18:51:43,479 - gateway - ERROR - Error setting up local broker (attempt 1): 'gateway_cert'
+2025-10-12 18:51:48,664 - gateway - ERROR - Error setting up local broker (attempt 2): 'gateway_cert'
+2025-10-12 18:51:53,858 - gateway - ERROR - Error setting up local broker (attempt 3): 'gateway_cert'
+2025-10-12 18:51:53,858 - gateway - CRITICAL - Failed to connect to local MQTT broker after all retries
+2025-10-12 18:51:54,637 - gateway - INFO - AWS MQTT connected successfully
+2025-10-12 18:51:54,637 - gateway - ERROR - LoRa connection failed: could not open port 'COM5': FileNotFoundError(2, 'The system cannot find the file specified.', None, 2)
+2025-10-12 18:51:54,637 - gateway - INFO - Gateway started
+2025-10-12 18:51:55,295 - gateway - INFO - Connected to AWS IoT
+2025-10-12 18:51:55,638 - gateway - INFO - Shutting down gateway...
+2025-10-12 18:51:55,638 - gateway - INFO - Cleaning up connections...
+2025-10-12 18:51:56,595 - gateway - INFO - Gateway stopped
+2025-10-12 18:53:08,822 - gateway - ERROR - Error setting up local broker (attempt 1): [WinError 10061] No connection could be made because the target machine actively refused it
+2025-10-12 18:53:16,054 - gateway - ERROR - Error setting up local broker (attempt 2): [WinError 10061] No connection could be made because the target machine actively refused it
+2025-10-12 18:53:21,271 - gateway - INFO - Local MQTT broker connected successfully
+2025-10-12 18:53:21,271 - gateway - INFO - Connected to local MQTT broker
+2025-10-12 18:53:22,129 - gateway - INFO - AWS MQTT connected successfully
+2025-10-12 18:53:22,129 - gateway - ERROR - LoRa connection failed: could not open port 'COM5': FileNotFoundError(2, 'The system cannot find the file specified.', None, 2)
+2025-10-12 18:53:22,129 - gateway - INFO - Gateway started
+2025-10-12 18:53:22,772 - gateway - INFO - Connected to AWS IoT
+2025-10-12 18:53:49,133 - gateway - WARNING - Local MQTT disconnected unexpectedly (rc=7), reconnecting...
+2025-10-12 18:54:59,850 - gateway - INFO - Shutting down gateway...
+2025-10-12 18:54:59,850 - gateway - INFO - Cleaning up connections...
+2025-10-12 18:55:00,930 - gateway - INFO - Gateway stopped
+2025-10-12 18:55:06,561 - gateway - INFO - Local MQTT broker connected successfully
+2025-10-12 18:55:06,561 - gateway - INFO - Connected to local MQTT broker
+2025-10-12 18:55:07,321 - gateway - INFO - AWS MQTT connected successfully
+2025-10-12 18:55:07,322 - gateway - ERROR - LoRa connection failed: could not open port 'COM5': FileNotFoundError(2, 'The system cannot find the file specified.', None, 2)
+2025-10-12 18:55:07,322 - gateway - INFO - Gateway started
+2025-10-12 18:55:07,946 - gateway - INFO - Connected to AWS IoT
+2025-10-12 18:55:25,124 - gateway - INFO - Request from passkey_01: {'body': '{"cmd":"unlock_request","client_id":"passkey_01","pw":"064b1b97b8762e109f8280fd47bb5c5ab33adca5a7f7231aef22b23ce31fbfa4","ts":1760270123,"nonce":1392790571}', 'hmac': 'bd7a9b6d1689391f194240fcb600451f2050952ac5c186f0877ca1712769906e'}
+2025-10-12 18:55:25,124 - gateway - WARNING - No matching password found
+2025-10-12 18:55:25,124 - gateway - WARNING - Access denied: invalid_password
+2025-10-12 18:57:11,905 - gateway - INFO - Shutting down gateway...
+2025-10-12 18:57:11,905 - gateway - INFO - Cleaning up connections...
+2025-10-12 18:57:13,655 - gateway - INFO - Gateway stopped
+2025-10-12 18:57:14,898 - gateway - INFO - Local MQTT broker connected successfully
+2025-10-12 18:57:14,899 - gateway - INFO - Connected to local MQTT broker
+2025-10-12 18:57:14,916 - gateway - ERROR - Failed to publish to AWS: 4
+2025-10-12 18:57:15,772 - gateway - INFO - AWS MQTT connected successfully
+2025-10-12 18:57:15,772 - gateway - ERROR - LoRa connection failed: could not open port 'COM5': FileNotFoundError(2, 'The system cannot find the file specified.', None, 2)
+2025-10-12 18:57:15,773 - gateway - INFO - Gateway started
+2025-10-12 18:57:16,398 - gateway - INFO - Connected to AWS IoT
+2025-10-12 18:57:24,232 - gateway - INFO - Request from passkey_01: {'body': '{"cmd":"unlock_request","client_id":"passkey_01","pw":"064b1b97b8762e109f8280fd47bb5c5ab33adca5a7f7231aef22b23ce31fbfa4","ts":1760270242,"nonce":78819671}', 'hmac': '60df8edda43ba9aa6760e751d051ba5a460a9fd4fc69c3ef293b8637c0ab37c6'}
+2025-10-12 18:57:24,232 - gateway - INFO - Password authenticated: user_001
+2025-10-12 18:57:24,234 - gateway - INFO - Access granted for password ID: user_001
+2025-10-12 18:57:35,308 - gateway - WARNING - Local MQTT disconnected unexpectedly (rc=7), reconnecting...
+2025-10-12 18:57:35,964 - gateway - INFO - Shutting down gateway...
+2025-10-12 18:57:35,964 - gateway - INFO - Cleaning up connections...
+2025-10-12 18:57:41,152 - gateway - INFO - Gateway stopped
+2025-10-12 19:01:49,685 - gateway - ERROR - Error setting up local broker (attempt 1): [WinError 10061] No connection could be made because the target machine actively refused it
+2025-10-12 19:01:54,911 - gateway - INFO - Local MQTT broker connected successfully
+2025-10-12 19:01:54,911 - gateway - INFO - Connected to local MQTT broker
+2025-10-12 19:01:56,215 - gateway - INFO - AWS MQTT connected successfully
+2025-10-12 19:01:56,215 - gateway - ERROR - LoRa connection failed: could not open port 'COM5': FileNotFoundError(2, 'The system cannot find the file specified.', None, 2)
+2025-10-12 19:01:56,217 - gateway - INFO - Gateway started
+2025-10-12 19:01:56,824 - gateway - INFO - Connected to AWS IoT
+2025-10-12 19:02:30,416 - gateway - INFO - Shutting down gateway...
+2025-10-12 19:02:30,416 - gateway - INFO - Cleaning up connections...
+2025-10-12 19:02:31,292 - gateway - INFO - Gateway stopped
+2025-10-12 19:02:32,508 - gateway - INFO - Local MQTT broker connected successfully
+2025-10-12 19:02:32,508 - gateway - INFO - Connected to local MQTT broker
+2025-10-12 19:02:33,491 - gateway - INFO - AWS MQTT connected successfully
+2025-10-12 19:02:33,500 - gateway - INFO - LoRa connected on COM5
+2025-10-12 19:02:33,500 - gateway - INFO - Gateway started
+2025-10-12 19:02:34,058 - gateway - INFO - Connected to AWS IoT
+2025-10-12 19:14:14,637 - gateway - INFO - Shutting down gateway...
+2025-10-12 19:14:14,637 - gateway - INFO - Cleaning up connections...
+2025-10-12 19:14:15,179 - gateway - INFO - Gateway stopped
+2025-10-12 19:14:27,534 - gateway - INFO - Local MQTT broker connected successfully
+2025-10-12 19:14:27,534 - gateway - INFO - Connected to local MQTT broker
+2025-10-12 19:14:28,395 - gateway - INFO - AWS MQTT connected successfully
+2025-10-12 19:14:28,461 - gateway - INFO - LoRa connected on COM5
+2025-10-12 19:14:28,464 - gateway - INFO - Gateway started
+2025-10-12 19:14:28,987 - gateway - INFO - Connected to AWS IoT
+2025-10-12 19:18:11,898 - gateway - ERROR - Gateway error: ClearCommError failed (PermissionError(13, 'Access is denied.', None, 5))
+Traceback (most recent call last):
+  File "P:\MMT\__IoT\First_IoT\Gateway\main.py", line 935, in run
+    if self.serial_conn and self.serial_conn.in_waiting > 0:
+  File "D:\Miniconda3\envs\IoT\lib\site-packages\serial\serialwin32.py", line 259, in in_waiting
+    raise SerialException("ClearCommError failed ({!r})".format(ctypes.WinError()))
+serial.serialutil.SerialException: ClearCommError failed (PermissionError(13, 'Access is denied.', None, 5))
+2025-10-12 19:18:12,921 - gateway - ERROR - Gateway error: ClearCommError failed (PermissionError(13, 'Access is denied.', None, 5))
+Traceback (most recent call last):
+  File "P:\MMT\__IoT\First_IoT\Gateway\main.py", line 935, in run
+    if self.serial_conn and self.serial_conn.in_waiting > 0:
+  File "D:\Miniconda3\envs\IoT\lib\site-packages\serial\serialwin32.py", line 259, in in_waiting
+    raise SerialException("ClearCommError failed ({!r})".format(ctypes.WinError()))
+serial.serialutil.SerialException: ClearCommError failed (PermissionError(13, 'Access is denied.', None, 5))
+2025-10-12 19:18:13,922 - gateway - ERROR - Gateway error: ClearCommError failed (PermissionError(13, 'Access is denied.', None, 5))
+Traceback (most recent call last):
+  File "P:\MMT\__IoT\First_IoT\Gateway\main.py", line 935, in run
+    if self.serial_conn and self.serial_conn.in_waiting > 0:
+  File "D:\Miniconda3\envs\IoT\lib\site-packages\serial\serialwin32.py", line 259, in in_waiting
+    raise SerialException("ClearCommError failed ({!r})".format(ctypes.WinError()))
+serial.serialutil.SerialException: ClearCommError failed (PermissionError(13, 'Access is denied.', None, 5))
+2025-10-12 19:18:14,924 - gateway - ERROR - Gateway error: ClearCommError failed (PermissionError(13, 'Access is denied.', None, 5))
+Traceback (most recent call last):
+  File "P:\MMT\__IoT\First_IoT\Gateway\main.py", line 935, in run
+    if self.serial_conn and self.serial_conn.in_waiting > 0:
+  File "D:\Miniconda3\envs\IoT\lib\site-packages\serial\serialwin32.py", line 259, in in_waiting
+    raise SerialException("ClearCommError failed ({!r})".format(ctypes.WinError()))
+serial.serialutil.SerialException: ClearCommError failed (PermissionError(13, 'Access is denied.', None, 5))
+2025-10-12 19:18:15,930 - gateway - ERROR - Gateway error: ClearCommError failed (PermissionError(13, 'Access is denied.', None, 5))
+Traceback (most recent call last):
+  File "P:\MMT\__IoT\First_IoT\Gateway\main.py", line 935, in run
+    if self.serial_conn and self.serial_conn.in_waiting > 0:
+  File "D:\Miniconda3\envs\IoT\lib\site-packages\serial\serialwin32.py", line 259, in in_waiting
+    raise SerialException("ClearCommError failed ({!r})".format(ctypes.WinError()))
+serial.serialutil.SerialException: ClearCommError failed (PermissionError(13, 'Access is denied.', None, 5))
+2025-10-12 19:18:16,940 - gateway - ERROR - Gateway error: ClearCommError failed (PermissionError(13, 'Access is denied.', None, 5))
+Traceback (most recent call last):
+  File "P:\MMT\__IoT\First_IoT\Gateway\main.py", line 935, in run
+    if self.serial_conn and self.serial_conn.in_waiting > 0:
+  File "D:\Miniconda3\envs\IoT\lib\site-packages\serial\serialwin32.py", line 259, in in_waiting
+    raise SerialException("ClearCommError failed ({!r})".format(ctypes.WinError()))
+serial.serialutil.SerialException: ClearCommError failed (PermissionError(13, 'Access is denied.', None, 5))
+2025-10-12 19:18:17,952 - gateway - ERROR - Gateway error: ClearCommError failed (PermissionError(13, 'Access is denied.', None, 5))
+Traceback (most recent call last):
+  File "P:\MMT\__IoT\First_IoT\Gateway\main.py", line 935, in run
+    if self.serial_conn and self.serial_conn.in_waiting > 0:
+  File "D:\Miniconda3\envs\IoT\lib\site-packages\serial\serialwin32.py", line 259, in in_waiting
+    raise SerialException("ClearCommError failed ({!r})".format(ctypes.WinError()))
+serial.serialutil.SerialException: ClearCommError failed (PermissionError(13, 'Access is denied.', None, 5))
+2025-10-12 19:18:18,954 - gateway - ERROR - Gateway error: ClearCommError failed (PermissionError(13, 'Access is denied.', None, 5))
+Traceback (most recent call last):
+  File "P:\MMT\__IoT\First_IoT\Gateway\main.py", line 935, in run
+    if self.serial_conn and self.serial_conn.in_waiting > 0:
+  File "D:\Miniconda3\envs\IoT\lib\site-packages\serial\serialwin32.py", line 259, in in_waiting
+    raise SerialException("ClearCommError failed ({!r})".format(ctypes.WinError()))
+serial.serialutil.SerialException: ClearCommError failed (PermissionError(13, 'Access is denied.', None, 5))
+2025-10-12 19:18:19,967 - gateway - ERROR - Gateway error: ClearCommError failed (PermissionError(13, 'Access is denied.', None, 5))
+Traceback (most recent call last):
+  File "P:\MMT\__IoT\First_IoT\Gateway\main.py", line 935, in run
+    if self.serial_conn and self.serial_conn.in_waiting > 0:
+  File "D:\Miniconda3\envs\IoT\lib\site-packages\serial\serialwin32.py", line 259, in in_waiting
+    raise SerialException("ClearCommError failed ({!r})".format(ctypes.WinError()))
+serial.serialutil.SerialException: ClearCommError failed (PermissionError(13, 'Access is denied.', None, 5))
+2025-10-12 19:18:20,970 - gateway - ERROR - Gateway error: ClearCommError failed (PermissionError(13, 'Access is denied.', None, 5))
+Traceback (most recent call last):
+  File "P:\MMT\__IoT\First_IoT\Gateway\main.py", line 935, in run
+    if self.serial_conn and self.serial_conn.in_waiting > 0:
+  File "D:\Miniconda3\envs\IoT\lib\site-packages\serial\serialwin32.py", line 259, in in_waiting
+    raise SerialException("ClearCommError failed ({!r})".format(ctypes.WinError()))
+serial.serialutil.SerialException: ClearCommError failed (PermissionError(13, 'Access is denied.', None, 5))
+2025-10-12 19:18:21,983 - gateway - ERROR - Gateway error: ClearCommError failed (PermissionError(13, 'Access is denied.', None, 5))
+Traceback (most recent call last):
+  File "P:\MMT\__IoT\First_IoT\Gateway\main.py", line 935, in run
+    if self.serial_conn and self.serial_conn.in_waiting > 0:
+  File "D:\Miniconda3\envs\IoT\lib\site-packages\serial\serialwin32.py", line 259, in in_waiting
+    raise SerialException("ClearCommError failed ({!r})".format(ctypes.WinError()))
+serial.serialutil.SerialException: ClearCommError failed (PermissionError(13, 'Access is denied.', None, 5))
+2025-10-12 19:18:22,991 - gateway - ERROR - Gateway error: ClearCommError failed (PermissionError(13, 'Access is denied.', None, 5))
+Traceback (most recent call last):
+  File "P:\MMT\__IoT\First_IoT\Gateway\main.py", line 935, in run
+    if self.serial_conn and self.serial_conn.in_waiting > 0:
+  File "D:\Miniconda3\envs\IoT\lib\site-packages\serial\serialwin32.py", line 259, in in_waiting
+    raise SerialException("ClearCommError failed ({!r})".format(ctypes.WinError()))
+serial.serialutil.SerialException: ClearCommError failed (PermissionError(13, 'Access is denied.', None, 5))
+2025-10-12 19:18:23,994 - gateway - ERROR - Gateway error: ClearCommError failed (PermissionError(13, 'Access is denied.', None, 5))
+Traceback (most recent call last):
+  File "P:\MMT\__IoT\First_IoT\Gateway\main.py", line 935, in run
+    if self.serial_conn and self.serial_conn.in_waiting > 0:
+  File "D:\Miniconda3\envs\IoT\lib\site-packages\serial\serialwin32.py", line 259, in in_waiting
+    raise SerialException("ClearCommError failed ({!r})".format(ctypes.WinError()))
+serial.serialutil.SerialException: ClearCommError failed (PermissionError(13, 'Access is denied.', None, 5))
+2025-10-12 19:18:25,010 - gateway - ERROR - Gateway error: ClearCommError failed (PermissionError(13, 'Access is denied.', None, 5))
+Traceback (most recent call last):
+  File "P:\MMT\__IoT\First_IoT\Gateway\main.py", line 935, in run
+    if self.serial_conn and self.serial_conn.in_waiting > 0:
+  File "D:\Miniconda3\envs\IoT\lib\site-packages\serial\serialwin32.py", line 259, in in_waiting
+    raise SerialException("ClearCommError failed ({!r})".format(ctypes.WinError()))
+serial.serialutil.SerialException: ClearCommError failed (PermissionError(13, 'Access is denied.', None, 5))
+2025-10-12 19:18:26,010 - gateway - ERROR - Gateway error: ClearCommError failed (PermissionError(13, 'Access is denied.', None, 5))
+Traceback (most recent call last):
+  File "P:\MMT\__IoT\First_IoT\Gateway\main.py", line 935, in run
+    if self.serial_conn and self.serial_conn.in_waiting > 0:
+  File "D:\Miniconda3\envs\IoT\lib\site-packages\serial\serialwin32.py", line 259, in in_waiting
+    raise SerialException("ClearCommError failed ({!r})".format(ctypes.WinError()))
+serial.serialutil.SerialException: ClearCommError failed (PermissionError(13, 'Access is denied.', None, 5))
+2025-10-12 19:18:27,016 - gateway - ERROR - Gateway error: ClearCommError failed (PermissionError(13, 'Access is denied.', None, 5))
+Traceback (most recent call last):
+  File "P:\MMT\__IoT\First_IoT\Gateway\main.py", line 935, in run
+    if self.serial_conn and self.serial_conn.in_waiting > 0:
+  File "D:\Miniconda3\envs\IoT\lib\site-packages\serial\serialwin32.py", line 259, in in_waiting
+    raise SerialException("ClearCommError failed ({!r})".format(ctypes.WinError()))
+serial.serialutil.SerialException: ClearCommError failed (PermissionError(13, 'Access is denied.', None, 5))
+2025-10-12 19:18:28,019 - gateway - ERROR - Gateway error: ClearCommError failed (PermissionError(13, 'Access is denied.', None, 5))
+Traceback (most recent call last):
+  File "P:\MMT\__IoT\First_IoT\Gateway\main.py", line 935, in run
+    if self.serial_conn and self.serial_conn.in_waiting > 0:
+  File "D:\Miniconda3\envs\IoT\lib\site-packages\serial\serialwin32.py", line 259, in in_waiting
+    raise SerialException("ClearCommError failed ({!r})".format(ctypes.WinError()))
+serial.serialutil.SerialException: ClearCommError failed (PermissionError(13, 'Access is denied.', None, 5))
+2025-10-12 19:18:29,033 - gateway - ERROR - Gateway error: ClearCommError failed (PermissionError(13, 'Access is denied.', None, 5))
+Traceback (most recent call last):
+  File "P:\MMT\__IoT\First_IoT\Gateway\main.py", line 935, in run
+    if self.serial_conn and self.serial_conn.in_waiting > 0:
+  File "D:\Miniconda3\envs\IoT\lib\site-packages\serial\serialwin32.py", line 259, in in_waiting
+    raise SerialException("ClearCommError failed ({!r})".format(ctypes.WinError()))
+serial.serialutil.SerialException: ClearCommError failed (PermissionError(13, 'Access is denied.', None, 5))
+2025-10-12 19:18:33,542 - gateway - INFO - Local MQTT broker connected successfully
+2025-10-12 19:18:33,542 - gateway - INFO - Connected to local MQTT broker
+2025-10-12 19:18:34,396 - gateway - INFO - AWS MQTT connected successfully
+2025-10-12 19:18:34,462 - gateway - INFO - LoRa connected on COM5
+2025-10-12 19:18:34,462 - gateway - INFO - Gateway started
+2025-10-12 19:18:34,995 - gateway - INFO - Connected to AWS IoT
+2025-10-12 19:27:57,349 - gateway - ERROR - Gateway error: ClearCommError failed (PermissionError(13, 'Access is denied.', None, 5))
+Traceback (most recent call last):
+  File "P:\MMT\__IoT\First_IoT\Gateway\main.py", line 935, in run
+  File "D:\Miniconda3\envs\IoT\lib\site-packages\serial\serialwin32.py", line 259, in in_waiting
+    raise SerialException("ClearCommError failed ({!r})".format(ctypes.WinError()))
+serial.serialutil.SerialException: ClearCommError failed (PermissionError(13, 'Access is denied.', None, 5))
+2025-10-12 19:27:58,366 - gateway - ERROR - Gateway error: ClearCommError failed (PermissionError(13, 'Access is denied.', None, 5))
+Traceback (most recent call last):
+  File "P:\MMT\__IoT\First_IoT\Gateway\main.py", line 935, in run
+  File "D:\Miniconda3\envs\IoT\lib\site-packages\serial\serialwin32.py", line 259, in in_waiting
+    raise SerialException("ClearCommError failed ({!r})".format(ctypes.WinError()))
+serial.serialutil.SerialException: ClearCommError failed (PermissionError(13, 'Access is denied.', None, 5))
+2025-10-12 19:27:59,367 - gateway - ERROR - Gateway error: ClearCommError failed (PermissionError(13, 'Access is denied.', None, 5))
+Traceback (most recent call last):
+  File "P:\MMT\__IoT\First_IoT\Gateway\main.py", line 935, in run
+  File "D:\Miniconda3\envs\IoT\lib\site-packages\serial\serialwin32.py", line 259, in in_waiting
+    raise SerialException("ClearCommError failed ({!r})".format(ctypes.WinError()))
+serial.serialutil.SerialException: ClearCommError failed (PermissionError(13, 'Access is denied.', None, 5))
+2025-10-12 19:28:00,375 - gateway - ERROR - Gateway error: ClearCommError failed (PermissionError(13, 'Access is denied.', None, 5))
+Traceback (most recent call last):
+  File "P:\MMT\__IoT\First_IoT\Gateway\main.py", line 935, in run
+  File "D:\Miniconda3\envs\IoT\lib\site-packages\serial\serialwin32.py", line 259, in in_waiting
+    raise SerialException("ClearCommError failed ({!r})".format(ctypes.WinError()))
+serial.serialutil.SerialException: ClearCommError failed (PermissionError(13, 'Access is denied.', None, 5))
+2025-10-12 19:28:01,379 - gateway - ERROR - Gateway error: ClearCommError failed (PermissionError(13, 'Access is denied.', None, 5))
+Traceback (most recent call last):
+  File "P:\MMT\__IoT\First_IoT\Gateway\main.py", line 935, in run
+  File "D:\Miniconda3\envs\IoT\lib\site-packages\serial\serialwin32.py", line 259, in in_waiting
+    raise SerialException("ClearCommError failed ({!r})".format(ctypes.WinError()))
+serial.serialutil.SerialException: ClearCommError failed (PermissionError(13, 'Access is denied.', None, 5))
+2025-10-12 19:28:02,396 - gateway - ERROR - Gateway error: ClearCommError failed (PermissionError(13, 'Access is denied.', None, 5))
+Traceback (most recent call last):
+  File "P:\MMT\__IoT\First_IoT\Gateway\main.py", line 935, in run
+  File "D:\Miniconda3\envs\IoT\lib\site-packages\serial\serialwin32.py", line 259, in in_waiting
+    raise SerialException("ClearCommError failed ({!r})".format(ctypes.WinError()))
+serial.serialutil.SerialException: ClearCommError failed (PermissionError(13, 'Access is denied.', None, 5))
+2025-10-12 19:28:03,403 - gateway - ERROR - Gateway error: ClearCommError failed (PermissionError(13, 'Access is denied.', None, 5))
+Traceback (most recent call last):
+  File "P:\MMT\__IoT\First_IoT\Gateway\main.py", line 935, in run
+  File "D:\Miniconda3\envs\IoT\lib\site-packages\serial\serialwin32.py", line 259, in in_waiting
+    raise SerialException("ClearCommError failed ({!r})".format(ctypes.WinError()))
+serial.serialutil.SerialException: ClearCommError failed (PermissionError(13, 'Access is denied.', None, 5))
+2025-10-12 22:26:26,773 - gateway - INFO - Local MQTT broker connected successfully
+2025-10-12 22:26:26,773 - gateway - INFO - Connected to local MQTT broker
+2025-10-12 22:26:27,729 - gateway - INFO - AWS MQTT connected successfully
+2025-10-12 22:26:27,729 - gateway - ERROR - LoRa connection failed: could not open port 'COM5': FileNotFoundError(2, 'The system cannot find the file specified.', None, 2)
+2025-10-12 22:26:27,729 - gateway - INFO - Gateway started
+2025-10-12 22:26:29,855 - gateway - INFO - Connected to AWS IoT
+2025-10-12 22:26:56,666 - gateway - WARNING - Local MQTT disconnected unexpectedly (rc=7), reconnecting...
+2025-10-12 22:27:02,697 - gateway - INFO - Connected to local MQTT broker
+2025-10-12 22:30:41,705 - gateway - WARNING - Local MQTT disconnected unexpectedly (rc=7), reconnecting...
+2025-10-12 22:31:25,837 - gateway - INFO - Connected to local MQTT broker
+2025-10-12 22:34:23,665 - gateway - WARNING - Local MQTT disconnected unexpectedly (rc=7), reconnecting...
+2025-10-12 22:34:33,711 - gateway - INFO - Connected to local MQTT broker
+2025-10-12 22:35:03,898 - gateway - WARNING - Local MQTT disconnected unexpectedly (rc=7), reconnecting...
+2025-10-12 22:38:08,439 - gateway - INFO - Shutting down gateway...
+2025-10-12 22:38:08,444 - gateway - INFO - Cleaning up connections...
+2025-10-12 22:38:08,801 - gateway - INFO - Gateway stopped
+2025-10-12 22:38:09,970 - gateway - INFO - Local MQTT broker connected successfully
+2025-10-12 22:38:09,974 - gateway - INFO - Connected to local MQTT broker
+2025-10-12 22:38:09,992 - gateway - ERROR - Failed to publish to AWS: 4
+2025-10-12 22:38:10,875 - gateway - ERROR - Failed to publish to AWS: 4
+2025-10-12 22:38:10,892 - gateway - INFO - AWS MQTT connected successfully
+2025-10-12 22:38:10,893 - gateway - ERROR - LoRa connection failed: could not open port 'COM5': FileNotFoundError(2, 'The system cannot find the file specified.', None, 2)
+2025-10-12 22:38:10,893 - gateway - INFO - Gateway started
+2025-10-12 22:38:11,534 - gateway - INFO - Connected to AWS IoT
+2025-10-12 22:40:06,011 - gateway - INFO - Command sent to fan_01: {'cmd': 'fan_on'}
+2025-10-12 22:40:24,543 - gateway - WARNING - Local MQTT disconnected unexpectedly (rc=7), reconnecting...
+2025-10-12 22:40:25,175 - gateway - INFO - Shutting down gateway...
+2025-10-12 22:40:25,176 - gateway - INFO - Cleaning up connections...
+2025-10-12 22:40:29,602 - gateway - INFO - Gateway stopped

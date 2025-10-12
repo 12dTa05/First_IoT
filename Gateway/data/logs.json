@@ -1,0 +1,7 @@
+{
+  "timestamp": "2025-09-25T21:33:39.522724",
+  "type": "door_status",
+  "status": "clos",
+  "device": "rfid_gate",
+  "sequence": 28
+}
