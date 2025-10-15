@@ -6,11 +6,11 @@
 #include <time.h>
 
 // WiFi credentials
-const char* ssid = "4GEE-Router-GKS7-2.4GHz";
-const char* wifiPass = "RrMxJERai7Xq";
+const char* ssid = "atttcnm_wifi";
+const char* wifiPass = "123456@2025";
 
 // MQTT config
-const char* mqtt_host = "192.168.1.148";
+const char* mqtt_host = "192.168.1.111";
 const uint16_t mqtt_port = 1883;
 
 const char* device_id = "temp_01";

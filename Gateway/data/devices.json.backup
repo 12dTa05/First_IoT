@@ -28,7 +28,6 @@
       "last_used": null
     }
   },
-
   "rfid_cards": {
     "8675f205": {
       "active": true,
@@ -59,7 +58,6 @@
       "deactivation_reason": "Employee left company"
     }
   },
-
   "devices": {
     "passkey_01": {
       "device_type": "passkey",
@@ -110,14 +108,22 @@
       "expected_heartbeat_interval": 300
     }
   },
-
   "access_rules": {
     "working_hours": {
       "enabled": true,
       "start_time": "06:00",
       "end_time": "22:00",
-      "days_of_week": [1, 2, 3, 4, 5],
-      "allowed_methods": ["rfid", "passkey"],
+      "days_of_week": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "allowed_methods": [
+        "rfid",
+        "passkey"
+      ],
       "restricted_users": [],
       "description": "Normal access during working hours on weekdays"
     },
@@ -125,22 +131,39 @@
       "enabled": true,
       "start_time": "22:00",
       "end_time": "06:00",
-      "days_of_week": [0, 1, 2, 3, 4, 5, 6],
-      "allowed_methods": ["passkey"],
-      "restricted_users": ["guest_001"],
+      "days_of_week": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6
+      ],
+      "allowed_methods": [
+        "passkey"
+      ],
+      "restricted_users": [
+        "guest_001"
+      ],
       "description": "Restricted access at night - guests cannot enter"
     },
     "weekend_access": {
       "enabled": true,
       "start_time": "00:00",
       "end_time": "23:59",
-      "days_of_week": [0, 6],
-      "allowed_methods": ["rfid", "passkey"],
+      "days_of_week": [
+        0,
+        6
+      ],
+      "allowed_methods": [
+        "rfid",
+        "passkey"
+      ],
       "restricted_users": [],
       "description": "Full access on weekends"
     }
   },
-
   "system_info": {
     "gateway_id": "Gateway1",
     "installation_date": "2025-10-01T10:00:00Z",

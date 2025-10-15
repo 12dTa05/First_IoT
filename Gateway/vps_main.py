@@ -50,7 +50,7 @@ CONFIG = {
     
     # Local MQTT Broker (Devices connect here)
     'local_broker': {
-        'host': '192.168.1.148',
+        'host': '192.168.1.111',
         'port': 1884,
         'use_tls': True,
         'ca_cert': './gateway_cert/ca.cert.pem',
@@ -228,6 +228,38 @@ class Database:
         with self.lock:
             self._save_json(CONFIG['devices_db'], self.devices)
             self._save_json('settings.json', self.settings)
+            
+    def add_log(self, log_entry):
+        """Add log entry to logs.json"""
+        with self.lock:
+            # Add timestamp if not exists
+            if 'timestamp' not in log_entry:
+                log_entry['timestamp'] = datetime.now().isoformat()
+            
+            # Add to logs list
+            if not isinstance(self.logs, list):
+                self.logs = []
+            
+            self.logs.append(log_entry)
+            
+            # Keep only last 1000 entries
+            if len(self.logs) > 1000:
+                self.logs = self.logs[-1000:]
+            
+            # Save to file
+            self._save_json('logs.json', self.logs)
+    
+    def get_recent_logs(self, limit=100, log_type=None):
+        """Get recent logs with optional filtering"""
+        with self.lock:
+            if not isinstance(self.logs, list):
+                return []
+            
+            filtered = self.logs
+            if log_type:
+                filtered = [l for l in self.logs if l.get('type') == log_type]
+            
+            return filtered[-limit:]
     
     def authenticate_rfid(self, uid):
         try:
@@ -469,6 +501,16 @@ class Gateway:
         # Auto fan control
         if device_id == 'temp_01' and 'temperature' in payload.get('data', {}):
             temp = payload['data']['temperature']
+            
+            if temp > 28:
+                self.db.add_log({
+                    'type': 'alert',
+                    'event': 'high_temperature',
+                    'device_id': device_id,
+                    'temperature': temp,
+                    'timestamp': datetime.now().isoformat()
+                })
+            
             self.auto_fan_control(temp)
         
         # Forward to VPS
@@ -479,16 +521,37 @@ class Gateway:
         
         # Security checks
         if self.security.is_locked_out(device_id):
+            self.db.add_log({
+                'type': 'security_alert',
+                'event': 'device_locked_out',
+                'device_id': device_id,
+                'timestamp': datetime.now().isoformat()
+            })
+            
             self.send_local_response(device_id, {'cmd': 'LOCK', 'reason': 'locked_out'})
             return
         
         if 'hmac' not in payload or 'body' not in payload:
+            self.db.add_log({
+                'type': 'security_alert',
+                'event': 'invalid_request_format',
+                'device_id': device_id,
+                'timestamp': datetime.now().isoformat()
+            })
+            
             self.security.record_failed_attempt(device_id)
             self.send_local_response(device_id, {'cmd': 'LOCK', 'reason': 'invalid_format'})
             return
         
         # Verify HMAC
         if not verify_hmac(payload['body'], payload['hmac'], CONFIG['hmac_key']):
+            self.db.add_log({
+                'type': 'security_alert',
+                'event': 'hmac_verification_failed',
+                'device_id': device_id,
+                'timestamp': datetime.now().isoformat()
+            })
+            
             self.security.record_failed_attempt(device_id)
             self.send_local_response(device_id, {'cmd': 'LOCK', 'reason': 'invalid_signature'})
             
@@ -546,6 +609,8 @@ class Gateway:
             log_entry['password_id'] = pwd_id
         if not access_allowed:
             log_entry['deny_reason'] = deny_reason
+            
+        self.db.add_log(log_entry)
         
         self.forward_to_vps(device_id, 'logs', log_entry)
         
@@ -568,6 +633,44 @@ class Gateway:
     
     def handle_status(self, device_id, payload):
         logger.debug(f"Status: {device_id}")
+        
+        if device_id == 'fan_01':
+            state = payload.get('state', 'unknown')
+            auto_mode = payload.get('auto_mode')
+            
+            self.db.add_log({
+                'type': 'device_status',
+                'device_id': device_id,
+                'state': state,
+                'auto_mode': auto_mode,
+                'trigger': payload.get('trigger', 'unknown'),
+                'timestamp': datetime.now().isoformat()
+            })
+        
+    # ← THÊM LOG CHO TEMP STATUS
+        elif device_id == 'temp_01':
+            device_state = payload.get('state', 'unknown')
+            
+            if device_state == 'error':
+                self.db.add_log({
+                    'type': 'device_status',
+                    'device_id': device_id,
+                    'state': device_state,
+                    'error': payload.get('error'),
+                    'timestamp': datetime.now().isoformat()
+                })
+        
+        # ← THÊM LOG CHO PASSKEY STATUS
+        elif device_id == 'passkey_01':
+            device_state = payload.get('state', 'unknown')
+            
+            self.db.add_log({
+                'type': 'device_status',
+                'device_id': device_id,
+                'state': device_state,
+                'timestamp': datetime.now().isoformat()
+            })
+            
         self.forward_to_vps(device_id, 'status', payload)
     
     # ============= AUTO CONTROL =============
@@ -778,15 +881,19 @@ class Gateway:
         logger.info(f"RFID {uid}: {result.upper()}")
         
         # Log to VPS
-        self.forward_to_vps('rfid_gate_01', 'logs', {
-            'type': 'access_attempt',
-            'method': 'rfid',
-            'uid': uid,
-            'result': result,
-            'device': message['header']['device_type'],
-            'timestamp': datetime.now().isoformat(),
-            'deny_reason': deny_reason if not (is_valid and access_allowed) else None
-        })
+        log_entry = {
+        'type': 'access_attempt',
+        'method': 'rfid',
+        'uid': uid,
+        'result': result,
+        'device': message['header']['device_type'],
+        'timestamp': datetime.now().isoformat(),
+        'deny_reason': deny_reason if not (is_valid and access_allowed) else None
+        }
+        
+        self.db.add_log(log_entry)
+        
+        self.forward_to_vps('rfid_gate_01', 'logs', log_entry)
         
         # Send LoRa response
         return 'GRANT' if (is_valid and access_allowed) else 'DENY5'
@@ -794,6 +901,14 @@ class Gateway:
     def handle_gate_status(self, message):
         """Handle gate status update"""
         status = message['payload'].get('status')
+        
+        self.db.add_log({
+            'type': 'door_status',
+            'status': status,
+            'device': message['header']['device_type'],
+            'timestamp': datetime.now().isoformat(),
+            'sequence': message['header']['seq']
+        })
         
         self.forward_to_vps('rfid_gate_01', 'status', {
             'type': 'gate_status',
@@ -828,6 +943,13 @@ class Gateway:
     def run(self):
         """Main gateway loop"""
         self.running = True
+        
+        self.db.add_log({
+            'type': 'system_event',
+            'event': 'gateway_started',
+            'timestamp': datetime.now().isoformat()
+        })
+        
         logger.info("=" * 60)
         logger.info("Gateway started successfully")
         logger.info(f"Local MQTT: {CONFIG['local_broker']['host']}:{CONFIG['local_broker']['port']}")

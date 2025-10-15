@@ -922,3 +922,95 @@ serial.serialutil.SerialException: ClearCommError failed (PermissionError(13, 'A
 2025-10-14 21:18:45,817 - gateway - INFO - Cleaning up connections...
 2025-10-14 21:18:45,894 - gateway - WARNING -  Local MQTT disconnected (rc=0)
 2025-10-14 21:18:45,894 - gateway - INFO - Gateway stopped
+2025-10-15 15:41:38,229 - gateway - INFO - Setting up Local MQTT Broker...
+2025-10-15 15:41:43,496 - gateway - ERROR - Local MQTT connection failed: timed out
+2025-10-15 15:41:43,496 - gateway - INFO - Setting up VPS MQTT...
+2025-10-15 15:41:43,520 - gateway - INFO -  VPS mTLS configured
+2025-10-15 15:41:48,533 - gateway - ERROR - VPS MQTT connection failed: timed out
+2025-10-15 15:41:48,602 - gateway - INFO -  LoRa connected on COM5
+2025-10-15 15:41:48,603 - gateway - INFO - ============================================================
+2025-10-15 15:41:48,603 - gateway - INFO - Gateway started successfully
+2025-10-15 15:41:48,603 - gateway - INFO - Local MQTT: 192.168.1.148:1884
+2025-10-15 15:41:48,603 - gateway - INFO - VPS MQTT: 128.199.137.3:8883
+2025-10-15 15:41:48,604 - gateway - INFO - ============================================================
+2025-10-15 15:42:22,616 - gateway - INFO - RFID 8675f205: GRANTED
+2025-10-15 15:42:22,616 - gateway - INFO - LoRa >> GRANT
+2025-10-15 15:42:48,651 - gateway - INFO - Stats - RX: 0, TX: 0, Buffered: 1, Local: False, VPS: OK
+2025-10-15 15:42:50,744 - gateway - INFO - RFID 8675f205: GRANTED
+2025-10-15 15:42:50,744 - gateway - INFO - LoRa >> GRANT
+2025-10-15 15:43:22,528 - gateway - INFO - RFID ca75f005: DENIED
+2025-10-15 15:43:22,528 - gateway - INFO - LoRa >> DENY5
+2025-10-15 15:43:38,882 - gateway - INFO - RFID ca75f005: DENIED
+2025-10-15 15:43:38,882 - gateway - INFO - LoRa >> DENY5
+2025-10-15 15:43:48,722 - gateway - INFO - Stats - RX: 0, TX: 0, Buffered: 4, Local: False, VPS: OK
+2025-10-15 15:43:55,238 - gateway - INFO - RFID ca75f005: DENIED
+2025-10-15 15:43:55,239 - gateway - INFO - LoRa >> DENY5
+2025-10-15 15:44:48,746 - gateway - INFO - Stats - RX: 0, TX: 0, Buffered: 5, Local: False, VPS: OK
+2025-10-15 15:45:48,850 - gateway - INFO - Stats - RX: 0, TX: 0, Buffered: 5, Local: False, VPS: OK
+2025-10-15 15:46:43,034 - gateway - INFO - 
+Shutting down...
+2025-10-15 15:46:43,034 - gateway - INFO - Cleaning up connections...
+2025-10-15 15:46:43,034 - gateway - INFO - Gateway stopped
+2025-10-15 15:46:43,034 - gateway - INFO - Cleaning up connections...
+2025-10-15 15:46:43,034 - gateway - INFO - Gateway stopped
+2025-10-15 15:46:44,414 - gateway - INFO - Setting up Local MQTT Broker...
+2025-10-15 15:46:49,622 - gateway - ERROR - Local MQTT connection failed: timed out
+2025-10-15 15:46:49,622 - gateway - INFO - Setting up VPS MQTT...
+2025-10-15 15:46:49,625 - gateway - INFO -  VPS mTLS configured
+2025-10-15 15:47:07,841 - gateway - INFO - Setting up Local MQTT Broker...
+2025-10-15 15:47:08,090 - gateway - INFO - Setting up VPS MQTT...
+2025-10-15 15:47:08,090 - gateway - INFO -  Connected to Local MQTT
+2025-10-15 15:47:08,090 - gateway - INFO -  Subscribed to local topics
+2025-10-15 15:47:08,093 - gateway - INFO -  VPS mTLS configured
+2025-10-15 15:47:13,098 - gateway - ERROR - VPS MQTT connection failed: timed out
+2025-10-15 15:47:13,166 - gateway - INFO -  LoRa connected on COM5
+2025-10-15 15:47:13,166 - gateway - INFO - ============================================================
+2025-10-15 15:47:13,166 - gateway - INFO - Gateway started successfully
+2025-10-15 15:47:13,166 - gateway - INFO - Local MQTT: 192.168.1.111:1884
+2025-10-15 15:47:13,166 - gateway - INFO - VPS MQTT: 128.199.137.3:8883
+2025-10-15 15:47:13,166 - gateway - INFO - ============================================================
+2025-10-15 15:48:13,231 - gateway - INFO - Stats - RX: 0, TX: 0, Buffered: 0, Local: OK, VPS: OK
+2025-10-15 15:48:53,479 - gateway - INFO - Request: passkey_01
+2025-10-15 15:48:53,486 - gateway - INFO -  Access granted: user_001
+2025-10-15 15:49:13,262 - gateway - INFO - Stats - RX: 3, TX: 0, Buffered: 3, Local: OK, VPS: OK
+2025-10-15 15:49:23,098 - gateway - INFO - Request: passkey_01
+2025-10-15 15:49:23,099 - gateway - WARNING -  Access denied: invalid_password
+2025-10-15 15:50:13,323 - gateway - INFO - Stats - RX: 5, TX: 0, Buffered: 5, Local: OK, VPS: OK
+2025-10-15 15:51:13,369 - gateway - INFO - Stats - RX: 6, TX: 0, Buffered: 6, Local: OK, VPS: OK
+2025-10-15 15:52:13,464 - gateway - INFO - Stats - RX: 6, TX: 0, Buffered: 7, Local: OK, VPS: OK
+2025-10-15 15:52:25,435 - gateway - INFO - RFID 8675f205: GRANTED
+2025-10-15 15:52:25,435 - gateway - INFO - LoRa >> GRANT
+2025-10-15 15:52:41,322 - gateway - INFO - RFID ca75f005: DENIED
+2025-10-15 15:52:41,322 - gateway - INFO - LoRa >> DENY5
+2025-10-15 15:53:13,554 - gateway - INFO - Stats - RX: 6, TX: 0, Buffered: 9, Local: OK, VPS: OK
+2025-10-15 15:54:13,576 - gateway - INFO - Stats - RX: 6, TX: 0, Buffered: 9, Local: OK, VPS: OK
+2025-10-15 15:55:13,587 - gateway - INFO - Stats - RX: 6, TX: 0, Buffered: 9, Local: OK, VPS: OK
+2025-10-15 15:56:13,652 - gateway - INFO - Stats - RX: 6, TX: 0, Buffered: 9, Local: OK, VPS: OK
+2025-10-15 15:57:13,753 - gateway - INFO - Stats - RX: 6, TX: 0, Buffered: 9, Local: OK, VPS: OK
+2025-10-15 15:58:13,844 - gateway - INFO - Stats - RX: 6, TX: 0, Buffered: 9, Local: OK, VPS: OK
+2025-10-15 15:59:13,906 - gateway - INFO - Stats - RX: 6, TX: 0, Buffered: 9, Local: OK, VPS: OK
+2025-10-15 16:00:14,016 - gateway - INFO - Stats - RX: 6, TX: 0, Buffered: 9, Local: OK, VPS: OK
+2025-10-15 16:01:14,070 - gateway - INFO - Stats - RX: 6, TX: 0, Buffered: 9, Local: OK, VPS: OK
+2025-10-15 16:02:14,095 - gateway - INFO - Stats - RX: 7, TX: 0, Buffered: 10, Local: OK, VPS: OK
+2025-10-15 16:03:14,104 - gateway - INFO - Stats - RX: 9, TX: 0, Buffered: 12, Local: OK, VPS: OK
+2025-10-15 16:04:14,120 - gateway - INFO - Stats - RX: 11, TX: 0, Buffered: 14, Local: OK, VPS: OK
+2025-10-15 16:05:14,210 - gateway - INFO - Stats - RX: 15, TX: 0, Buffered: 18, Local: OK, VPS: OK
+2025-10-15 16:06:14,228 - gateway - INFO - Stats - RX: 17, TX: 0, Buffered: 20, Local: OK, VPS: OK
+2025-10-15 16:07:14,322 - gateway - INFO - Stats - RX: 19, TX: 0, Buffered: 22, Local: OK, VPS: OK
+2025-10-15 16:08:14,421 - gateway - INFO - Stats - RX: 21, TX: 0, Buffered: 24, Local: OK, VPS: OK
+2025-10-15 16:09:14,438 - gateway - INFO - Stats - RX: 24, TX: 0, Buffered: 27, Local: OK, VPS: OK
+2025-10-15 16:10:14,447 - gateway - INFO - Stats - RX: 26, TX: 0, Buffered: 29, Local: OK, VPS: OK
+2025-10-15 16:11:14,492 - gateway - INFO - Stats - RX: 28, TX: 0, Buffered: 31, Local: OK, VPS: OK
+2025-10-15 16:12:14,561 - gateway - INFO - Stats - RX: 37, TX: 0, Buffered: 40, Local: OK, VPS: OK
+2025-10-15 16:13:14,635 - gateway - INFO - Stats - RX: 49, TX: 0, Buffered: 52, Local: OK, VPS: OK
+2025-10-15 16:14:14,734 - gateway - INFO - Stats - RX: 51, TX: 0, Buffered: 54, Local: OK, VPS: OK
+2025-10-15 16:15:14,748 - gateway - INFO - Stats - RX: 55, TX: 0, Buffered: 58, Local: OK, VPS: OK
+2025-10-15 16:16:14,810 - gateway - INFO - Stats - RX: 59, TX: 0, Buffered: 62, Local: OK, VPS: OK
+2025-10-15 16:17:14,908 - gateway - INFO - Stats - RX: 67, TX: 0, Buffered: 70, Local: OK, VPS: OK
+2025-10-15 16:18:14,945 - gateway - INFO - Stats - RX: 70, TX: 0, Buffered: 73, Local: OK, VPS: OK
+2025-10-15 16:19:14,963 - gateway - INFO - Stats - RX: 73, TX: 0, Buffered: 76, Local: OK, VPS: OK
+2025-10-15 16:20:15,072 - gateway - INFO - Stats - RX: 77, TX: 0, Buffered: 80, Local: OK, VPS: OK
+2025-10-15 16:21:15,113 - gateway - INFO - Stats - RX: 80, TX: 0, Buffered: 83, Local: OK, VPS: OK
+2025-10-15 16:22:15,125 - gateway - INFO - Stats - RX: 84, TX: 0, Buffered: 87, Local: OK, VPS: OK
+2025-10-15 16:23:15,152 - gateway - INFO - Stats - RX: 87, TX: 0, Buffered: 90, Local: OK, VPS: OK
+2025-10-15 16:24:15,155 - gateway - INFO - Stats - RX: 90, TX: 0, Buffered: 93, Local: OK, VPS: OK

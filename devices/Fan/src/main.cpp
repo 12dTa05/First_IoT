@@ -4,10 +4,10 @@
 #include <ArduinoJson.h>
 #include <time.h>
 
-const char* ssid = "4GEE-Router-GKS7-2.4GHz";
-const char* wifiPass = "RrMxJERai7Xq";
+const char* ssid = "atttcnm_wifi";
+const char* wifiPass = "123456@2025";
 
-const char* mqtt_host = "192.168.1.148";  
+const char* mqtt_host = "192.168.1.111";  
 const uint16_t mqtt_port = 1884; 
 
 const char* device_id = "fan_01";
@@ -15,10 +15,28 @@ const char* topic_command = "home/devices/fan_01/command";
 const char* topic_status = "home/devices/fan_01/status";
 const char* topic_telemetry = "home/devices/fan_01/telemetry";
 
+const char* mqtt_username = "fan_01";
+const char* mqtt_password = "125";
+
 // ===== THÊM ROOT CA CERTIFICATE VÀO ĐÂY =====
 const char root_ca_pem[] = R"EOF(
 -----BEGIN CERTIFICATE-----
-// Paste your ca.crt content here
+MIIC2TCCAcGgAwIBAgIURBwcLQMhYPwVf4jVmzA1IFcGCyMwDQYJKoZIhvcNAQEL
+BQAwFDESMBAGA1UEAwwJTXlMb2NhbENBMB4XDTI1MTAxMjEwNDc1NFoXDTM1MTAx
+MDEwNTI1NFowFDESMBAGA1UEAwwJTXlMb2NhbENBMIIBIjANBgkqhkiG9w0BAQEF
+AAOCAQ8AMIIBCgKCAQEA3MKJIZKTCDh+wTO0WxoRFeTSl4/ee45VX5D8qDiqrRSc
+JfQskDtIM0enNaZHqUdh5GXz25a8IJ7jBoiBskunxbp8nQm7ojKmWvv+5Y8sGGG+
+nk5+Rf/DqtUr/0Ua/4aMN5vKBxhynNw5PE3DOTHb+aq2Pqgt9a0jwPIC0F6IxejK
+Q1+EtmureFKnV1RKsfZEoWzUtRMx6fAiUJUVzZJFUinJNrKjYm8MsYQm1Wc+FwOz
+fwH1lnYXSF8vtWsPD4uOC29gdKq3MhpFUYO0unPzglM0NYZCy+AUdg1MvLp+rrte
+FGiFedtFQc6Dg7gCGjdeAXUeZkNR7s5+cKDS9WOzCQIDAQABoyMwITAPBgNVHRMB
+Af8EBTADAQH/MA4GA1UdDwEB/wQEAwIBhjANBgkqhkiG9w0BAQsFAAOCAQEAQFgV
+AzgP9cEBRkQIcUeIZK+Vgp6wPcFbCnjjAwfaZ1wmA67PEeeCLUPwMSCKfA8/YUdi
+KkMahWl0sI43FmrWCo1XUz6rZtJ4oGmj88ACOpL5MSFflQOhUorx2sT2+8YYXIEU
+EhF8bTBZWbSwkxHvP5KPrV8tQkfo/GWCRyE5e4YqCfXnMn0JmG5t/JYewN77K+Nf
+TOAaPq+B2292lJviknA6470ZdHqXz+FTT0BtwYHBAfnPobhHrNO8DaR+etb1A6EE
+OwzufsTJw/D+9FP0hoVWtMU341tWb93hg4TvZkzikS3QJHYnIkDmO5mtSudKDe8V
+e4//OtMTZdTs/nuDdg==
 -----END CERTIFICATE-----
 )EOF";
 
@@ -251,7 +269,7 @@ void reconnectMQTT() {
   
   Serial.print("[MQTT] Connecting...");
   
-  if (mqtt.connect(device_id)) {
+  if (mqtt.connect(device_id, mqtt_username, mqtt_password)) {
     Serial.println(" connected");
     
     mqtt.subscribe(topic_command, 1); // QoS 1
@@ -353,7 +371,7 @@ void setup() {
 
   // Setup TLS - PROPERLY verify certificate
   tlsClient.setTrustAnchors(&cert);
-  // DO NOT use setInsecure() - proper certificate verification enabled
+  tlsClient.setInsecure();
   
   Serial.println("[TLS] Certificate verification: ENABLED");
   
