@@ -342,3 +342,583 @@ serial.serialutil.SerialException: ClearCommError failed (PermissionError(13, 'A
 2025-10-12 22:40:25,175 - gateway - INFO - Shutting down gateway...
 2025-10-12 22:40:25,176 - gateway - INFO - Cleaning up connections...
 2025-10-12 22:40:29,602 - gateway - INFO - Gateway stopped
+2025-10-13 15:12:09,314 - gateway - ERROR - ============================================================
+2025-10-13 15:12:09,354 - gateway - ERROR -    - Local CA: ./broker_cert/ca.cert.pem
+2025-10-13 15:12:09,356 - gateway - ERROR -    - VPS CA: ./vps_certs/ca.crt
+2025-10-13 15:12:09,356 - gateway - ERROR -    - VPS Cert: ./vps_certs/gateway.crt
+2025-10-13 15:12:09,356 - gateway - ERROR -    - VPS Key: ./vps_certs/gateway.key
+2025-10-13 15:12:09,356 - gateway - ERROR - 
+2025-10-13 15:12:09,357 - gateway - ERROR - Please follow setup guide to create/download certificates
+2025-10-13 15:12:09,357 - gateway - ERROR - ============================================================
+2025-10-13 15:13:39,337 - gateway - INFO - Setting up Local MQTT Broker...
+2025-10-13 15:13:39,660 - gateway - INFO - Setting up VPS MQTT...
+2025-10-13 15:13:42,406 - gateway - ERROR - VPS MQTT connection failed: [Errno 11001] getaddrinfo failed
+2025-10-13 15:13:42,408 - gateway - ERROR - LoRa connection failed: could not open port 'COM5': FileNotFoundError(2, 'The system cannot find the file specified.', None, 2)
+2025-10-13 15:13:42,408 - gateway - INFO - ============================================================
+2025-10-13 15:13:42,408 - gateway - INFO - Local MQTT: 192.168.1.148:1884
+2025-10-13 15:13:42,408 - gateway - INFO - VPS MQTT: YOUR_VPS_IP:8883
+2025-10-13 15:13:42,410 - gateway - INFO - ============================================================
+2025-10-13 15:13:49,030 - gateway - INFO - Cleaning up connections...
+2025-10-13 15:13:49,802 - gateway - INFO - Cleaning up connections...
+2025-10-13 15:20:48,726 - gateway - INFO - Setting up Local MQTT Broker...
+2025-10-13 15:20:50,989 - gateway - ERROR - Local MQTT connection failed: [WinError 10061] No connection could be made because the target machine actively refused it
+2025-10-13 15:20:50,989 - gateway - INFO - Setting up VPS MQTT...
+2025-10-13 15:20:56,005 - gateway - ERROR - VPS MQTT connection failed: timed out
+2025-10-13 15:20:56,005 - gateway - ERROR - LoRa connection failed: could not open port 'COM5': FileNotFoundError(2, 'The system cannot find the file specified.', None, 2)
+2025-10-13 15:20:56,005 - gateway - INFO - ============================================================
+2025-10-13 15:20:56,005 - gateway - INFO - Gateway started successfully
+2025-10-13 15:20:56,005 - gateway - INFO - Local MQTT: 192.168.1.148:1884
+2025-10-13 15:20:56,005 - gateway - INFO - VPS MQTT: 128.199.137.3:8883
+2025-10-13 15:20:56,005 - gateway - INFO - ============================================================
+2025-10-13 15:21:08,554 - gateway - INFO - 
+Shutting down...
+2025-10-13 15:21:08,554 - gateway - INFO - Cleaning up connections...
+2025-10-13 15:21:08,554 - gateway - INFO - Gateway stopped
+2025-10-13 15:21:08,554 - gateway - INFO - Cleaning up connections...
+2025-10-13 15:21:08,554 - gateway - INFO - Gateway stopped
+2025-10-13 15:21:11,892 - gateway - INFO - Setting up Local MQTT Broker...
+2025-10-13 15:21:12,096 - gateway - INFO - Setting up VPS MQTT...
+2025-10-13 15:21:17,108 - gateway - ERROR - VPS MQTT connection failed: timed out
+2025-10-13 15:21:17,108 - gateway - ERROR - LoRa connection failed: could not open port 'COM5': FileNotFoundError(2, 'The system cannot find the file specified.', None, 2)
+2025-10-13 15:21:17,108 - gateway - INFO - ============================================================
+2025-10-13 15:21:17,108 - gateway - INFO - Gateway started successfully
+2025-10-13 15:21:17,108 - gateway - INFO - Local MQTT: 192.168.1.148:1884
+2025-10-13 15:21:17,108 - gateway - INFO - VPS MQTT: 128.199.137.3:8883
+2025-10-13 15:21:17,108 - gateway - INFO - ============================================================
+2025-10-13 15:22:17,149 - gateway - INFO - Stats - RX: 0, TX: 0, Buffered: 0, Local: OK, VPS: OK
+2025-10-13 15:23:17,245 - gateway - INFO - Stats - RX: 0, TX: 0, Buffered: 0, Local: OK, VPS: OK
+2025-10-13 15:24:17,296 - gateway - INFO - Stats - RX: 0, TX: 0, Buffered: 0, Local: OK, VPS: OK
+2025-10-13 15:25:17,397 - gateway - INFO - Stats - RX: 0, TX: 0, Buffered: 0, Local: OK, VPS: OK
+2025-10-13 15:26:17,436 - gateway - INFO - Stats - RX: 0, TX: 0, Buffered: 0, Local: OK, VPS: OK
+2025-10-13 15:26:49,341 - gateway - INFO - 
+Shutting down...
+2025-10-13 15:26:49,341 - gateway - INFO - Cleaning up connections...
+2025-10-13 15:26:49,484 - gateway - INFO - Gateway stopped
+2025-10-13 15:26:49,484 - gateway - INFO - Cleaning up connections...
+2025-10-13 15:26:49,484 - gateway - INFO - Gateway stopped
+2025-10-13 15:37:21,754 - gateway - INFO - Setting up Local MQTT Broker...
+2025-10-13 15:37:21,966 - gateway - INFO - Setting up VPS MQTT...
+2025-10-13 15:37:21,966 - gateway - INFO -  Connected to Local MQTT
+2025-10-13 15:37:21,970 - gateway - INFO -  Subscribed to local topics
+2025-10-13 15:37:21,973 - gateway - INFO -  VPS mTLS configured
+2025-10-13 15:37:26,977 - gateway - ERROR - VPS MQTT connection failed: timed out
+2025-10-13 15:37:27,045 - gateway - INFO -  LoRa connected on COM5
+2025-10-13 15:37:27,045 - gateway - INFO - ============================================================
+2025-10-13 15:37:27,045 - gateway - INFO - Gateway started successfully
+2025-10-13 15:37:27,045 - gateway - INFO - Local MQTT: 192.168.1.148:1884
+2025-10-13 15:37:27,045 - gateway - INFO - VPS MQTT: 128.199.137.3:8883
+2025-10-13 15:37:27,047 - gateway - INFO - ============================================================
+2025-10-13 15:38:27,081 - gateway - INFO - Stats - RX: 0, TX: 0, Buffered: 0, Local: OK, VPS: OK
+2025-10-13 15:39:27,166 - gateway - INFO - Stats - RX: 0, TX: 0, Buffered: 0, Local: OK, VPS: OK
+2025-10-13 15:40:27,220 - gateway - INFO - Stats - RX: 0, TX: 0, Buffered: 0, Local: OK, VPS: OK
+2025-10-13 15:40:47,913 - gateway - INFO - 
+Shutting down...
+2025-10-13 15:40:47,913 - gateway - INFO - Cleaning up connections...
+2025-10-13 15:40:48,451 - gateway - WARNING -  Local MQTT disconnected (rc=0)
+2025-10-13 15:40:48,451 - gateway - INFO - Gateway stopped
+2025-10-13 15:40:48,451 - gateway - INFO - Cleaning up connections...
+2025-10-13 15:40:48,451 - gateway - INFO - Gateway stopped
+2025-10-13 15:40:50,169 - gateway - INFO - Setting up Local MQTT Broker...
+2025-10-13 15:40:50,389 - gateway - INFO - Setting up VPS MQTT...
+2025-10-13 15:40:50,389 - gateway - INFO -  Connected to Local MQTT
+2025-10-13 15:40:50,390 - gateway - INFO -  Subscribed to local topics
+2025-10-13 15:40:50,393 - gateway - INFO -  VPS mTLS configured
+2025-10-13 15:40:55,404 - gateway - ERROR - VPS MQTT connection failed: timed out
+2025-10-13 15:40:55,409 - gateway - INFO -  LoRa connected on COM5
+2025-10-13 15:40:55,409 - gateway - INFO - ============================================================
+2025-10-13 15:40:55,409 - gateway - INFO - Gateway started successfully
+2025-10-13 15:40:55,413 - gateway - INFO - Local MQTT: 192.168.1.148:1884
+2025-10-13 15:40:55,413 - gateway - INFO - VPS MQTT: 128.199.137.3:8883
+2025-10-13 15:40:55,413 - gateway - INFO - ============================================================
+2025-10-13 15:41:55,521 - gateway - INFO - Stats - RX: 0, TX: 0, Buffered: 0, Local: OK, VPS: OK
+2025-10-13 15:42:55,618 - gateway - INFO - Stats - RX: 0, TX: 0, Buffered: 0, Local: OK, VPS: OK
+2025-10-13 15:43:55,628 - gateway - INFO - Stats - RX: 0, TX: 0, Buffered: 0, Local: OK, VPS: OK
+2025-10-13 15:44:55,670 - gateway - INFO - Stats - RX: 0, TX: 0, Buffered: 0, Local: OK, VPS: OK
+2025-10-13 15:45:55,721 - gateway - INFO - Stats - RX: 0, TX: 0, Buffered: 0, Local: OK, VPS: OK
+2025-10-13 15:46:55,794 - gateway - INFO - Stats - RX: 0, TX: 0, Buffered: 0, Local: OK, VPS: OK
+2025-10-13 15:47:55,827 - gateway - INFO - Stats - RX: 0, TX: 0, Buffered: 0, Local: OK, VPS: OK
+2025-10-13 15:48:55,842 - gateway - INFO - Stats - RX: 0, TX: 0, Buffered: 0, Local: OK, VPS: OK
+2025-10-13 15:49:55,863 - gateway - INFO - Stats - RX: 0, TX: 0, Buffered: 0, Local: OK, VPS: OK
+2025-10-13 15:50:55,937 - gateway - INFO - Stats - RX: 0, TX: 0, Buffered: 0, Local: OK, VPS: OK
+2025-10-13 15:51:55,974 - gateway - INFO - Stats - RX: 0, TX: 0, Buffered: 0, Local: OK, VPS: OK
+2025-10-13 15:52:56,014 - gateway - INFO - Stats - RX: 0, TX: 0, Buffered: 0, Local: OK, VPS: OK
+2025-10-13 15:53:56,045 - gateway - INFO - Stats - RX: 0, TX: 0, Buffered: 0, Local: OK, VPS: OK
+2025-10-13 15:54:56,063 - gateway - INFO - Stats - RX: 0, TX: 0, Buffered: 0, Local: OK, VPS: OK
+2025-10-13 15:55:56,101 - gateway - INFO - Stats - RX: 0, TX: 0, Buffered: 0, Local: OK, VPS: OK
+2025-10-13 15:56:56,125 - gateway - INFO - Stats - RX: 0, TX: 0, Buffered: 0, Local: OK, VPS: OK
+2025-10-13 15:57:56,191 - gateway - INFO - Stats - RX: 0, TX: 0, Buffered: 0, Local: OK, VPS: OK
+2025-10-13 15:58:56,272 - gateway - INFO - Stats - RX: 0, TX: 0, Buffered: 0, Local: OK, VPS: OK
+2025-10-13 15:59:56,310 - gateway - INFO - Stats - RX: 0, TX: 0, Buffered: 0, Local: OK, VPS: OK
+2025-10-13 16:00:56,374 - gateway - INFO - Stats - RX: 0, TX: 0, Buffered: 0, Local: OK, VPS: OK
+2025-10-13 16:01:43,459 - gateway - INFO - 
+Shutting down...
+2025-10-13 16:01:43,459 - gateway - INFO - Cleaning up connections...
+2025-10-13 16:01:43,722 - gateway - WARNING -  Local MQTT disconnected (rc=0)
+2025-10-13 16:01:43,724 - gateway - INFO - Gateway stopped
+2025-10-13 16:01:43,725 - gateway - INFO - Cleaning up connections...
+2025-10-13 16:01:43,725 - gateway - INFO - Gateway stopped
+2025-10-13 16:05:11,777 - gateway - INFO - Setting up Local MQTT Broker...
+2025-10-13 16:05:11,981 - gateway - INFO - Setting up VPS MQTT...
+2025-10-13 16:05:11,983 - gateway - INFO -  Connected to Local MQTT
+2025-10-13 16:05:11,984 - gateway - INFO -  Subscribed to local topics
+2025-10-13 16:05:11,985 - gateway - INFO -  VPS mTLS configured
+2025-10-13 16:05:16,987 - gateway - ERROR - VPS MQTT connection failed: timed out
+2025-10-13 16:05:17,054 - gateway - INFO -  LoRa connected on COM5
+2025-10-13 16:05:17,055 - gateway - INFO - ============================================================
+2025-10-13 16:05:17,055 - gateway - INFO - Gateway started successfully
+2025-10-13 16:05:17,055 - gateway - INFO - Local MQTT: 192.168.1.148:1884
+2025-10-13 16:05:17,056 - gateway - INFO - VPS MQTT: 128.199.137.3:8883
+2025-10-13 16:05:17,056 - gateway - INFO - ============================================================
+2025-10-13 16:06:17,124 - gateway - INFO - Stats - RX: 0, TX: 0, Buffered: 0, Local: OK, VPS: OK
+2025-10-13 16:07:17,205 - gateway - INFO - Stats - RX: 0, TX: 0, Buffered: 0, Local: OK, VPS: OK
+2025-10-14 20:55:31,965 - gateway - ERROR - Error setting up local broker (attempt 1): [WinError 10061] No connection could be made because the target machine actively refused it
+2025-10-14 20:55:37,353 - gateway - INFO - Local MQTT broker connected successfully
+2025-10-14 20:55:37,353 - gateway - INFO - Connected to local MQTT broker
+2025-10-14 20:55:38,677 - gateway - INFO - AWS MQTT connected successfully
+2025-10-14 20:55:38,745 - gateway - INFO - LoRa connected on COM5
+2025-10-14 20:55:38,745 - gateway - INFO - Gateway started
+2025-10-14 20:55:39,416 - gateway - INFO - Connected to AWS IoT
+2025-10-14 20:56:43,619 - gateway - INFO - Shutting down gateway...
+2025-10-14 20:56:43,619 - gateway - INFO - Cleaning up connections...
+2025-10-14 20:56:44,121 - gateway - INFO - Gateway stopped
+2025-10-14 20:56:50,112 - gateway - INFO - Setting up Local MQTT Broker...
+2025-10-14 20:56:50,316 - gateway - INFO - Setting up VPS MQTT...
+2025-10-14 20:56:50,316 - gateway - INFO -  Connected to Local MQTT
+2025-10-14 20:56:50,318 - gateway - INFO -  Subscribed to local topics
+2025-10-14 20:56:50,342 - gateway - INFO -  VPS mTLS configured
+2025-10-14 20:56:55,354 - gateway - ERROR - VPS MQTT connection failed: timed out
+2025-10-14 20:56:55,423 - gateway - INFO -  LoRa connected on COM5
+2025-10-14 20:56:55,423 - gateway - INFO - ============================================================
+2025-10-14 20:56:55,423 - gateway - INFO - Gateway started successfully
+2025-10-14 20:56:55,423 - gateway - INFO - Local MQTT: 192.168.1.148:1884
+2025-10-14 20:56:55,424 - gateway - INFO - VPS MQTT: 128.199.137.3:8883
+2025-10-14 20:56:55,424 - gateway - INFO - ============================================================
+2025-10-14 20:57:55,455 - gateway - INFO - Stats - RX: 0, TX: 0, Buffered: 0, Local: OK, VPS: OK
+2025-10-14 20:58:55,477 - gateway - INFO - Stats - RX: 0, TX: 0, Buffered: 0, Local: OK, VPS: OK
+2025-10-14 20:59:55,561 - gateway - INFO - Stats - RX: 0, TX: 0, Buffered: 0, Local: OK, VPS: OK
+2025-10-14 21:00:55,599 - gateway - INFO - Stats - RX: 0, TX: 0, Buffered: 0, Local: OK, VPS: OK
+2025-10-14 21:01:55,681 - gateway - INFO - Stats - RX: 0, TX: 0, Buffered: 0, Local: OK, VPS: OK
+2025-10-14 21:02:55,767 - gateway - INFO - Stats - RX: 0, TX: 0, Buffered: 0, Local: OK, VPS: OK
+2025-10-14 21:03:55,767 - gateway - INFO - Stats - RX: 0, TX: 0, Buffered: 0, Local: OK, VPS: OK
+2025-10-14 21:04:55,867 - gateway - INFO - Stats - RX: 0, TX: 0, Buffered: 0, Local: OK, VPS: OK
+2025-10-14 21:05:55,914 - gateway - INFO - Stats - RX: 0, TX: 0, Buffered: 0, Local: OK, VPS: OK
+2025-10-14 21:06:55,950 - gateway - INFO - Stats - RX: 0, TX: 0, Buffered: 0, Local: OK, VPS: OK
+2025-10-14 21:07:55,979 - gateway - INFO - Stats - RX: 0, TX: 0, Buffered: 0, Local: OK, VPS: OK
+2025-10-14 21:08:56,015 - gateway - INFO - Stats - RX: 0, TX: 0, Buffered: 0, Local: OK, VPS: OK
+2025-10-14 21:09:56,047 - gateway - INFO - Stats - RX: 0, TX: 0, Buffered: 0, Local: OK, VPS: OK
+2025-10-14 21:10:56,107 - gateway - INFO - Stats - RX: 0, TX: 0, Buffered: 0, Local: OK, VPS: OK
+2025-10-14 21:11:56,175 - gateway - INFO - Stats - RX: 0, TX: 0, Buffered: 0, Local: OK, VPS: OK
+2025-10-14 21:12:56,276 - gateway - INFO - Stats - RX: 0, TX: 0, Buffered: 0, Local: OK, VPS: OK
+2025-10-14 21:13:56,277 - gateway - INFO - Stats - RX: 0, TX: 0, Buffered: 0, Local: OK, VPS: OK
+2025-10-14 21:14:56,336 - gateway - INFO - Stats - RX: 0, TX: 0, Buffered: 0, Local: OK, VPS: OK
+2025-10-14 21:15:56,413 - gateway - INFO - Stats - RX: 0, TX: 0, Buffered: 0, Local: OK, VPS: OK
+2025-10-14 21:16:56,513 - gateway - INFO - Stats - RX: 0, TX: 0, Buffered: 0, Local: OK, VPS: OK
+2025-10-14 21:17:02,363 - gateway - INFO - RFID 8675f205: GRANTED
+2025-10-14 21:17:02,363 - gateway - INFO - LoRa >> GRANT
+2025-10-14 21:17:31,915 - gateway - INFO - RFID 8675f205: GRANTED
+2025-10-14 21:17:31,916 - gateway - INFO - LoRa >> GRANT
+2025-10-14 21:17:43,298 - gateway - INFO - RFID 8675f205: GRANTED
+2025-10-14 21:17:43,299 - gateway - INFO - LoRa >> GRANT
+2025-10-14 21:17:49,214 - gateway - ERROR - Gateway error: ClearCommError failed (PermissionError(13, 'Access is denied.', None, 5))
+Traceback (most recent call last):
+  File "P:\MMT\__IoT\First_IoT\Gateway\vps_main.py", line 863, in run
+    if self.serial_conn and self.serial_conn.in_waiting > 0:
+  File "D:\Miniconda3\envs\IoT\lib\site-packages\serial\serialwin32.py", line 259, in in_waiting
+    raise SerialException("ClearCommError failed ({!r})".format(ctypes.WinError()))
+serial.serialutil.SerialException: ClearCommError failed (PermissionError(13, 'Access is denied.', None, 5))
+2025-10-14 21:17:50,235 - gateway - ERROR - Gateway error: ClearCommError failed (PermissionError(13, 'Access is denied.', None, 5))
+Traceback (most recent call last):
+  File "P:\MMT\__IoT\First_IoT\Gateway\vps_main.py", line 863, in run
+    if self.serial_conn and self.serial_conn.in_waiting > 0:
+  File "D:\Miniconda3\envs\IoT\lib\site-packages\serial\serialwin32.py", line 259, in in_waiting
+    raise SerialException("ClearCommError failed ({!r})".format(ctypes.WinError()))
+serial.serialutil.SerialException: ClearCommError failed (PermissionError(13, 'Access is denied.', None, 5))
+2025-10-14 21:17:51,245 - gateway - ERROR - Gateway error: ClearCommError failed (PermissionError(13, 'Access is denied.', None, 5))
+Traceback (most recent call last):
+  File "P:\MMT\__IoT\First_IoT\Gateway\vps_main.py", line 863, in run
+    if self.serial_conn and self.serial_conn.in_waiting > 0:
+  File "D:\Miniconda3\envs\IoT\lib\site-packages\serial\serialwin32.py", line 259, in in_waiting
+    raise SerialException("ClearCommError failed ({!r})".format(ctypes.WinError()))
+serial.serialutil.SerialException: ClearCommError failed (PermissionError(13, 'Access is denied.', None, 5))
+2025-10-14 21:17:52,256 - gateway - ERROR - Gateway error: ClearCommError failed (PermissionError(13, 'Access is denied.', None, 5))
+Traceback (most recent call last):
+  File "P:\MMT\__IoT\First_IoT\Gateway\vps_main.py", line 863, in run
+    if self.serial_conn and self.serial_conn.in_waiting > 0:
+  File "D:\Miniconda3\envs\IoT\lib\site-packages\serial\serialwin32.py", line 259, in in_waiting
+    raise SerialException("ClearCommError failed ({!r})".format(ctypes.WinError()))
+serial.serialutil.SerialException: ClearCommError failed (PermissionError(13, 'Access is denied.', None, 5))
+2025-10-14 21:17:53,265 - gateway - ERROR - Gateway error: ClearCommError failed (PermissionError(13, 'Access is denied.', None, 5))
+Traceback (most recent call last):
+  File "P:\MMT\__IoT\First_IoT\Gateway\vps_main.py", line 863, in run
+    if self.serial_conn and self.serial_conn.in_waiting > 0:
+  File "D:\Miniconda3\envs\IoT\lib\site-packages\serial\serialwin32.py", line 259, in in_waiting
+    raise SerialException("ClearCommError failed ({!r})".format(ctypes.WinError()))
+serial.serialutil.SerialException: ClearCommError failed (PermissionError(13, 'Access is denied.', None, 5))
+2025-10-14 21:17:54,273 - gateway - ERROR - Gateway error: ClearCommError failed (PermissionError(13, 'Access is denied.', None, 5))
+Traceback (most recent call last):
+  File "P:\MMT\__IoT\First_IoT\Gateway\vps_main.py", line 863, in run
+    if self.serial_conn and self.serial_conn.in_waiting > 0:
+  File "D:\Miniconda3\envs\IoT\lib\site-packages\serial\serialwin32.py", line 259, in in_waiting
+    raise SerialException("ClearCommError failed ({!r})".format(ctypes.WinError()))
+serial.serialutil.SerialException: ClearCommError failed (PermissionError(13, 'Access is denied.', None, 5))
+2025-10-14 21:17:55,284 - gateway - ERROR - Gateway error: ClearCommError failed (PermissionError(13, 'Access is denied.', None, 5))
+Traceback (most recent call last):
+  File "P:\MMT\__IoT\First_IoT\Gateway\vps_main.py", line 863, in run
+    if self.serial_conn and self.serial_conn.in_waiting > 0:
+  File "D:\Miniconda3\envs\IoT\lib\site-packages\serial\serialwin32.py", line 259, in in_waiting
+    raise SerialException("ClearCommError failed ({!r})".format(ctypes.WinError()))
+serial.serialutil.SerialException: ClearCommError failed (PermissionError(13, 'Access is denied.', None, 5))
+2025-10-14 21:17:56,299 - gateway - ERROR - Gateway error: ClearCommError failed (PermissionError(13, 'Access is denied.', None, 5))
+Traceback (most recent call last):
+  File "P:\MMT\__IoT\First_IoT\Gateway\vps_main.py", line 863, in run
+    if self.serial_conn and self.serial_conn.in_waiting > 0:
+  File "D:\Miniconda3\envs\IoT\lib\site-packages\serial\serialwin32.py", line 259, in in_waiting
+    raise SerialException("ClearCommError failed ({!r})".format(ctypes.WinError()))
+serial.serialutil.SerialException: ClearCommError failed (PermissionError(13, 'Access is denied.', None, 5))
+2025-10-14 21:17:57,305 - gateway - INFO - Stats - RX: 0, TX: 0, Buffered: 8, Local: OK, VPS: OK
+2025-10-14 21:17:57,306 - gateway - ERROR - Gateway error: ClearCommError failed (PermissionError(13, 'Access is denied.', None, 5))
+Traceback (most recent call last):
+  File "P:\MMT\__IoT\First_IoT\Gateway\vps_main.py", line 863, in run
+    if self.serial_conn and self.serial_conn.in_waiting > 0:
+  File "D:\Miniconda3\envs\IoT\lib\site-packages\serial\serialwin32.py", line 259, in in_waiting
+    raise SerialException("ClearCommError failed ({!r})".format(ctypes.WinError()))
+serial.serialutil.SerialException: ClearCommError failed (PermissionError(13, 'Access is denied.', None, 5))
+2025-10-14 21:17:58,314 - gateway - ERROR - Gateway error: ClearCommError failed (PermissionError(13, 'Access is denied.', None, 5))
+Traceback (most recent call last):
+  File "P:\MMT\__IoT\First_IoT\Gateway\vps_main.py", line 863, in run
+    if self.serial_conn and self.serial_conn.in_waiting > 0:
+  File "D:\Miniconda3\envs\IoT\lib\site-packages\serial\serialwin32.py", line 259, in in_waiting
+    raise SerialException("ClearCommError failed ({!r})".format(ctypes.WinError()))
+serial.serialutil.SerialException: ClearCommError failed (PermissionError(13, 'Access is denied.', None, 5))
+2025-10-14 21:17:59,328 - gateway - ERROR - Gateway error: ClearCommError failed (PermissionError(13, 'Access is denied.', None, 5))
+Traceback (most recent call last):
+  File "P:\MMT\__IoT\First_IoT\Gateway\vps_main.py", line 863, in run
+    if self.serial_conn and self.serial_conn.in_waiting > 0:
+  File "D:\Miniconda3\envs\IoT\lib\site-packages\serial\serialwin32.py", line 259, in in_waiting
+    raise SerialException("ClearCommError failed ({!r})".format(ctypes.WinError()))
+serial.serialutil.SerialException: ClearCommError failed (PermissionError(13, 'Access is denied.', None, 5))
+2025-10-14 21:18:00,329 - gateway - ERROR - Gateway error: ClearCommError failed (PermissionError(13, 'Access is denied.', None, 5))
+Traceback (most recent call last):
+  File "P:\MMT\__IoT\First_IoT\Gateway\vps_main.py", line 863, in run
+    if self.serial_conn and self.serial_conn.in_waiting > 0:
+  File "D:\Miniconda3\envs\IoT\lib\site-packages\serial\serialwin32.py", line 259, in in_waiting
+    raise SerialException("ClearCommError failed ({!r})".format(ctypes.WinError()))
+serial.serialutil.SerialException: ClearCommError failed (PermissionError(13, 'Access is denied.', None, 5))
+2025-10-14 21:18:01,340 - gateway - ERROR - Gateway error: ClearCommError failed (PermissionError(13, 'Access is denied.', None, 5))
+Traceback (most recent call last):
+  File "P:\MMT\__IoT\First_IoT\Gateway\vps_main.py", line 863, in run
+    if self.serial_conn and self.serial_conn.in_waiting > 0:
+  File "D:\Miniconda3\envs\IoT\lib\site-packages\serial\serialwin32.py", line 259, in in_waiting
+    raise SerialException("ClearCommError failed ({!r})".format(ctypes.WinError()))
+serial.serialutil.SerialException: ClearCommError failed (PermissionError(13, 'Access is denied.', None, 5))
+2025-10-14 21:18:02,345 - gateway - ERROR - Gateway error: ClearCommError failed (PermissionError(13, 'Access is denied.', None, 5))
+Traceback (most recent call last):
+  File "P:\MMT\__IoT\First_IoT\Gateway\vps_main.py", line 863, in run
+    if self.serial_conn and self.serial_conn.in_waiting > 0:
+  File "D:\Miniconda3\envs\IoT\lib\site-packages\serial\serialwin32.py", line 259, in in_waiting
+    raise SerialException("ClearCommError failed ({!r})".format(ctypes.WinError()))
+serial.serialutil.SerialException: ClearCommError failed (PermissionError(13, 'Access is denied.', None, 5))
+2025-10-14 21:18:03,353 - gateway - ERROR - Gateway error: ClearCommError failed (PermissionError(13, 'Access is denied.', None, 5))
+Traceback (most recent call last):
+  File "P:\MMT\__IoT\First_IoT\Gateway\vps_main.py", line 863, in run
+    if self.serial_conn and self.serial_conn.in_waiting > 0:
+  File "D:\Miniconda3\envs\IoT\lib\site-packages\serial\serialwin32.py", line 259, in in_waiting
+    raise SerialException("ClearCommError failed ({!r})".format(ctypes.WinError()))
+serial.serialutil.SerialException: ClearCommError failed (PermissionError(13, 'Access is denied.', None, 5))
+2025-10-14 21:18:04,374 - gateway - ERROR - Gateway error: ClearCommError failed (PermissionError(13, 'Access is denied.', None, 5))
+Traceback (most recent call last):
+  File "P:\MMT\__IoT\First_IoT\Gateway\vps_main.py", line 863, in run
+    if self.serial_conn and self.serial_conn.in_waiting > 0:
+  File "D:\Miniconda3\envs\IoT\lib\site-packages\serial\serialwin32.py", line 259, in in_waiting
+    raise SerialException("ClearCommError failed ({!r})".format(ctypes.WinError()))
+serial.serialutil.SerialException: ClearCommError failed (PermissionError(13, 'Access is denied.', None, 5))
+2025-10-14 21:18:05,382 - gateway - ERROR - Gateway error: ClearCommError failed (PermissionError(13, 'Access is denied.', None, 5))
+Traceback (most recent call last):
+  File "P:\MMT\__IoT\First_IoT\Gateway\vps_main.py", line 863, in run
+    if self.serial_conn and self.serial_conn.in_waiting > 0:
+  File "D:\Miniconda3\envs\IoT\lib\site-packages\serial\serialwin32.py", line 259, in in_waiting
+    raise SerialException("ClearCommError failed ({!r})".format(ctypes.WinError()))
+serial.serialutil.SerialException: ClearCommError failed (PermissionError(13, 'Access is denied.', None, 5))
+2025-10-14 21:18:06,397 - gateway - ERROR - Gateway error: ClearCommError failed (PermissionError(13, 'Access is denied.', None, 5))
+Traceback (most recent call last):
+  File "P:\MMT\__IoT\First_IoT\Gateway\vps_main.py", line 863, in run
+    if self.serial_conn and self.serial_conn.in_waiting > 0:
+  File "D:\Miniconda3\envs\IoT\lib\site-packages\serial\serialwin32.py", line 259, in in_waiting
+    raise SerialException("ClearCommError failed ({!r})".format(ctypes.WinError()))
+serial.serialutil.SerialException: ClearCommError failed (PermissionError(13, 'Access is denied.', None, 5))
+2025-10-14 21:18:07,410 - gateway - ERROR - Gateway error: ClearCommError failed (PermissionError(13, 'Access is denied.', None, 5))
+Traceback (most recent call last):
+  File "P:\MMT\__IoT\First_IoT\Gateway\vps_main.py", line 863, in run
+    if self.serial_conn and self.serial_conn.in_waiting > 0:
+  File "D:\Miniconda3\envs\IoT\lib\site-packages\serial\serialwin32.py", line 259, in in_waiting
+    raise SerialException("ClearCommError failed ({!r})".format(ctypes.WinError()))
+serial.serialutil.SerialException: ClearCommError failed (PermissionError(13, 'Access is denied.', None, 5))
+2025-10-14 21:18:08,415 - gateway - ERROR - Gateway error: ClearCommError failed (PermissionError(13, 'Access is denied.', None, 5))
+Traceback (most recent call last):
+  File "P:\MMT\__IoT\First_IoT\Gateway\vps_main.py", line 863, in run
+    if self.serial_conn and self.serial_conn.in_waiting > 0:
+  File "D:\Miniconda3\envs\IoT\lib\site-packages\serial\serialwin32.py", line 259, in in_waiting
+    raise SerialException("ClearCommError failed ({!r})".format(ctypes.WinError()))
+serial.serialutil.SerialException: ClearCommError failed (PermissionError(13, 'Access is denied.', None, 5))
+2025-10-14 21:18:09,429 - gateway - ERROR - Gateway error: ClearCommError failed (PermissionError(13, 'Access is denied.', None, 5))
+Traceback (most recent call last):
+  File "P:\MMT\__IoT\First_IoT\Gateway\vps_main.py", line 863, in run
+    if self.serial_conn and self.serial_conn.in_waiting > 0:
+  File "D:\Miniconda3\envs\IoT\lib\site-packages\serial\serialwin32.py", line 259, in in_waiting
+    raise SerialException("ClearCommError failed ({!r})".format(ctypes.WinError()))
+serial.serialutil.SerialException: ClearCommError failed (PermissionError(13, 'Access is denied.', None, 5))
+2025-10-14 21:18:10,444 - gateway - ERROR - Gateway error: ClearCommError failed (PermissionError(13, 'Access is denied.', None, 5))
+Traceback (most recent call last):
+  File "P:\MMT\__IoT\First_IoT\Gateway\vps_main.py", line 863, in run
+    if self.serial_conn and self.serial_conn.in_waiting > 0:
+  File "D:\Miniconda3\envs\IoT\lib\site-packages\serial\serialwin32.py", line 259, in in_waiting
+    raise SerialException("ClearCommError failed ({!r})".format(ctypes.WinError()))
+serial.serialutil.SerialException: ClearCommError failed (PermissionError(13, 'Access is denied.', None, 5))
+2025-10-14 21:18:11,452 - gateway - ERROR - Gateway error: ClearCommError failed (PermissionError(13, 'Access is denied.', None, 5))
+Traceback (most recent call last):
+  File "P:\MMT\__IoT\First_IoT\Gateway\vps_main.py", line 863, in run
+    if self.serial_conn and self.serial_conn.in_waiting > 0:
+  File "D:\Miniconda3\envs\IoT\lib\site-packages\serial\serialwin32.py", line 259, in in_waiting
+    raise SerialException("ClearCommError failed ({!r})".format(ctypes.WinError()))
+serial.serialutil.SerialException: ClearCommError failed (PermissionError(13, 'Access is denied.', None, 5))
+2025-10-14 21:18:12,461 - gateway - ERROR - Gateway error: ClearCommError failed (PermissionError(13, 'Access is denied.', None, 5))
+Traceback (most recent call last):
+  File "P:\MMT\__IoT\First_IoT\Gateway\vps_main.py", line 863, in run
+    if self.serial_conn and self.serial_conn.in_waiting > 0:
+  File "D:\Miniconda3\envs\IoT\lib\site-packages\serial\serialwin32.py", line 259, in in_waiting
+    raise SerialException("ClearCommError failed ({!r})".format(ctypes.WinError()))
+serial.serialutil.SerialException: ClearCommError failed (PermissionError(13, 'Access is denied.', None, 5))
+2025-10-14 21:18:13,461 - gateway - ERROR - Gateway error: ClearCommError failed (PermissionError(13, 'Access is denied.', None, 5))
+Traceback (most recent call last):
+  File "P:\MMT\__IoT\First_IoT\Gateway\vps_main.py", line 863, in run
+    if self.serial_conn and self.serial_conn.in_waiting > 0:
+  File "D:\Miniconda3\envs\IoT\lib\site-packages\serial\serialwin32.py", line 259, in in_waiting
+    raise SerialException("ClearCommError failed ({!r})".format(ctypes.WinError()))
+serial.serialutil.SerialException: ClearCommError failed (PermissionError(13, 'Access is denied.', None, 5))
+2025-10-14 21:18:14,483 - gateway - ERROR - Gateway error: ClearCommError failed (PermissionError(13, 'Access is denied.', None, 5))
+Traceback (most recent call last):
+  File "P:\MMT\__IoT\First_IoT\Gateway\vps_main.py", line 863, in run
+    if self.serial_conn and self.serial_conn.in_waiting > 0:
+  File "D:\Miniconda3\envs\IoT\lib\site-packages\serial\serialwin32.py", line 259, in in_waiting
+    raise SerialException("ClearCommError failed ({!r})".format(ctypes.WinError()))
+serial.serialutil.SerialException: ClearCommError failed (PermissionError(13, 'Access is denied.', None, 5))
+2025-10-14 21:18:15,486 - gateway - ERROR - Gateway error: ClearCommError failed (PermissionError(13, 'Access is denied.', None, 5))
+Traceback (most recent call last):
+  File "P:\MMT\__IoT\First_IoT\Gateway\vps_main.py", line 863, in run
+    if self.serial_conn and self.serial_conn.in_waiting > 0:
+  File "D:\Miniconda3\envs\IoT\lib\site-packages\serial\serialwin32.py", line 259, in in_waiting
+    raise SerialException("ClearCommError failed ({!r})".format(ctypes.WinError()))
+serial.serialutil.SerialException: ClearCommError failed (PermissionError(13, 'Access is denied.', None, 5))
+2025-10-14 21:18:16,498 - gateway - ERROR - Gateway error: ClearCommError failed (PermissionError(13, 'Access is denied.', None, 5))
+Traceback (most recent call last):
+  File "P:\MMT\__IoT\First_IoT\Gateway\vps_main.py", line 863, in run
+    if self.serial_conn and self.serial_conn.in_waiting > 0:
+  File "D:\Miniconda3\envs\IoT\lib\site-packages\serial\serialwin32.py", line 259, in in_waiting
+    raise SerialException("ClearCommError failed ({!r})".format(ctypes.WinError()))
+serial.serialutil.SerialException: ClearCommError failed (PermissionError(13, 'Access is denied.', None, 5))
+2025-10-14 21:18:17,509 - gateway - ERROR - Gateway error: ClearCommError failed (PermissionError(13, 'Access is denied.', None, 5))
+Traceback (most recent call last):
+  File "P:\MMT\__IoT\First_IoT\Gateway\vps_main.py", line 863, in run
+    if self.serial_conn and self.serial_conn.in_waiting > 0:
+  File "D:\Miniconda3\envs\IoT\lib\site-packages\serial\serialwin32.py", line 259, in in_waiting
+    raise SerialException("ClearCommError failed ({!r})".format(ctypes.WinError()))
+serial.serialutil.SerialException: ClearCommError failed (PermissionError(13, 'Access is denied.', None, 5))
+2025-10-14 21:18:18,518 - gateway - ERROR - Gateway error: ClearCommError failed (PermissionError(13, 'Access is denied.', None, 5))
+Traceback (most recent call last):
+  File "P:\MMT\__IoT\First_IoT\Gateway\vps_main.py", line 863, in run
+    if self.serial_conn and self.serial_conn.in_waiting > 0:
+  File "D:\Miniconda3\envs\IoT\lib\site-packages\serial\serialwin32.py", line 259, in in_waiting
+    raise SerialException("ClearCommError failed ({!r})".format(ctypes.WinError()))
+serial.serialutil.SerialException: ClearCommError failed (PermissionError(13, 'Access is denied.', None, 5))
+2025-10-14 21:18:19,529 - gateway - ERROR - Gateway error: ClearCommError failed (PermissionError(13, 'Access is denied.', None, 5))
+Traceback (most recent call last):
+  File "P:\MMT\__IoT\First_IoT\Gateway\vps_main.py", line 863, in run
+    if self.serial_conn and self.serial_conn.in_waiting > 0:
+  File "D:\Miniconda3\envs\IoT\lib\site-packages\serial\serialwin32.py", line 259, in in_waiting
+    raise SerialException("ClearCommError failed ({!r})".format(ctypes.WinError()))
+serial.serialutil.SerialException: ClearCommError failed (PermissionError(13, 'Access is denied.', None, 5))
+2025-10-14 21:18:20,532 - gateway - ERROR - Gateway error: ClearCommError failed (PermissionError(13, 'Access is denied.', None, 5))
+Traceback (most recent call last):
+  File "P:\MMT\__IoT\First_IoT\Gateway\vps_main.py", line 863, in run
+    if self.serial_conn and self.serial_conn.in_waiting > 0:
+  File "D:\Miniconda3\envs\IoT\lib\site-packages\serial\serialwin32.py", line 259, in in_waiting
+    raise SerialException("ClearCommError failed ({!r})".format(ctypes.WinError()))
+serial.serialutil.SerialException: ClearCommError failed (PermissionError(13, 'Access is denied.', None, 5))
+2025-10-14 21:18:21,537 - gateway - ERROR - Gateway error: ClearCommError failed (PermissionError(13, 'Access is denied.', None, 5))
+Traceback (most recent call last):
+  File "P:\MMT\__IoT\First_IoT\Gateway\vps_main.py", line 863, in run
+    if self.serial_conn and self.serial_conn.in_waiting > 0:
+  File "D:\Miniconda3\envs\IoT\lib\site-packages\serial\serialwin32.py", line 259, in in_waiting
+    raise SerialException("ClearCommError failed ({!r})".format(ctypes.WinError()))
+serial.serialutil.SerialException: ClearCommError failed (PermissionError(13, 'Access is denied.', None, 5))
+2025-10-14 21:18:22,544 - gateway - ERROR - Gateway error: ClearCommError failed (PermissionError(13, 'Access is denied.', None, 5))
+Traceback (most recent call last):
+  File "P:\MMT\__IoT\First_IoT\Gateway\vps_main.py", line 863, in run
+    if self.serial_conn and self.serial_conn.in_waiting > 0:
+  File "D:\Miniconda3\envs\IoT\lib\site-packages\serial\serialwin32.py", line 259, in in_waiting
+    raise SerialException("ClearCommError failed ({!r})".format(ctypes.WinError()))
+serial.serialutil.SerialException: ClearCommError failed (PermissionError(13, 'Access is denied.', None, 5))
+2025-10-14 21:18:23,554 - gateway - ERROR - Gateway error: ClearCommError failed (PermissionError(13, 'Access is denied.', None, 5))
+Traceback (most recent call last):
+  File "P:\MMT\__IoT\First_IoT\Gateway\vps_main.py", line 863, in run
+    if self.serial_conn and self.serial_conn.in_waiting > 0:
+  File "D:\Miniconda3\envs\IoT\lib\site-packages\serial\serialwin32.py", line 259, in in_waiting
+    raise SerialException("ClearCommError failed ({!r})".format(ctypes.WinError()))
+serial.serialutil.SerialException: ClearCommError failed (PermissionError(13, 'Access is denied.', None, 5))
+2025-10-14 21:18:24,561 - gateway - ERROR - Gateway error: ClearCommError failed (PermissionError(13, 'Access is denied.', None, 5))
+Traceback (most recent call last):
+  File "P:\MMT\__IoT\First_IoT\Gateway\vps_main.py", line 863, in run
+    if self.serial_conn and self.serial_conn.in_waiting > 0:
+  File "D:\Miniconda3\envs\IoT\lib\site-packages\serial\serialwin32.py", line 259, in in_waiting
+    raise SerialException("ClearCommError failed ({!r})".format(ctypes.WinError()))
+serial.serialutil.SerialException: ClearCommError failed (PermissionError(13, 'Access is denied.', None, 5))
+2025-10-14 21:18:25,583 - gateway - ERROR - Gateway error: ClearCommError failed (PermissionError(13, 'Access is denied.', None, 5))
+Traceback (most recent call last):
+  File "P:\MMT\__IoT\First_IoT\Gateway\vps_main.py", line 863, in run
+    if self.serial_conn and self.serial_conn.in_waiting > 0:
+  File "D:\Miniconda3\envs\IoT\lib\site-packages\serial\serialwin32.py", line 259, in in_waiting
+    raise SerialException("ClearCommError failed ({!r})".format(ctypes.WinError()))
+serial.serialutil.SerialException: ClearCommError failed (PermissionError(13, 'Access is denied.', None, 5))
+2025-10-14 21:18:26,596 - gateway - ERROR - Gateway error: ClearCommError failed (PermissionError(13, 'Access is denied.', None, 5))
+Traceback (most recent call last):
+  File "P:\MMT\__IoT\First_IoT\Gateway\vps_main.py", line 863, in run
+    if self.serial_conn and self.serial_conn.in_waiting > 0:
+  File "D:\Miniconda3\envs\IoT\lib\site-packages\serial\serialwin32.py", line 259, in in_waiting
+    raise SerialException("ClearCommError failed ({!r})".format(ctypes.WinError()))
+serial.serialutil.SerialException: ClearCommError failed (PermissionError(13, 'Access is denied.', None, 5))
+2025-10-14 21:18:27,607 - gateway - ERROR - Gateway error: ClearCommError failed (PermissionError(13, 'Access is denied.', None, 5))
+Traceback (most recent call last):
+  File "P:\MMT\__IoT\First_IoT\Gateway\vps_main.py", line 863, in run
+    if self.serial_conn and self.serial_conn.in_waiting > 0:
+  File "D:\Miniconda3\envs\IoT\lib\site-packages\serial\serialwin32.py", line 259, in in_waiting
+    raise SerialException("ClearCommError failed ({!r})".format(ctypes.WinError()))
+serial.serialutil.SerialException: ClearCommError failed (PermissionError(13, 'Access is denied.', None, 5))
+2025-10-14 21:18:28,614 - gateway - ERROR - Gateway error: ClearCommError failed (PermissionError(13, 'Access is denied.', None, 5))
+Traceback (most recent call last):
+  File "P:\MMT\__IoT\First_IoT\Gateway\vps_main.py", line 863, in run
+    if self.serial_conn and self.serial_conn.in_waiting > 0:
+  File "D:\Miniconda3\envs\IoT\lib\site-packages\serial\serialwin32.py", line 259, in in_waiting
+    raise SerialException("ClearCommError failed ({!r})".format(ctypes.WinError()))
+serial.serialutil.SerialException: ClearCommError failed (PermissionError(13, 'Access is denied.', None, 5))
+2025-10-14 21:18:29,629 - gateway - ERROR - Gateway error: ClearCommError failed (PermissionError(13, 'Access is denied.', None, 5))
+Traceback (most recent call last):
+  File "P:\MMT\__IoT\First_IoT\Gateway\vps_main.py", line 863, in run
+    if self.serial_conn and self.serial_conn.in_waiting > 0:
+  File "D:\Miniconda3\envs\IoT\lib\site-packages\serial\serialwin32.py", line 259, in in_waiting
+    raise SerialException("ClearCommError failed ({!r})".format(ctypes.WinError()))
+serial.serialutil.SerialException: ClearCommError failed (PermissionError(13, 'Access is denied.', None, 5))
+2025-10-14 21:18:30,629 - gateway - ERROR - Gateway error: ClearCommError failed (PermissionError(13, 'Access is denied.', None, 5))
+Traceback (most recent call last):
+  File "P:\MMT\__IoT\First_IoT\Gateway\vps_main.py", line 863, in run
+    if self.serial_conn and self.serial_conn.in_waiting > 0:
+  File "D:\Miniconda3\envs\IoT\lib\site-packages\serial\serialwin32.py", line 259, in in_waiting
+    raise SerialException("ClearCommError failed ({!r})".format(ctypes.WinError()))
+serial.serialutil.SerialException: ClearCommError failed (PermissionError(13, 'Access is denied.', None, 5))
+2025-10-14 21:18:31,633 - gateway - ERROR - Gateway error: ClearCommError failed (PermissionError(13, 'Access is denied.', None, 5))
+Traceback (most recent call last):
+  File "P:\MMT\__IoT\First_IoT\Gateway\vps_main.py", line 863, in run
+    if self.serial_conn and self.serial_conn.in_waiting > 0:
+  File "D:\Miniconda3\envs\IoT\lib\site-packages\serial\serialwin32.py", line 259, in in_waiting
+    raise SerialException("ClearCommError failed ({!r})".format(ctypes.WinError()))
+serial.serialutil.SerialException: ClearCommError failed (PermissionError(13, 'Access is denied.', None, 5))
+2025-10-14 21:18:32,636 - gateway - ERROR - Gateway error: ClearCommError failed (PermissionError(13, 'Access is denied.', None, 5))
+Traceback (most recent call last):
+  File "P:\MMT\__IoT\First_IoT\Gateway\vps_main.py", line 863, in run
+    if self.serial_conn and self.serial_conn.in_waiting > 0:
+  File "D:\Miniconda3\envs\IoT\lib\site-packages\serial\serialwin32.py", line 259, in in_waiting
+    raise SerialException("ClearCommError failed ({!r})".format(ctypes.WinError()))
+serial.serialutil.SerialException: ClearCommError failed (PermissionError(13, 'Access is denied.', None, 5))
+2025-10-14 21:18:33,648 - gateway - ERROR - Gateway error: ClearCommError failed (PermissionError(13, 'Access is denied.', None, 5))
+Traceback (most recent call last):
+  File "P:\MMT\__IoT\First_IoT\Gateway\vps_main.py", line 863, in run
+    if self.serial_conn and self.serial_conn.in_waiting > 0:
+  File "D:\Miniconda3\envs\IoT\lib\site-packages\serial\serialwin32.py", line 259, in in_waiting
+    raise SerialException("ClearCommError failed ({!r})".format(ctypes.WinError()))
+serial.serialutil.SerialException: ClearCommError failed (PermissionError(13, 'Access is denied.', None, 5))
+2025-10-14 21:18:34,661 - gateway - ERROR - Gateway error: ClearCommError failed (PermissionError(13, 'Access is denied.', None, 5))
+Traceback (most recent call last):
+  File "P:\MMT\__IoT\First_IoT\Gateway\vps_main.py", line 863, in run
+    if self.serial_conn and self.serial_conn.in_waiting > 0:
+  File "D:\Miniconda3\envs\IoT\lib\site-packages\serial\serialwin32.py", line 259, in in_waiting
+    raise SerialException("ClearCommError failed ({!r})".format(ctypes.WinError()))
+serial.serialutil.SerialException: ClearCommError failed (PermissionError(13, 'Access is denied.', None, 5))
+2025-10-14 21:18:35,678 - gateway - ERROR - Gateway error: ClearCommError failed (PermissionError(13, 'Access is denied.', None, 5))
+Traceback (most recent call last):
+  File "P:\MMT\__IoT\First_IoT\Gateway\vps_main.py", line 863, in run
+    if self.serial_conn and self.serial_conn.in_waiting > 0:
+  File "D:\Miniconda3\envs\IoT\lib\site-packages\serial\serialwin32.py", line 259, in in_waiting
+    raise SerialException("ClearCommError failed ({!r})".format(ctypes.WinError()))
+serial.serialutil.SerialException: ClearCommError failed (PermissionError(13, 'Access is denied.', None, 5))
+2025-10-14 21:18:36,690 - gateway - ERROR - Gateway error: ClearCommError failed (PermissionError(13, 'Access is denied.', None, 5))
+Traceback (most recent call last):
+  File "P:\MMT\__IoT\First_IoT\Gateway\vps_main.py", line 863, in run
+    if self.serial_conn and self.serial_conn.in_waiting > 0:
+  File "D:\Miniconda3\envs\IoT\lib\site-packages\serial\serialwin32.py", line 259, in in_waiting
+    raise SerialException("ClearCommError failed ({!r})".format(ctypes.WinError()))
+serial.serialutil.SerialException: ClearCommError failed (PermissionError(13, 'Access is denied.', None, 5))
+2025-10-14 21:18:37,698 - gateway - ERROR - Gateway error: ClearCommError failed (PermissionError(13, 'Access is denied.', None, 5))
+Traceback (most recent call last):
+  File "P:\MMT\__IoT\First_IoT\Gateway\vps_main.py", line 863, in run
+    if self.serial_conn and self.serial_conn.in_waiting > 0:
+  File "D:\Miniconda3\envs\IoT\lib\site-packages\serial\serialwin32.py", line 259, in in_waiting
+    raise SerialException("ClearCommError failed ({!r})".format(ctypes.WinError()))
+serial.serialutil.SerialException: ClearCommError failed (PermissionError(13, 'Access is denied.', None, 5))
+2025-10-14 21:18:38,705 - gateway - ERROR - Gateway error: ClearCommError failed (PermissionError(13, 'Access is denied.', None, 5))
+Traceback (most recent call last):
+  File "P:\MMT\__IoT\First_IoT\Gateway\vps_main.py", line 863, in run
+    if self.serial_conn and self.serial_conn.in_waiting > 0:
+  File "D:\Miniconda3\envs\IoT\lib\site-packages\serial\serialwin32.py", line 259, in in_waiting
+    raise SerialException("ClearCommError failed ({!r})".format(ctypes.WinError()))
+serial.serialutil.SerialException: ClearCommError failed (PermissionError(13, 'Access is denied.', None, 5))
+2025-10-14 21:18:39,708 - gateway - ERROR - Gateway error: ClearCommError failed (PermissionError(13, 'Access is denied.', None, 5))
+Traceback (most recent call last):
+  File "P:\MMT\__IoT\First_IoT\Gateway\vps_main.py", line 863, in run
+    if self.serial_conn and self.serial_conn.in_waiting > 0:
+  File "D:\Miniconda3\envs\IoT\lib\site-packages\serial\serialwin32.py", line 259, in in_waiting
+    raise SerialException("ClearCommError failed ({!r})".format(ctypes.WinError()))
+serial.serialutil.SerialException: ClearCommError failed (PermissionError(13, 'Access is denied.', None, 5))
+2025-10-14 21:18:40,714 - gateway - ERROR - Gateway error: ClearCommError failed (PermissionError(13, 'Access is denied.', None, 5))
+Traceback (most recent call last):
+  File "P:\MMT\__IoT\First_IoT\Gateway\vps_main.py", line 863, in run
+    if self.serial_conn and self.serial_conn.in_waiting > 0:
+  File "D:\Miniconda3\envs\IoT\lib\site-packages\serial\serialwin32.py", line 259, in in_waiting
+    raise SerialException("ClearCommError failed ({!r})".format(ctypes.WinError()))
+serial.serialutil.SerialException: ClearCommError failed (PermissionError(13, 'Access is denied.', None, 5))
+2025-10-14 21:18:41,720 - gateway - ERROR - Gateway error: ClearCommError failed (PermissionError(13, 'Access is denied.', None, 5))
+Traceback (most recent call last):
+  File "P:\MMT\__IoT\First_IoT\Gateway\vps_main.py", line 863, in run
+    if self.serial_conn and self.serial_conn.in_waiting > 0:
+  File "D:\Miniconda3\envs\IoT\lib\site-packages\serial\serialwin32.py", line 259, in in_waiting
+    raise SerialException("ClearCommError failed ({!r})".format(ctypes.WinError()))
+serial.serialutil.SerialException: ClearCommError failed (PermissionError(13, 'Access is denied.', None, 5))
+2025-10-14 21:18:42,724 - gateway - ERROR - Gateway error: ClearCommError failed (PermissionError(13, 'Access is denied.', None, 5))
+Traceback (most recent call last):
+  File "P:\MMT\__IoT\First_IoT\Gateway\vps_main.py", line 863, in run
+    if self.serial_conn and self.serial_conn.in_waiting > 0:
+  File "D:\Miniconda3\envs\IoT\lib\site-packages\serial\serialwin32.py", line 259, in in_waiting
+    raise SerialException("ClearCommError failed ({!r})".format(ctypes.WinError()))
+serial.serialutil.SerialException: ClearCommError failed (PermissionError(13, 'Access is denied.', None, 5))
+2025-10-14 21:18:43,730 - gateway - ERROR - Gateway error: ClearCommError failed (PermissionError(13, 'Access is denied.', None, 5))
+Traceback (most recent call last):
+  File "P:\MMT\__IoT\First_IoT\Gateway\vps_main.py", line 863, in run
+    if self.serial_conn and self.serial_conn.in_waiting > 0:
+  File "D:\Miniconda3\envs\IoT\lib\site-packages\serial\serialwin32.py", line 259, in in_waiting
+    raise SerialException("ClearCommError failed ({!r})".format(ctypes.WinError()))
+serial.serialutil.SerialException: ClearCommError failed (PermissionError(13, 'Access is denied.', None, 5))
+2025-10-14 21:18:44,737 - gateway - ERROR - Gateway error: ClearCommError failed (PermissionError(13, 'Access is denied.', None, 5))
+Traceback (most recent call last):
+  File "P:\MMT\__IoT\First_IoT\Gateway\vps_main.py", line 863, in run
+    if self.serial_conn and self.serial_conn.in_waiting > 0:
+  File "D:\Miniconda3\envs\IoT\lib\site-packages\serial\serialwin32.py", line 259, in in_waiting
+    raise SerialException("ClearCommError failed ({!r})".format(ctypes.WinError()))
+serial.serialutil.SerialException: ClearCommError failed (PermissionError(13, 'Access is denied.', None, 5))
+2025-10-14 21:18:45,741 - gateway - ERROR - Gateway error: ClearCommError failed (PermissionError(13, 'Access is denied.', None, 5))
+Traceback (most recent call last):
+  File "P:\MMT\__IoT\First_IoT\Gateway\vps_main.py", line 863, in run
+    if self.serial_conn and self.serial_conn.in_waiting > 0:
+  File "D:\Miniconda3\envs\IoT\lib\site-packages\serial\serialwin32.py", line 259, in in_waiting
+    raise SerialException("ClearCommError failed ({!r})".format(ctypes.WinError()))
+serial.serialutil.SerialException: ClearCommError failed (PermissionError(13, 'Access is denied.', None, 5))
+2025-10-14 21:18:45,817 - gateway - INFO - Cleaning up connections...
+2025-10-14 21:18:45,894 - gateway - WARNING -  Local MQTT disconnected (rc=0)
+2025-10-14 21:18:45,894 - gateway - INFO - Gateway stopped

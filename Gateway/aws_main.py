@@ -96,25 +96,11 @@ CONFIG = {
 
 MESSAGE_TYPES = {
     0x01: 'rfid_scan',
-    0x02: 'temp_update',
-    0x03: 'motion_detect',
-    0x04: 'relay_control',
-    0x05: 'passkey',
     0x06: 'gate_status',
-    0x08: 'door_status',
-    0x07: 'system_status',
-    0x80: 'ack',
-    0xFF: 'error'
 }
 
 DEVICE_TYPES = {
     0x01: 'rfid_gate',
-    0x02: 'relay_fan',
-    0x03: 'temp_DH11',
-    0x04: 'gateway',
-    0x05: 'passkey',
-    0x07: 'motion_outdoor',
-    0x08: 'motion_indoor'
 }
 
 def crc32(data: bytes, poly=0x04C11DB7, init=0xFFFFFFFF, xor_out=0xFFFFFFFF) -> int:
@@ -133,11 +119,6 @@ def verify_hmac(body_str, received_hmac, key):
     """Verify HMAC-SHA256 signature using full hash"""
     calculated = hmac.new(key, body_str.encode(), hashlib.sha256).hexdigest()
     return hmac.compare_digest(calculated, received_hmac)
-
-def calculate_hmac(data_str, key):
-    """Calculate HMAC-SHA256 signature"""
-    return hmac.new(key, data_str.encode(), hashlib.sha256).hexdigest()
-
 
 class SecurityManager:
     """Manages security features including rate limiting, nonce validation, and lockouts"""

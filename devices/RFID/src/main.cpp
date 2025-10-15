@@ -11,8 +11,6 @@
 #define SS_PIN D8
 #define RST_PIN D3
 #define SERVO_PIN D0
-#define LED_OK D4
-#define LED_ERROR D5
 #define RESPONSE_TIMEOUT_MS 12000
 
 // Device type cho RFID Gate
@@ -241,8 +239,6 @@ bool receiveAckMessage(bool* accessGranted, unsigned long timeoutMs) {
 // ============= HARDWARE CONTROL =============
 void openGate() {
   Serial.println(F("=== ACCESS GRANTED ==="));
-  digitalWrite(LED_OK, HIGH);
-  digitalWrite(LED_ERROR, LOW);
   
   gate.write(90);
   sendStatusMessage("open");
@@ -252,24 +248,7 @@ void openGate() {
   gate.write(0);
   sendStatusMessage("clos");
   
-  digitalWrite(LED_OK, LOW);
   Serial.println(F("Gate closed"));
-}
-
-void showError() {
-  Serial.println(F("=== ACCESS DENIED ==="));
-  digitalWrite(LED_ERROR, HIGH);
-  digitalWrite(LED_OK, LOW);
-  
-  for (int i = 0; i < 3; i++) {
-    digitalWrite(LED_ERROR, LOW);
-    delay(200);
-    digitalWrite(LED_ERROR, HIGH);
-    delay(200);
-  }
-  
-  delay(1000);
-  digitalWrite(LED_ERROR, LOW);
 }
 
 // ============= SETUP =============
@@ -283,11 +262,6 @@ void setup() {
   Serial.println(F("Protocol: Gateway Compatible"));
   Serial.println(F("================================\n"));
   
-  // Setup LEDs
-  pinMode(LED_OK, OUTPUT);
-  pinMode(LED_ERROR, OUTPUT);
-  digitalWrite(LED_OK, LOW);
-  digitalWrite(LED_ERROR, LOW);
   
   // Setup LoRa
   loraSerial.begin(9600);
@@ -312,13 +286,6 @@ void setup() {
   
   Serial.println(F("\n[READY] Waiting for RFID cards...\n"));
   
-  // Blink LEDs to indicate ready
-  for (int i = 0; i < 2; i++) {
-    digitalWrite(LED_OK, HIGH);
-    delay(100);
-    digitalWrite(LED_OK, LOW);
-    delay(100);
-  }
 }
 
 // ============= MAIN LOOP =============
@@ -334,7 +301,6 @@ void loop() {
   // Validate UID
   if (rfid.uid.size == 0 || rfid.uid.size > 10) {
     Serial.println(F("[ERROR] Invalid UID size"));
-    showError();
     rfid.PICC_HaltA();
     rfid.PCD_StopCrypto1();
     delay(2000);
@@ -349,7 +315,6 @@ void loop() {
   // Send RFID scan message
   if (!sendRFIDScan(uid, uidLen)) {
     Serial.println(F("[ERROR] Failed to send message"));
-    showError();
     rfid.PICC_HaltA();
     rfid.PCD_StopCrypto1();
     delay(2000);
@@ -361,12 +326,10 @@ void loop() {
   if (receiveAckMessage(&accessGranted, RESPONSE_TIMEOUT_MS)) {
     if (accessGranted) {
       openGate();
-    } else {
-      showError();
-    }
-  } else {
+    } 
+  } 
+  else {
     Serial.println(F("[ERROR] No response from Gateway"));
-    showError();
   }
   
   // Cleanup
