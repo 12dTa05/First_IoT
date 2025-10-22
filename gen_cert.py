@@ -21,8 +21,10 @@ DEFAULTS = {
     "ca_common_name": "MyLocalCA",
     "broker_common_name": "broker.local",
     "gateway_common_name": "gateway.local",
+    "server_common_name": "VPS.server",
     "broker_sans": ["broker.local", "192.168.1.148"],
     "gateway_sans": ["gateway.local", "192.168.1.148"],
+    "server_sans": ["VPS.server", "159.223.63.61"],
     "key_size": 2048,
     "ca_valid_days": 3650,      # 10 years
     "cert_valid_days": 825,     # ~2.25 years (common max)
@@ -156,8 +158,10 @@ def main():
     p.add_argument("--ca-cn", default=DEFAULTS["ca_common_name"], help="CA Common Name")
     p.add_argument("--broker-cn", default=DEFAULTS["broker_common_name"], help="Broker Common Name")
     p.add_argument("--gateway-cn", default=DEFAULTS["gateway_common_name"], help="Gateway Common Name")
+    p.add_argument("--server-cn", default=DEFAULTS["server_common_name"], help="Server Common Name")
     p.add_argument("--broker-san", nargs="+", default=DEFAULTS["broker_sans"], help="SANs cho broker (DNS/IP). Ví dụ: broker.local 127.0.0.1")
     p.add_argument("--gateway-san", nargs="+", default=DEFAULTS["gateway_sans"], help="SANs cho gateway (DNS/IP).")
+    p.add_argument("--server-san", nargs="+", default=DEFAULTS["server_sans"], help="SANs cho server")
     p.add_argument("--key-size", type=int, default=DEFAULTS["key_size"], help="Kích thước RSA key (bits)")
     p.add_argument("--ca-days", type=int, default=DEFAULTS["ca_valid_days"], help="Thời hạn CA (ngày)")
     p.add_argument("--cert-days", type=int, default=DEFAULTS["cert_valid_days"], help="Thời hạn cert server (ngày)")
@@ -190,6 +194,13 @@ def main():
     write_pem(os.path.join(out, "gateway.cert.pem"), cert_to_pem(gateway_cert))
     write_pem(os.path.join(out, "gateway.csr.pem"), gateway_csr.public_bytes(serialization.Encoding.PEM))
 
+    server_key, server_csr, server_cert = create_csr_and_signed_cert(
+        args.server_cn, args.server_san, ca_key, ca_cert, key_size=args.key_size, valid_days=args.cert_days
+    )
+    write_pem(os.path.join(out, "server.key.pem"), private_key_to_pem(gateway_key), mode=0o600)
+    write_pem(os.path.join(out, "server.cert.pem"), cert_to_pem(server_cert))
+    write_pem(os.path.join(out, "server.csr.pem"), server_csr.public_bytes(serialization.Encoding.PEM))
+
     # Optional: create combined PEM for server (key + cert) if some services want
     with open(os.path.join(out, "broker.full.pem"), "wb") as f:
         f.write(private_key_to_pem(broker_key))
@@ -198,6 +209,10 @@ def main():
     with open(os.path.join(out, "gateway.full.pem"), "wb") as f:
         f.write(private_key_to_pem(gateway_key))
         f.write(cert_to_pem(gateway_cert))
+        f.write(ca_cert_pem)
+    with open(os.path.join(out, "server.full.pem"), "wb") as f:
+        f.write(private_key_to_pem(server_key))
+        f.write(cert_to_pem(server_cert))
         f.write(ca_cert_pem)
 
     print(f"Hoàn tất. File lưu tại: {os.path.abspath(out)}")

@@ -6,11 +6,11 @@
 #include <time.h>
 
 // WiFi credentials
-const char* ssid = "atttcnm_wifi";
-const char* wifiPass = "123456@2025";
+const char* ssid = "Firewall_OWRT";
+const char* wifiPass = "12052003A";
 
 // MQTT config
-const char* mqtt_host = "192.168.1.111";
+const char* mqtt_host = "192.168.1.209";
 const uint16_t mqtt_port = 1883;
 
 const char* device_id = "temp_01";

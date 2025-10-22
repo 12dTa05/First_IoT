@@ -8,10 +8,10 @@
 #include <bearssl/bearssl_hash.h>
 #include <time.h>
 
-const char* ssid = "atttcnm_wifi";
-const char* wifiPass = "123456@2025";
+const char* ssid = "Firewall_OWRT";
+const char* wifiPass = "12052003A";
 
-const char* mqtt_host = "192.168.1.111";  
+const char* mqtt_host = "192.168.1.209";  
 const uint16_t mqtt_port = 1884;          
 
 const char* device_id = "passkey_01";
@@ -91,6 +91,28 @@ int consecutiveFailures = 0;
 unsigned long lastMemCheck = 0;
 const unsigned long memCheckInterval = 30000;
 const uint32_t minFreeHeap = 8000;
+
+struct RemoteUnlockConfig {
+    bool enabled = true;
+    unsigned long default_duration_ms = 5000;  // 5 seconds default
+    unsigned long max_duration_ms = 30000;     // 30 seconds maximum
+    bool require_reason = true;
+    bool audit_log = true;
+};
+
+RemoteUnlockConfig remoteConfig;
+
+// Track remote unlock state
+struct RemoteUnlockState {
+    bool active = false;
+    String command_id = "";
+    String initiated_by = "";
+    String reason = "";
+    unsigned long unlock_time = 0;
+    unsigned long duration_ms = 0;
+};
+
+RemoteUnlockState remoteState;
 
 // HMAC calculation using FULL hash (64 characters)
 String calc_hmac_sha256_hex(const String &data) {
@@ -186,6 +208,22 @@ void mqttCallback(char* topic, byte* payload, unsigned int length) {
     const char* cmd = doc["cmd"];
     if (cmd == nullptr) {
       Serial.println("[ERROR] No 'cmd' field in message");
+      return;
+    }
+
+    if (strcmp(cmd, "remote_unlock") == 0) {
+      handleRemoteUnlock(doc);
+      return;
+    }
+        
+        // ===== NEW: Handle Remote Lock Command =====
+    if (strcmp(cmd, "remote_lock") == 0) {
+      handleRemoteLock(doc);
+      return;
+    }
+
+    if (strcmp(cmd, "update_config") == 0) {
+      handleConfigUpdate(doc);
       return;
     }
 
@@ -330,6 +368,207 @@ void sendUnlockRequest(String password) {
   }
 }
 
+void handleRemoteUnlock(JsonDocument& doc) {
+    Serial.println("[REMOTE] Remote unlock request received");
+    
+    // Check if remote unlock is enabled
+    if (!remoteConfig.enabled) {
+        sendRemoteResponse(doc["command_id"], false, "remote_unlock_disabled");
+        Serial.println("[REMOTE] Remote unlock is disabled");
+        return;
+    }
+    
+    // Extract parameters
+    String command_id = doc["command_id"] | String(millis());
+    String initiated_by = doc["user"] | "unknown";
+    String reason = doc["reason"] | "no_reason_provided";
+    unsigned long duration = doc["duration_ms"] | remoteConfig.default_duration_ms;
+    
+    // Validate duration
+    if (duration > remoteConfig.max_duration_ms) {
+        duration = remoteConfig.max_duration_ms;
+        Serial.printf("[REMOTE] Duration capped at max: %lu ms\n", duration);
+    }
+    
+    // Log remote unlock attempt
+    logRemoteAccess("unlock", command_id, initiated_by, reason, duration);
+    
+    // Store state
+    remoteState.active = true;
+    remoteState.command_id = command_id;
+    remoteState.initiated_by = initiated_by;
+    remoteState.reason = reason;
+    remoteState.unlock_time = millis();
+    remoteState.duration_ms = duration;
+    
+    // Execute unlock
+    executeUnlock("remote_unlock", duration);
+    
+    // Send acknowledgment
+    sendRemoteResponse(command_id, true, "unlocked");
+    
+    Serial.printf("[REMOTE] Door unlocked by %s for %lu ms\n", 
+                  initiated_by.c_str(), duration);
+}
+
+// ============= REMOTE LOCK HANDLER =============
+void handleRemoteLock(JsonDocument& doc) {
+    Serial.println("[REMOTE] Remote lock request received");
+    
+    String command_id = doc["command_id"] | String(millis());
+    String initiated_by = doc["user"] | "unknown";
+    
+    // Cancel any active remote unlock
+    if (remoteState.active) {
+        remoteState.active = false;
+        Serial.println("[REMOTE] Cancelled active remote unlock");
+    }
+    
+    // Execute lock immediately
+    doorServo.write(0);
+    digitalWrite(LED_OK, LOW);
+    digitalWrite(LED_ERR, HIGH);
+    delay(500);
+    digitalWrite(LED_ERR, LOW);
+    
+    // Log and respond
+    logRemoteAccess("lock", command_id, initiated_by, "manual_lock", 0);
+    sendRemoteResponse(command_id, true, "locked");
+    sendStatus("locked", "remote_lock");
+    
+    Serial.printf("[REMOTE] Door locked by %s\n", initiated_by.c_str());
+}
+
+// ============= CONFIGURATION UPDATE HANDLER =============
+void handleConfigUpdate(JsonDocument& doc) {
+    Serial.println("[CONFIG] Configuration update received");
+    
+    if (doc.containsKey("remote_enabled")) {
+        remoteConfig.enabled = doc["remote_enabled"];
+    }
+    
+    if (doc.containsKey("default_duration_ms")) {
+        remoteConfig.default_duration_ms = doc["default_duration_ms"];
+    }
+    
+    if (doc.containsKey("max_duration_ms")) {
+        remoteConfig.max_duration_ms = doc["max_duration_ms"];
+    }
+    
+    // Save to EEPROM if needed
+    // saveConfigToEEPROM();
+    
+    Serial.println("[CONFIG] Configuration updated successfully");
+    sendRemoteResponse(doc["command_id"], true, "config_updated");
+}
+
+// ============= UNIFIED UNLOCK EXECUTION =============
+void executeUnlock(const char* method, unsigned long duration_ms) {
+    Serial.printf("[UNLOCK] Opening door via %s for %lu ms\n", method, duration_ms);
+    
+    // Open door
+    doorServo.write(180);
+    digitalWrite(LED_OK, HIGH);
+    digitalWrite(LED_ERR, LOW);
+    
+    // Send status
+    sendStatus("unlocked", method);
+    
+    // Visual feedback
+    blinkLED(LED_OK, 3, 200);
+    digitalWrite(LED_OK, HIGH);
+    
+    // Wait for specified duration
+    delay(duration_ms);
+    
+    // Auto-lock
+    doorServo.write(0);
+    digitalWrite(LED_OK, LOW);
+    
+    sendStatus("locked", "auto_lock");
+    
+    Serial.println("[UNLOCK] Door auto-locked");
+}
+
+// ============= UNIFIED LOCK EXECUTION =============
+void executeLock(const char* reason) {
+    doorServo.write(0);
+    digitalWrite(LED_OK, LOW);
+    digitalWrite(LED_ERR, HIGH);
+    
+    sendStatus("locked", reason ? reason : "denied");
+    
+    delay(1500);
+    digitalWrite(LED_ERR, LOW);
+}
+
+// ============= SEND REMOTE RESPONSE =============
+void sendRemoteResponse(String command_id, bool success, const char* status) {
+    if (!mqtt.connected()) return;
+    
+    StaticJsonDocument<256> doc;
+    doc["device_id"] = device_id;
+    doc["command_id"] = command_id;
+    doc["success"] = success;
+    doc["status"] = status;
+    doc["timestamp"] = time(nullptr);
+    doc["free_heap"] = ESP.getFreeHeap();
+    
+    String payload;
+    serializeJson(doc, payload);
+    
+    mqtt.publish(topic_status, payload.c_str(), false);
+    
+    Serial.printf("[RESPONSE] Sent: command_id=%s, success=%d, status=%s\n", 
+                  command_id.c_str(), success, status);
+}
+
+// ============= LOG REMOTE ACCESS =============
+void logRemoteAccess(const char* action, String command_id, 
+                     String initiated_by, String reason, unsigned long duration) {
+    if (!mqtt.connected()) return;
+    
+    StaticJsonDocument<384> doc;
+    doc["device_id"] = device_id;
+    doc["type"] = "remote_access";
+    doc["action"] = action;
+    doc["command_id"] = command_id;
+    doc["initiated_by"] = initiated_by;
+    doc["reason"] = reason;
+    doc["duration_ms"] = duration;
+    doc["timestamp"] = time(nullptr);
+    
+    String payload;
+    serializeJson(doc, payload);
+    
+    // Publish to dedicated remote access log topic
+    String logTopic = String(topic_status) + "/remote";
+    mqtt.publish(logTopic.c_str(), payload.c_str(), false);
+    
+    Serial.printf("[LOG] Remote %s by %s: %s\n", action, 
+                  initiated_by.c_str(), reason.c_str());
+}
+
+void sendStatus(const char* state, const char* method) {
+    if (!mqtt.connected()) return;
+    
+    StaticJsonDocument<256> doc;
+    doc["device_id"] = device_id;
+    doc["state"] = state;
+    doc["method"] = method;
+    doc["timestamp"] = time(nullptr);
+    
+    if (remoteState.active) {
+        doc["remote_active"] = true;
+        doc["remote_user"] = remoteState.initiated_by;
+    }
+    
+    String payload;
+    serializeJson(doc, payload);
+    
+    mqtt.publish(topic_status, payload.c_str(), true);
+}
+
 void setup() {
   Serial.begin(115200);
   delay(100);
@@ -406,6 +645,10 @@ void setup() {
   Serial.println("=================================\n");
   
   blinkLED(LED_OK, 2, 200);
+
+  remoteConfig.enabled = true;
+  remoteConfig.default_duration_ms = 5000;
+  remoteConfig.max_duration_ms = 30000;
 }
 
 void loop() {
@@ -418,6 +661,14 @@ void loop() {
   if (currentMillis - lastMemCheck >= memCheckInterval) {
     lastMemCheck = currentMillis;
     checkMemory();
+  }
+
+  if (remoteState.active) {
+    unsigned long elapsed = millis() - remoteState.unlock_time;
+    if (elapsed >= remoteState.duration_ms + 5000) {  // +2s for servo movement
+      remoteState.active = false;
+      Serial.println("[REMOTE] Remote unlock session ended");
+    }
   }
   
   char k = keypad.getKey();

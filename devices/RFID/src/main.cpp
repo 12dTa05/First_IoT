@@ -47,6 +47,16 @@ uint32_t crc32(const uint8_t* data, size_t len) {
   return crc ^ 0xFFFFFFFF;
 }
 
+struct RemoteControlState {
+    bool listening_for_command = false;
+    unsigned long listen_start = 0;
+    const unsigned long listen_timeout = 30000;  // 30 seconds
+    String current_command_id = "";
+    String initiated_by = "";
+};
+
+RemoteControlState remoteCtrl;
+
 // ============= MESSAGE BUILDING =============
 bool sendRFIDScan(const byte* uid, byte uidLen) {
   if (uidLen > 10) return false;
@@ -236,6 +246,63 @@ bool receiveAckMessage(bool* accessGranted, unsigned long timeoutMs) {
   return false;
 }
 
+bool checkForRemoteCommand() {
+    if (!lora.available()) {
+        return false;
+    }
+    
+    ResponseContainer rsc = lora.receiveMessage();
+    
+    if (rsc.status.code != 1 || rsc.data.length() < 12) {
+        return false;
+    }
+    
+    const uint8_t* buffer = (const uint8_t*)rsc.data.c_str();
+    int len = rsc.data.length();
+    
+    // Verify header: 0xC0 0x00 0x00
+    if (buffer[0] != 0xC0 || buffer[1] != 0x00 || buffer[2] != 0x00) {
+        return false;
+    }
+    
+    // Parse command type at position 7
+    uint8_t commandLen = buffer[6];
+    if (len != 7 + commandLen) {
+        return false;
+    }
+    
+    // Extract command string
+    String command = "";
+    for (uint8_t i = 0; i < commandLen; i++) {
+        command += (char)buffer[7 + i];
+    }
+    
+    Serial.print(F("[REMOTE] Received LoRa command: "));
+    Serial.println(command);
+    
+    // Parse command format: "REMOTE_UNLOCK:{command_id}:{user}:{duration}"
+    if (command.startsWith("REMOTE_UNLOCK:")) {
+        handleRemoteUnlockCommand(command);
+        return true;
+    }
+    
+    if (command.startsWith("REMOTE_LOCK:")) {
+        handleRemoteLockCommand(command);
+        return true;
+    }
+    
+    // Legacy commands
+    if (command == "GRANT") {
+        return true;  // Normal RFID grant
+    }
+    
+    if (command == "DENY5") {
+        return true;  // Normal RFID deny
+    }
+    
+    return false;
+}
+
 // ============= HARDWARE CONTROL =============
 void openGate() {
   Serial.println(F("=== ACCESS GRANTED ==="));
@@ -249,6 +316,138 @@ void openGate() {
   sendStatusMessage("clos");
   
   Serial.println(F("Gate closed"));
+}
+
+void handleRemoteUnlockCommand(String command) {
+    Serial.println(F("\n[REMOTE] Processing remote unlock command"));
+    
+    // Parse command format: REMOTE_UNLOCK:{command_id}:{user}:{duration_ms}
+    int idx1 = command.indexOf(':');
+    int idx2 = command.indexOf(':', idx1 + 1);
+    int idx3 = command.indexOf(':', idx2 + 1);
+    
+    if (idx1 == -1 || idx2 == -1 || idx3 == -1) {
+        Serial.println(F("[ERROR] Invalid command format"));
+        sendRemoteResponse("error", false, "invalid_format");
+        return;
+    }
+    
+    String command_id = command.substring(idx1 + 1, idx2);
+    String user = command.substring(idx2 + 1, idx3);
+    unsigned long duration_ms = command.substring(idx3 + 1).toInt();
+    
+    // Validate duration (1-30 seconds)
+    if (duration_ms < 1000 || duration_ms > 30000) {
+        duration_ms = 5000;  // Default 5 seconds
+    }
+    
+    Serial.printf("[REMOTE] Command ID: %s\n", command_id.c_str());
+    Serial.printf("[REMOTE] User: %s\n", user.c_str());
+    Serial.printf("[REMOTE] Duration: %lu ms\n", duration_ms);
+    
+    // Store remote control state
+    remoteCtrl.current_command_id = command_id;
+    remoteCtrl.initiated_by = user;
+    
+    // Execute unlock
+    executeRemoteUnlock(duration_ms);
+    
+    // Send acknowledgment
+    sendRemoteResponse(command_id, true, "unlocked");
+    
+    // Send status message via LoRa
+    sendStatusMessage("REMOTE_OPEN");
+}
+
+// ============= HANDLE REMOTE LOCK COMMAND =============
+void handleRemoteLockCommand(String command) {
+    Serial.println(F("\n[REMOTE] Processing remote lock command"));
+    
+    // Parse command format: REMOTE_LOCK:{command_id}:{user}
+    int idx1 = command.indexOf(':');
+    int idx2 = command.indexOf(':', idx1 + 1);
+    
+    if (idx1 == -1 || idx2 == -1) {
+        Serial.println(F("[ERROR] Invalid command format"));
+        return;
+    }
+    
+    String command_id = command.substring(idx1 + 1, idx2);
+    String user = command.substring(idx2 + 1);
+    
+    Serial.printf("[REMOTE] Lock by: %s\n", user.c_str());
+    
+    // Execute lock immediately
+    gate.write(0);
+    
+    // Send acknowledgment
+    sendRemoteResponse(command_id, true, "locked");
+    
+    // Send status
+    sendStatusMessage("REMOTE_CLOS");
+    
+    Serial.println(F("[REMOTE] Gate locked"));
+}
+
+// ============= EXECUTE REMOTE UNLOCK =============
+void executeRemoteUnlock(unsigned long duration_ms) {
+    Serial.println(F("\n=== REMOTE ACCESS GRANTED ==="));
+    
+    // Open gate
+    gate.write(90);
+    delay(500);
+    
+    Serial.printf("Gate opened for %lu ms\n", duration_ms);
+    
+    // Wait for specified duration
+    delay(duration_ms);
+    
+    // Close gate
+    gate.write(0);
+    delay(500);
+    
+    sendStatusMessage("AUTO_CLOS");
+    
+    Serial.println(F("Gate closed automatically"));
+    Serial.println(F("=== REMOTE UNLOCK COMPLETE ===\n"));
+}
+
+// ============= SEND REMOTE RESPONSE VIA LORA =============
+void sendRemoteResponse(String command_id, bool success, const char* status) {
+    // Create response message
+    // Format: "ACK:{command_id}:{success}:{status}"
+    String response = "ACK:" + command_id + ":" + 
+                     String(success ? "1" : "0") + ":" + 
+                     String(status);
+    
+    uint8_t buffer[64];
+    int idx = 0;
+    
+    // Header
+    buffer[idx++] = 0xC0;
+    buffer[idx++] = 0x00;
+    buffer[idx++] = 0x00;
+    
+    // Address (Gateway)
+    buffer[idx++] = 0x00;
+    buffer[idx++] = 0x00;
+    
+    // Channel
+    buffer[idx++] = 23;
+    
+    // Length
+    buffer[idx++] = response.length();
+    
+    // Data
+    for (unsigned int i = 0; i < response.length(); i++) {
+        buffer[idx++] = response[i];
+    }
+    
+    // Send via LoRa
+    lora.sendMessage(buffer, idx);
+    
+    Serial.print(F("[RESPONSE] Sent: "));
+    Serial.println(response);
 }
 
 // ============= SETUP =============
@@ -280,6 +479,9 @@ void setup() {
   
   // Initialize random seed
   randomSeed(analogRead(A0));
+
+  remoteCtrl.listening_for_command = false;
+  remoteCtrl.listen_start = 0;
   
   // Send online status
   sendStatusMessage("ONLINE");
@@ -290,6 +492,10 @@ void setup() {
 
 // ============= MAIN LOOP =============
 void loop() {
+  if (checkForRemoteCommand()) {
+    delay(100);
+  }
+
   // Check for RFID card
   if (!rfid.PICC_IsNewCardPresent() || !rfid.PICC_ReadCardSerial()) {
     delay(50);
