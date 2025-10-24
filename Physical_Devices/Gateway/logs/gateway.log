@@ -132,3 +132,220 @@
 2025-10-24 22:41:14,454 - gateway - INFO - [SHUTDOWN] Gateway stopped cleanly
 2025-10-24 22:41:14,454 - gateway - INFO - [SHUTDOWN] Cleaning up connections...
 2025-10-24 22:41:14,454 - gateway - INFO - [SHUTDOWN] Gateway stopped cleanly
+2025-10-24 23:00:37,389 - gateway - INFO - Checking prerequisites...
+2025-10-24 23:00:37,392 - gateway - INFO - ============================================================
+2025-10-24 23:00:37,392 - gateway - INFO - Initializing IoT Gateway
+2025-10-24 23:00:37,392 - gateway - INFO - ============================================================
+2025-10-24 23:00:37,392 - gateway - INFO - [REMOTE] Unified Remote Control Manager initialized
+2025-10-24 23:00:37,394 - gateway - INFO - [REMOTE] Supported devices: Keypad, RFID Gate, Fan
+2025-10-24 23:00:37,394 - gateway - INFO - [AUTOMATION] Automation engine integrated
+2025-10-24 23:00:37,394 - gateway - INFO - Setting up Local MQTT Broker connection...
+2025-10-24 23:00:39,640 - gateway - ERROR - Local MQTT connection failed: [WinError 10061] No connection could be made because the target machine actively refused it
+2025-10-24 23:00:39,641 - gateway - INFO - Setting up VPS MQTT Broker connection...
+2025-10-24 23:00:44,651 - gateway - ERROR - VPS MQTT connection failed: timed out
+2025-10-24 23:00:44,651 - gateway - INFO - Gateway initialization complete
+2025-10-24 23:00:44,651 - gateway - INFO - ============================================================
+2025-10-24 23:00:44,651 - gateway - INFO - IoT Gateway Started Successfully
+2025-10-24 23:00:44,651 - gateway - INFO - Local MQTT: 192.168.1.205:1884
+2025-10-24 23:00:44,651 - gateway - INFO - VPS MQTT: 159.223.63.61:8883
+2025-10-24 23:00:44,651 - gateway - INFO - Features: Remote Control (Keypad, RFID, Fan), Automation Engine
+2025-10-24 23:00:44,651 - gateway - INFO - ============================================================
+2025-10-24 23:00:47,249 - gateway - INFO - 
+[SHUTDOWN] Received interrupt signal
+2025-10-24 23:00:47,249 - gateway - INFO - [SHUTDOWN] Cleaning up connections...
+2025-10-24 23:00:47,251 - gateway - INFO - [SHUTDOWN] Gateway stopped cleanly
+2025-10-24 23:00:47,251 - gateway - INFO - [SHUTDOWN] Cleaning up connections...
+2025-10-24 23:00:47,251 - gateway - INFO - [SHUTDOWN] Gateway stopped cleanly
+2025-10-24 23:00:48,529 - gateway - INFO - Checking prerequisites...
+2025-10-24 23:00:48,529 - gateway - INFO - ============================================================
+2025-10-24 23:00:48,529 - gateway - INFO - Initializing IoT Gateway
+2025-10-24 23:00:48,529 - gateway - INFO - ============================================================
+2025-10-24 23:00:48,529 - gateway - INFO - [REMOTE] Unified Remote Control Manager initialized
+2025-10-24 23:00:48,529 - gateway - INFO - [REMOTE] Supported devices: Keypad, RFID Gate, Fan
+2025-10-24 23:00:48,529 - gateway - INFO - [AUTOMATION] Automation engine integrated
+2025-10-24 23:00:48,529 - gateway - INFO - Setting up Local MQTT Broker connection...
+2025-10-24 23:00:48,750 - gateway - INFO - Local MQTT connection initiated
+2025-10-24 23:00:48,750 - gateway - INFO - Setting up VPS MQTT Broker connection...
+2025-10-24 23:00:49,080 - gateway - INFO - VPS MQTT connection initiated
+2025-10-24 23:00:49,084 - gateway - INFO - Gateway initialization complete
+2025-10-24 23:00:49,084 - gateway - INFO - ============================================================
+2025-10-24 23:00:49,084 - gateway - INFO - IoT Gateway Started Successfully
+2025-10-24 23:00:49,084 - gateway - INFO - Local MQTT: 192.168.1.205:1884
+2025-10-24 23:00:49,084 - gateway - INFO - VPS MQTT: 159.223.63.61:8883
+2025-10-24 23:00:49,084 - gateway - INFO - Features: Remote Control (Keypad, RFID, Fan), Automation Engine
+2025-10-24 23:00:49,084 - gateway - INFO - ============================================================
+2025-10-24 23:00:49,162 - gateway - INFO - [BUFFER] Flushing 1 buffered messages
+2025-10-24 23:00:49,216 - gateway - INFO - [BUFFER] Flush complete
+2025-10-24 23:00:57,672 - gateway - INFO - [AUTOMATION] Temperature 26.1°C (threshold: 28.0°C)
+2025-10-24 23:00:57,672 - gateway - INFO - [AUTOMATION] Triggering: fan_off
+2025-10-24 23:00:57,673 - gateway - INFO - [REMOTE] Sent MQTT command to fan_01: fan_off
+2025-10-24 23:00:57,674 - gateway - INFO - [AUTOMATION] Logged fan_off for fan_01 (temp: 26.1°C)
+2025-10-24 23:04:43,117 - gateway - INFO - 
+[SHUTDOWN] Received interrupt signal
+2025-10-24 23:04:43,117 - gateway - INFO - [SHUTDOWN] Cleaning up connections...
+2025-10-24 23:04:44,227 - gateway - INFO - [SHUTDOWN] Gateway stopped cleanly
+2025-10-24 23:04:44,228 - gateway - INFO - [SHUTDOWN] Cleaning up connections...
+2025-10-24 23:04:44,228 - gateway - INFO - [SHUTDOWN] Gateway stopped cleanly
+2025-10-24 23:04:50,147 - gateway - INFO - Checking prerequisites...
+2025-10-24 23:04:50,153 - gateway - INFO - ============================================================
+2025-10-24 23:04:50,153 - gateway - INFO - Initializing IoT Gateway
+2025-10-24 23:04:50,153 - gateway - INFO - ============================================================
+2025-10-24 23:04:50,154 - gateway - INFO - [REMOTE] Unified Remote Control Manager initialized
+2025-10-24 23:04:50,154 - gateway - INFO - [REMOTE] Supported devices: Keypad, RFID Gate, Fan
+2025-10-24 23:04:50,154 - gateway - INFO - [AUTOMATION] Automation engine integrated
+2025-10-24 23:04:50,155 - gateway - INFO - Setting up Local MQTT Broker connection...
+2025-10-24 23:04:50,383 - gateway - INFO - Local MQTT connection initiated
+2025-10-24 23:04:50,383 - gateway - INFO - Setting up VPS MQTT Broker connection...
+2025-10-24 23:04:50,391 - gateway - DEBUG - [STATUS] temp_01: online
+2025-10-24 23:04:50,392 - gateway - DEBUG - [BUFFER] Message buffered (total: 1)
+2025-10-24 23:04:50,967 - gateway - INFO - VPS MQTT connection initiated
+2025-10-24 23:04:50,971 - gateway - INFO - Gateway initialization complete
+2025-10-24 23:04:50,972 - gateway - INFO - ============================================================
+2025-10-24 23:04:50,972 - gateway - INFO - IoT Gateway Started Successfully
+2025-10-24 23:04:50,972 - gateway - INFO - Local MQTT: 192.168.1.205:1884
+2025-10-24 23:04:50,973 - gateway - INFO - VPS MQTT: 159.223.63.61:8883
+2025-10-24 23:04:50,973 - gateway - INFO - Features: Remote Control (Keypad, RFID, Fan), Automation Engine
+2025-10-24 23:04:50,973 - gateway - INFO - ============================================================
+2025-10-24 23:04:51,044 - gateway - INFO - [BUFFER] Flushing 1 buffered messages
+2025-10-24 23:04:51,044 - gateway - DEBUG - [VPS] Published to gateway/status/temp_01
+2025-10-24 23:04:51,101 - gateway - INFO - [BUFFER] Flush complete
+2025-10-24 23:04:57,680 - gateway - DEBUG - [TELEMETRY] temp_01: temp_update
+2025-10-24 23:04:57,680 - gateway - INFO - [AUTOMATION] Temperature 26.2°C (threshold: 28.0°C)
+2025-10-24 23:04:57,680 - gateway - INFO - [AUTOMATION] Triggering: fan_off
+2025-10-24 23:04:57,680 - gateway - INFO - [REMOTE] Sent MQTT command to fan_01: fan_off
+2025-10-24 23:04:57,680 - gateway - DEBUG - [VPS] Published to gateway/logs/fan_01
+2025-10-24 23:04:57,680 - gateway - INFO - [AUTOMATION] Logged fan_off for fan_01 (temp: 26.2°C)
+2025-10-24 23:04:57,680 - gateway - DEBUG - [VPS] Published to gateway/telemetry/temp_01
+2025-10-24 23:05:27,680 - gateway - DEBUG - [TELEMETRY] temp_01: temp_update
+2025-10-24 23:05:27,681 - gateway - DEBUG - [VPS] Published to gateway/telemetry/temp_01
+2025-10-24 23:05:57,685 - gateway - DEBUG - [TELEMETRY] temp_01: temp_update
+2025-10-24 23:05:57,685 - gateway - DEBUG - [VPS] Published to gateway/telemetry/temp_01
+2025-10-24 23:06:27,682 - gateway - DEBUG - [TELEMETRY] temp_01: temp_update
+2025-10-24 23:06:27,683 - gateway - DEBUG - [VPS] Published to gateway/telemetry/temp_01
+2025-10-24 23:06:57,684 - gateway - DEBUG - [TELEMETRY] temp_01: temp_update
+2025-10-24 23:06:57,684 - gateway - DEBUG - [VPS] Published to gateway/telemetry/temp_01
+2025-10-24 23:07:27,696 - gateway - DEBUG - [TELEMETRY] temp_01: temp_update
+2025-10-24 23:07:27,697 - gateway - DEBUG - [VPS] Published to gateway/telemetry/temp_01
+2025-10-24 23:07:57,685 - gateway - DEBUG - [TELEMETRY] temp_01: temp_update
+2025-10-24 23:07:57,686 - gateway - DEBUG - [VPS] Published to gateway/telemetry/temp_01
+2025-10-24 23:08:27,688 - gateway - DEBUG - [TELEMETRY] temp_01: temp_update
+2025-10-24 23:08:27,689 - gateway - DEBUG - [VPS] Published to gateway/telemetry/temp_01
+2025-10-24 23:08:57,688 - gateway - DEBUG - [TELEMETRY] temp_01: temp_update
+2025-10-24 23:08:57,689 - gateway - DEBUG - [VPS] Published to gateway/telemetry/temp_01
+2025-10-24 23:09:27,689 - gateway - DEBUG - [TELEMETRY] temp_01: temp_update
+2025-10-24 23:09:27,690 - gateway - DEBUG - [VPS] Published to gateway/telemetry/temp_01
+2025-10-24 23:09:51,073 - gateway - INFO - [STATS] RX: 11, TX: 12, Buffered: 0, Remote Cmds: 0, Auto Triggers: 10, Temp: 26.1°C, Fan: off, Local: OK, VPS: OK
+2025-10-24 23:09:57,692 - gateway - DEBUG - [TELEMETRY] temp_01: temp_update
+2025-10-24 23:09:57,693 - gateway - DEBUG - [VPS] Published to gateway/telemetry/temp_01
+2025-10-24 23:10:27,692 - gateway - DEBUG - [TELEMETRY] temp_01: temp_update
+2025-10-24 23:10:27,693 - gateway - DEBUG - [BUFFER] Message buffered (total: 1)
+2025-10-24 23:10:57,694 - gateway - DEBUG - [TELEMETRY] temp_01: temp_update
+2025-10-24 23:10:57,694 - gateway - DEBUG - [BUFFER] Message buffered (total: 2)
+2025-10-24 23:11:27,698 - gateway - DEBUG - [TELEMETRY] temp_01: temp_update
+2025-10-24 23:11:27,698 - gateway - DEBUG - [BUFFER] Message buffered (total: 3)
+2025-10-24 23:11:57,697 - gateway - DEBUG - [TELEMETRY] temp_01: temp_update
+2025-10-24 23:11:57,698 - gateway - DEBUG - [BUFFER] Message buffered (total: 4)
+2025-10-24 23:12:27,700 - gateway - DEBUG - [TELEMETRY] temp_01: temp_update
+2025-10-24 23:12:27,700 - gateway - DEBUG - [BUFFER] Message buffered (total: 5)
+2025-10-24 23:12:31,752 - gateway - INFO - 
+[SHUTDOWN] Received interrupt signal
+2025-10-24 23:12:31,753 - gateway - INFO - [SHUTDOWN] Cleaning up connections...
+2025-10-24 23:12:33,318 - gateway - INFO - [SHUTDOWN] Gateway stopped cleanly
+2025-10-24 23:12:33,318 - gateway - INFO - [SHUTDOWN] Cleaning up connections...
+2025-10-24 23:12:33,319 - gateway - INFO - [SHUTDOWN] Gateway stopped cleanly
+2025-10-24 23:12:34,576 - gateway - INFO - Checking prerequisites...
+2025-10-24 23:12:34,576 - gateway - INFO - ============================================================
+2025-10-24 23:12:34,576 - gateway - INFO - Initializing IoT Gateway
+2025-10-24 23:12:34,576 - gateway - INFO - ============================================================
+2025-10-24 23:12:34,582 - gateway - INFO - [REMOTE] Unified Remote Control Manager initialized
+2025-10-24 23:12:34,582 - gateway - INFO - [REMOTE] Supported devices: Keypad, RFID Gate, Fan
+2025-10-24 23:12:34,582 - gateway - INFO - [AUTOMATION] Automation engine integrated
+2025-10-24 23:12:34,582 - gateway - INFO - Setting up Local MQTT Broker connection...
+2025-10-24 23:12:34,794 - gateway - INFO - Local MQTT connection initiated
+2025-10-24 23:12:34,795 - gateway - INFO - Setting up VPS MQTT Broker connection...
+2025-10-24 23:12:34,804 - gateway - DEBUG - [STATUS] temp_01: online
+2025-10-24 23:12:34,804 - gateway - DEBUG - [BUFFER] Message buffered (total: 1)
+2025-10-24 23:12:35,172 - gateway - INFO - VPS MQTT connection initiated
+2025-10-24 23:12:35,172 - gateway - INFO - Gateway initialization complete
+2025-10-24 23:12:35,172 - gateway - INFO - ============================================================
+2025-10-24 23:12:35,172 - gateway - INFO - IoT Gateway Started Successfully
+2025-10-24 23:12:35,172 - gateway - INFO - Local MQTT: 192.168.1.205:1884
+2025-10-24 23:12:35,176 - gateway - INFO - VPS MQTT: 159.223.63.61:8883
+2025-10-24 23:12:35,176 - gateway - INFO - Features: Remote Control (Keypad, RFID, Fan), Automation Engine
+2025-10-24 23:12:35,176 - gateway - INFO - ============================================================
+2025-10-24 23:12:35,509 - gateway - INFO - [BUFFER] Flushing 1 buffered messages
+2025-10-24 23:12:35,509 - gateway - DEBUG - [VPS] Published to gateway/status/temp_01
+2025-10-24 23:12:35,561 - gateway - INFO - [BUFFER] Flush complete
+2025-10-24 23:12:57,700 - gateway - DEBUG - [TELEMETRY] temp_01: temp_update
+2025-10-24 23:12:57,700 - gateway - INFO - [AUTOMATION] Temperature 26.1°C (threshold: 28.0°C)
+2025-10-24 23:12:57,701 - gateway - INFO - [AUTOMATION] Triggering: fan_off
+2025-10-24 23:12:57,701 - gateway - INFO - [REMOTE] Sent MQTT command to fan_01: fan_off
+2025-10-24 23:12:57,702 - gateway - DEBUG - [VPS] Published to gateway/logs/fan_01
+2025-10-24 23:12:57,703 - gateway - INFO - [AUTOMATION] Logged fan_off for fan_01 (temp: 26.1°C)
+2025-10-24 23:12:57,703 - gateway - DEBUG - [VPS] Published to gateway/telemetry/temp_01
+2025-10-24 23:13:27,702 - gateway - DEBUG - [TELEMETRY] temp_01: temp_update
+2025-10-24 23:13:27,703 - gateway - DEBUG - [VPS] Published to gateway/telemetry/temp_01
+2025-10-24 23:13:57,705 - gateway - DEBUG - [TELEMETRY] temp_01: temp_update
+2025-10-24 23:13:57,706 - gateway - DEBUG - [VPS] Published to gateway/telemetry/temp_01
+2025-10-24 23:14:27,705 - gateway - DEBUG - [TELEMETRY] temp_01: temp_update
+2025-10-24 23:14:27,706 - gateway - DEBUG - [VPS] Published to gateway/telemetry/temp_01
+2025-10-24 23:14:57,704 - gateway - DEBUG - [TELEMETRY] temp_01: temp_update
+2025-10-24 23:14:57,704 - gateway - DEBUG - [VPS] Published to gateway/telemetry/temp_01
+2025-10-24 23:15:27,706 - gateway - DEBUG - [TELEMETRY] temp_01: temp_update
+2025-10-24 23:15:27,707 - gateway - DEBUG - [VPS] Published to gateway/telemetry/temp_01
+2025-10-24 23:15:57,707 - gateway - DEBUG - [TELEMETRY] temp_01: temp_update
+2025-10-24 23:15:57,708 - gateway - DEBUG - [VPS] Published to gateway/telemetry/temp_01
+2025-10-24 23:16:27,709 - gateway - DEBUG - [TELEMETRY] temp_01: temp_update
+2025-10-24 23:16:27,710 - gateway - DEBUG - [VPS] Published to gateway/telemetry/temp_01
+2025-10-24 23:16:57,710 - gateway - DEBUG - [TELEMETRY] temp_01: temp_update
+2025-10-24 23:16:57,710 - gateway - DEBUG - [VPS] Published to gateway/telemetry/temp_01
+2025-10-24 23:17:27,711 - gateway - DEBUG - [TELEMETRY] temp_01: temp_update
+2025-10-24 23:17:27,712 - gateway - DEBUG - [VPS] Published to gateway/telemetry/temp_01
+2025-10-24 23:17:35,247 - gateway - INFO - [STATS] RX: 11, TX: 12, Buffered: 0, Remote Cmds: 0, Auto Triggers: 10, Temp: 26.1°C, Fan: off, Local: OK, VPS: OK
+2025-10-24 23:17:57,715 - gateway - DEBUG - [TELEMETRY] temp_01: temp_update
+2025-10-24 23:17:57,716 - gateway - DEBUG - [VPS] Published to gateway/telemetry/temp_01
+2025-10-24 23:18:27,717 - gateway - DEBUG - [TELEMETRY] temp_01: temp_update
+2025-10-24 23:18:27,717 - gateway - DEBUG - [VPS] Published to gateway/telemetry/temp_01
+2025-10-24 23:18:57,714 - gateway - DEBUG - [TELEMETRY] temp_01: temp_update
+2025-10-24 23:18:57,715 - gateway - DEBUG - [VPS] Published to gateway/telemetry/temp_01
+2025-10-24 23:19:27,716 - gateway - DEBUG - [TELEMETRY] temp_01: temp_update
+2025-10-24 23:19:27,717 - gateway - DEBUG - [BUFFER] Message buffered (total: 1)
+2025-10-24 23:19:36,751 - gateway - INFO - [BUFFER] Flushing 1 buffered messages
+2025-10-24 23:19:36,752 - gateway - DEBUG - [VPS] Published to gateway/telemetry/temp_01
+2025-10-24 23:19:36,806 - gateway - INFO - [BUFFER] Flush complete
+2025-10-24 23:19:57,715 - gateway - DEBUG - [TELEMETRY] temp_01: temp_update
+2025-10-24 23:19:57,716 - gateway - DEBUG - [VPS] Published to gateway/telemetry/temp_01
+2025-10-24 23:20:27,718 - gateway - DEBUG - [TELEMETRY] temp_01: temp_update
+2025-10-24 23:20:27,719 - gateway - DEBUG - [VPS] Published to gateway/telemetry/temp_01
+2025-10-24 23:20:57,725 - gateway - DEBUG - [TELEMETRY] temp_01: temp_update
+2025-10-24 23:20:57,726 - gateway - DEBUG - [VPS] Published to gateway/telemetry/temp_01
+2025-10-24 23:21:27,721 - gateway - DEBUG - [TELEMETRY] temp_01: temp_update
+2025-10-24 23:21:27,721 - gateway - DEBUG - [VPS] Published to gateway/telemetry/temp_01
+2025-10-24 23:21:57,720 - gateway - DEBUG - [TELEMETRY] temp_01: temp_update
+2025-10-24 23:21:57,720 - gateway - DEBUG - [VPS] Published to gateway/telemetry/temp_01
+2025-10-24 23:22:27,722 - gateway - DEBUG - [TELEMETRY] temp_01: temp_update
+2025-10-24 23:22:27,722 - gateway - DEBUG - [BUFFER] Message buffered (total: 1)
+2025-10-24 23:22:35,326 - gateway - INFO - [STATS] RX: 21, TX: 21, Buffered: 1, Remote Cmds: 0, Auto Triggers: 20, Temp: 26.1°C, Fan: off, Local: OK, VPS: DOWN
+2025-10-24 23:22:57,723 - gateway - DEBUG - [TELEMETRY] temp_01: temp_update
+2025-10-24 23:22:57,723 - gateway - DEBUG - [BUFFER] Message buffered (total: 2)
+2025-10-24 23:23:27,723 - gateway - DEBUG - [TELEMETRY] temp_01: temp_update
+2025-10-24 23:23:27,724 - gateway - DEBUG - [BUFFER] Message buffered (total: 3)
+2025-10-24 23:23:57,724 - gateway - DEBUG - [TELEMETRY] temp_01: temp_update
+2025-10-24 23:23:57,724 - gateway - DEBUG - [BUFFER] Message buffered (total: 4)
+2025-10-24 23:24:23,675 - gateway - INFO - [BUFFER] Flushing 4 buffered messages
+2025-10-24 23:24:23,675 - gateway - DEBUG - [VPS] Published to gateway/telemetry/temp_01
+2025-10-24 23:24:23,734 - gateway - DEBUG - [VPS] Published to gateway/telemetry/temp_01
+2025-10-24 23:24:23,796 - gateway - DEBUG - [VPS] Published to gateway/telemetry/temp_01
+2025-10-24 23:24:23,859 - gateway - DEBUG - [VPS] Published to gateway/telemetry/temp_01
+2025-10-24 23:24:23,921 - gateway - INFO - [BUFFER] Flush complete
+2025-10-24 23:24:27,727 - gateway - DEBUG - [TELEMETRY] temp_01: temp_update
+2025-10-24 23:24:27,727 - gateway - DEBUG - [VPS] Published to gateway/telemetry/temp_01
+2025-10-24 23:24:57,726 - gateway - DEBUG - [TELEMETRY] temp_01: temp_update
+2025-10-24 23:24:57,727 - gateway - DEBUG - [VPS] Published to gateway/telemetry/temp_01
+2025-10-24 23:25:27,727 - gateway - DEBUG - [TELEMETRY] temp_01: temp_update
+2025-10-24 23:25:27,728 - gateway - DEBUG - [VPS] Published to gateway/telemetry/temp_01
+2025-10-24 23:25:57,729 - gateway - DEBUG - [TELEMETRY] temp_01: temp_update
+2025-10-24 23:25:57,730 - gateway - DEBUG - [VPS] Published to gateway/telemetry/temp_01
+2025-10-24 23:26:27,731 - gateway - DEBUG - [TELEMETRY] temp_01: temp_update
+2025-10-24 23:26:27,732 - gateway - DEBUG - [VPS] Published to gateway/telemetry/temp_01
+2025-10-24 23:26:57,731 - gateway - DEBUG - [TELEMETRY] temp_01: temp_update

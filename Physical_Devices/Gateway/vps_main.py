@@ -21,7 +21,7 @@ def setup_logging():
     os.makedirs(log_dir, exist_ok=True)
     
     logger = logging.getLogger('gateway')
-    logger.setLevel(logging.INFO)
+    logger.setLevel(logging.DEBUG)
     
     file_handler = RotatingFileHandler(
         os.path.join(log_dir, 'gateway.log'),
