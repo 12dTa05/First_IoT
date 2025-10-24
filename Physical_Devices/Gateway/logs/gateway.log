@@ -349,3 +349,4 @@
 2025-10-24 23:26:27,731 - gateway - DEBUG - [TELEMETRY] temp_01: temp_update
 2025-10-24 23:26:27,732 - gateway - DEBUG - [VPS] Published to gateway/telemetry/temp_01
 2025-10-24 23:26:57,731 - gateway - DEBUG - [TELEMETRY] temp_01: temp_update
+2025-10-24 23:26:57,731 - gateway - DEBUG - [VPS] Published to gateway/telemetry/temp_01
