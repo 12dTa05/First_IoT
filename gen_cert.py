@@ -22,8 +22,8 @@ DEFAULTS = {
     "broker_common_name": "broker.local",
     "gateway_common_name": "gateway.local",
     "server_common_name": "VPS.server",
-    "broker_sans": ["broker.local", "192.168.1.148"],
-    "gateway_sans": ["gateway.local", "192.168.1.148"],
+    "broker_sans": ["broker.local", "192.168.1.205"],
+    "gateway_sans": ["gateway.local", "192.168.1.205"],
     "server_sans": ["VPS.server", "159.223.63.61"],
     "key_size": 2048,
     "ca_valid_days": 3650,      # 10 years
@@ -197,7 +197,7 @@ def main():
     server_key, server_csr, server_cert = create_csr_and_signed_cert(
         args.server_cn, args.server_san, ca_key, ca_cert, key_size=args.key_size, valid_days=args.cert_days
     )
-    write_pem(os.path.join(out, "server.key.pem"), private_key_to_pem(gateway_key), mode=0o600)
+    write_pem(os.path.join(out, "server.key.pem"), private_key_to_pem(server_key), mode=0o600)
     write_pem(os.path.join(out, "server.cert.pem"), cert_to_pem(server_cert))
     write_pem(os.path.join(out, "server.csr.pem"), server_csr.public_bytes(serialization.Encoding.PEM))
 
