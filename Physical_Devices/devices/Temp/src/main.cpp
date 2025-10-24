@@ -6,8 +6,8 @@
 #include <time.h>
 
 // WiFi credentials
-const char* ssid = "Firewall";
-const char* wifiPass = "12052003";
+const char* ssid = "Home";
+const char* wifiPass = "12052003A";
 
 // MQTT config
 const char* mqtt_host = "192.168.1.205";

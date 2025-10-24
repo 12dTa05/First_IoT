@@ -40,3 +40,95 @@
 2025-10-24 10:05:12,939 - gateway - INFO - VPS MQTT: 159.223.63.61:8883
 2025-10-24 10:05:12,939 - gateway - INFO - Features: Remote Control (Keypad, RFID, Fan), Automation Engine
 2025-10-24 10:05:12,939 - gateway - INFO - ============================================================
+2025-10-24 22:19:08,757 - gateway - INFO - Checking prerequisites...
+2025-10-24 22:19:08,785 - gateway - INFO - ============================================================
+2025-10-24 22:19:08,785 - gateway - INFO - Initializing IoT Gateway
+2025-10-24 22:19:08,785 - gateway - INFO - ============================================================
+2025-10-24 22:19:08,810 - gateway - INFO - [REMOTE] Unified Remote Control Manager initialized
+2025-10-24 22:19:08,811 - gateway - INFO - [REMOTE] Supported devices: Keypad, RFID Gate, Fan
+2025-10-24 22:19:08,811 - gateway - INFO - [AUTOMATION] Automation engine integrated
+2025-10-24 22:19:08,812 - gateway - INFO - Setting up Local MQTT Broker connection...
+2025-10-24 22:19:09,127 - gateway - INFO - Local MQTT connection initiated
+2025-10-24 22:19:09,127 - gateway - INFO - Setting up VPS MQTT Broker connection...
+2025-10-24 22:19:09,626 - gateway - INFO - VPS MQTT connection initiated
+2025-10-24 22:19:09,655 - gateway - INFO - Gateway initialization complete
+2025-10-24 22:19:09,655 - gateway - INFO - ============================================================
+2025-10-24 22:19:09,655 - gateway - INFO - IoT Gateway Started Successfully
+2025-10-24 22:19:09,655 - gateway - INFO - Local MQTT: 192.168.1.205:1884
+2025-10-24 22:19:09,655 - gateway - INFO - VPS MQTT: 159.223.63.61:8883
+2025-10-24 22:19:09,655 - gateway - INFO - Features: Remote Control (Keypad, RFID, Fan), Automation Engine
+2025-10-24 22:19:09,655 - gateway - INFO - ============================================================
+2025-10-24 22:19:09,722 - gateway - INFO - [BUFFER] Flushing 1 buffered messages
+2025-10-24 22:19:09,780 - gateway - INFO - [BUFFER] Flush complete
+2025-10-24 22:19:36,639 - gateway - INFO - [AUTOMATION] Temperature 26.1°C (threshold: 28.0°C)
+2025-10-24 22:19:36,646 - gateway - INFO - [AUTOMATION] Triggering: fan_off
+2025-10-24 22:19:36,646 - gateway - INFO - [REMOTE] Sent MQTT command to fan_01: fan_off
+2025-10-24 22:19:36,648 - gateway - INFO - [AUTOMATION] Logged fan_off for fan_01 (temp: 26.1°C)
+2025-10-24 22:24:09,685 - gateway - INFO - [STATS] RX: 11, TX: 12, Buffered: 0, Remote Cmds: 0, Auto Triggers: 10, Temp: 26.0°C, Fan: off, Local: OK, VPS: OK
+2025-10-24 22:29:09,729 - gateway - INFO - [STATS] RX: 21, TX: 22, Buffered: 0, Remote Cmds: 0, Auto Triggers: 20, Temp: 26.1°C, Fan: off, Local: OK, VPS: OK
+2025-10-24 22:33:43,853 - gateway - INFO - 
+[SHUTDOWN] Received interrupt signal
+2025-10-24 22:33:43,853 - gateway - INFO - [SHUTDOWN] Cleaning up connections...
+2025-10-24 22:33:45,984 - gateway - INFO - [SHUTDOWN] Gateway stopped cleanly
+2025-10-24 22:33:45,984 - gateway - INFO - [SHUTDOWN] Cleaning up connections...
+2025-10-24 22:33:45,984 - gateway - INFO - [SHUTDOWN] Gateway stopped cleanly
+2025-10-24 22:35:05,084 - gateway - INFO - Checking prerequisites...
+2025-10-24 22:35:05,087 - gateway - INFO - ============================================================
+2025-10-24 22:35:05,087 - gateway - INFO - Initializing IoT Gateway
+2025-10-24 22:35:05,087 - gateway - INFO - ============================================================
+2025-10-24 22:35:05,089 - gateway - INFO - [REMOTE] Unified Remote Control Manager initialized
+2025-10-24 22:35:05,089 - gateway - INFO - [REMOTE] Supported devices: Keypad, RFID Gate, Fan
+2025-10-24 22:35:05,089 - gateway - INFO - [AUTOMATION] Automation engine integrated
+2025-10-24 22:35:05,089 - gateway - INFO - Setting up Local MQTT Broker connection...
+2025-10-24 22:35:05,301 - gateway - INFO - Local MQTT connection initiated
+2025-10-24 22:35:05,302 - gateway - INFO - Setting up VPS MQTT Broker connection...
+2025-10-24 22:35:40,686 - gateway - INFO - VPS MQTT connection initiated
+2025-10-24 22:35:40,689 - gateway - INFO - Gateway initialization complete
+2025-10-24 22:35:40,690 - gateway - INFO - ============================================================
+2025-10-24 22:35:40,690 - gateway - INFO - IoT Gateway Started Successfully
+2025-10-24 22:35:40,690 - gateway - INFO - Local MQTT: 192.168.1.205:1884
+2025-10-24 22:35:40,690 - gateway - INFO - VPS MQTT: 159.223.63.61:8883
+2025-10-24 22:35:40,690 - gateway - INFO - Features: Remote Control (Keypad, RFID, Fan), Automation Engine
+2025-10-24 22:35:40,692 - gateway - INFO - ============================================================
+2025-10-24 22:36:10,647 - gateway - INFO - [AUTOMATION] Temperature 26.1°C (threshold: 28.0°C)
+2025-10-24 22:36:10,647 - gateway - INFO - [AUTOMATION] Triggering: fan_off
+2025-10-24 22:36:10,651 - gateway - INFO - [REMOTE] Sent MQTT command to fan_01: fan_off
+2025-10-24 22:36:10,652 - gateway - INFO - [AUTOMATION] Logged fan_off for fan_01 (temp: 26.1°C)
+2025-10-24 22:36:15,445 - gateway - INFO - [BUFFER] Flushing 4 buffered messages
+2025-10-24 22:36:15,683 - gateway - INFO - [BUFFER] Flush complete
+2025-10-24 22:39:40,802 - gateway - INFO - 
+[SHUTDOWN] Received interrupt signal
+2025-10-24 22:39:40,802 - gateway - INFO - [SHUTDOWN] Cleaning up connections...
+2025-10-24 22:39:41,471 - gateway - INFO - [SHUTDOWN] Gateway stopped cleanly
+2025-10-24 22:39:41,471 - gateway - INFO - [SHUTDOWN] Cleaning up connections...
+2025-10-24 22:39:41,471 - gateway - INFO - [SHUTDOWN] Gateway stopped cleanly
+2025-10-24 22:39:43,062 - gateway - INFO - Checking prerequisites...
+2025-10-24 22:39:43,062 - gateway - INFO - ============================================================
+2025-10-24 22:39:43,062 - gateway - INFO - Initializing IoT Gateway
+2025-10-24 22:39:43,062 - gateway - INFO - ============================================================
+2025-10-24 22:39:43,062 - gateway - INFO - [REMOTE] Unified Remote Control Manager initialized
+2025-10-24 22:39:43,062 - gateway - INFO - [REMOTE] Supported devices: Keypad, RFID Gate, Fan
+2025-10-24 22:39:43,069 - gateway - INFO - [AUTOMATION] Automation engine integrated
+2025-10-24 22:39:43,069 - gateway - INFO - Setting up Local MQTT Broker connection...
+2025-10-24 22:39:43,282 - gateway - INFO - Local MQTT connection initiated
+2025-10-24 22:39:43,283 - gateway - INFO - Setting up VPS MQTT Broker connection...
+2025-10-24 22:39:43,919 - gateway - INFO - VPS MQTT connection initiated
+2025-10-24 22:39:43,924 - gateway - INFO - Gateway initialization complete
+2025-10-24 22:39:43,924 - gateway - INFO - ============================================================
+2025-10-24 22:39:43,924 - gateway - INFO - IoT Gateway Started Successfully
+2025-10-24 22:39:43,924 - gateway - INFO - Local MQTT: 192.168.1.205:1884
+2025-10-24 22:39:43,924 - gateway - INFO - VPS MQTT: 159.223.63.61:8883
+2025-10-24 22:39:43,924 - gateway - INFO - Features: Remote Control (Keypad, RFID, Fan), Automation Engine
+2025-10-24 22:39:43,924 - gateway - INFO - ============================================================
+2025-10-24 22:39:44,047 - gateway - INFO - [BUFFER] Flushing 1 buffered messages
+2025-10-24 22:39:44,102 - gateway - INFO - [BUFFER] Flush complete
+2025-10-24 22:40:04,733 - gateway - INFO - [AUTOMATION] Temperature 26.1°C (threshold: 28.0°C)
+2025-10-24 22:40:04,733 - gateway - INFO - [AUTOMATION] Triggering: fan_off
+2025-10-24 22:40:04,740 - gateway - INFO - [REMOTE] Sent MQTT command to fan_01: fan_off
+2025-10-24 22:40:04,741 - gateway - INFO - [AUTOMATION] Logged fan_off for fan_01 (temp: 26.1°C)
+2025-10-24 22:41:13,371 - gateway - INFO - 
+[SHUTDOWN] Received interrupt signal
+2025-10-24 22:41:13,371 - gateway - INFO - [SHUTDOWN] Cleaning up connections...
+2025-10-24 22:41:14,454 - gateway - INFO - [SHUTDOWN] Gateway stopped cleanly
+2025-10-24 22:41:14,454 - gateway - INFO - [SHUTDOWN] Cleaning up connections...
+2025-10-24 22:41:14,454 - gateway - INFO - [SHUTDOWN] Gateway stopped cleanly

@@ -4,10 +4,10 @@
 #include <ArduinoJson.h>
 #include <time.h>
 
-const char* ssid = "Home_IoT";
-const char* wifiPass = "12052003";
+const char* ssid = "Home";
+const char* wifiPass = "12052003A";
 
-const char* mqtt_host = "192.168.1.125";  
+const char* mqtt_host = "192.168.1.205";  
 const uint16_t mqtt_port = 1884; 
 
 const char* device_id = "fan_01";
