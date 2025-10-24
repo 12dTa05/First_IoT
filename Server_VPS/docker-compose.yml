@@ -1,88 +1,66 @@
 version: '3.8'
 
 services:
-  timescaledb:
+  postgres:
     image: timescale/timescaledb:latest-pg16
-    container_name: iot-timescaledb
+    container_name: iot-postgres
     restart: unless-stopped
     environment:
-      POSTGRES_DB: ${POSTGRES_DB:-iot_db}
-      POSTGRES_USER: ${POSTGRES_USER:-iot}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-2003}
-      TIMESCALEDB_TELEMETRY: off
+      POSTGRES_DB: iot_db
+      POSTGRES_USER: iot
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      PGDATA: /var/lib/postgresql/data/pgdata
     volumes:
-      - timescale_data:/var/lib/postgresql/data
-      - ./schema.sql:/docker-entrypoint-initdb.d/01-schema.sql
+      - postgres_data:/var/lib/postgresql/data
+      - ./schema.sql:/docker-entrypoint-initdb.d/schema.sql
     ports:
       - "5432:5432"
+    networks:
+      - iot-network
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-iot}"]
+      test: ["CMD-SHELL", "pg_isready -U iot -d iot_db"]
       interval: 10s
       timeout: 5s
       retries: 5
-    networks:
-      - iot-network
 
-  redis:
-    image: redis:7-alpine
-    container_name: iot-redis
-    restart: unless-stopped
-    command: redis-server --requirepass ${REDIS_PASSWORD:-2003}
-    volumes:
-      - redis_data:/data
-    ports:
-      - "6379:6379"
-    healthcheck:
-      test: ["CMD", "redis-cli", "-a", "${REDIS_PASSWORD:-2003}", "ping"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-    networks:
-      - iot-network
-
-  mosquitto:
+  mqtt:
     image: eclipse-mosquitto:2
-    container_name: iot-mosquitto
+    container_name: iot-mqtt
     restart: unless-stopped
     volumes:
-      - ./mqtt/mosquitto.conf:/mosquitto/config/mosquitto.conf
-      - ./mqtt/passwd:/mosquitto/config/passwd
-      - mosquitto_data:/mosquitto/data
-      - mosquitto_logs:/mosquitto/log
+      - ./mosquitto/config:/mosquitto/config
+      - ./mosquitto/data:/mosquitto/data
+      - ./mosquitto/log:/mosquitto/log
+      - ./mosquitto/passwd:/mosquitto/passwd
+      - ./mosquitto/certs:/mosquitto/certs
     ports:
       - "1883:1883"
-      - "9001:9001"
     networks:
       - iot-network
 
-  backend:
-    build:
-      context: ./backend
-      dockerfile: Dockerfile
-    container_name: iot-backend
+  api:
+    build: ./api
+    container_name: iot-api
     restart: unless-stopped
     environment:
-      DATABASE_URL: postgresql://${POSTGRES_USER:-iot}:${POSTGRES_PASSWORD:-2003}@timescaledb:5432/${POSTGRES_DB:-iot_db}
-      REDIS_URL: redis://:${REDIS_PASSWORD:-2003}@redis:6379/0
-      MQTT_BROKER: mosquitto
+      NODE_ENV: production
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_NAME: iot_db
+      DB_USER: iot
+      DB_PASSWORD: ${DB_PASSWORD}
+      MQTT_HOST: mqtt
       MQTT_PORT: 1883
-      MQTT_USER: ${MQTT_USER:-vps}
-      MQTT_PASSWORD: ${MQTT_PASSWORD:-2003}
-      JWT_SECRET: ${JWT_SECRET:-ThaiVuongMinhThaoLinhTu@2003}
-      JWT_ALGORITHM: HS256
-      JWT_EXPIRE_MINUTES: 10080
-      ENVIRONMENT: production
-      LOG_LEVEL: INFO
-    volumes:
-      - ./backend/app:/app/app
+      MQTT_USERNAME: ${MQTT_USERNAME}
+      MQTT_PASSWORD: ${MQTT_PASSWORD}
+      JWT_SECRET: ${JWT_SECRET}
+      API_PORT: 3000
     ports:
-      - "8000:8000"
+      - "3000:3000"
     depends_on:
-      timescaledb:
+      postgres:
         condition: service_healthy
-      redis:
-        condition: service_healthy
-      mosquitto:
+      mqtt:
         condition: service_started
     networks:
       - iot-network
@@ -91,23 +69,18 @@ services:
     image: nginx:alpine
     container_name: iot-nginx
     restart: unless-stopped
-    volumes:
-      - ./nginx/nginx.conf:/etc/nginx/nginx.conf
-      - ./nginx/ssl:/etc/nginx/ssl
     ports:
       - "80:80"
-      - "443:443"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf
     depends_on:
-      - backend
+      - api
     networks:
       - iot-network
-
-volumes:
-  timescale_data:
-  redis_data:
-  mosquitto_data:
-  mosquitto_logs:
 
 networks:
   iot-network:
     driver: bridge
+
+volumes:
+  postgres_data:
