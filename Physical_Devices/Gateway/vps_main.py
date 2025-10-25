@@ -79,11 +79,11 @@ CONFIG = {
         'local_request': 'home/devices/+/request',
         'local_status': 'home/devices/+/status',
         'local_command': 'home/devices/{device_id}/command',
-        'vps_telemetry': 'gateway/telemetry/{device_id}',
-        'vps_status': 'gateway/status/{device_id}',
-        'vps_logs': 'gateway/logs/{device_id}',
-        'vps_command': 'gateway/command/#',
-        'vps_gateway_status': 'gateway/status/Gateway1',
+        'vps_telemetry': 'iot/Gateway1/telemetry',
+        'vps_status': 'iot/Gateway1/status',
+        'vps_logs': 'iot/Gateway1/logs',
+        'vps_command': 'iot/Gateway1/command',
+        'vps_gateway_status': 'iot/Gateway1/status',
     },
     
     'db_path': './data/',
@@ -849,9 +849,13 @@ class Gateway:
             # Extract device_id from topic: gateway/command/{device_id}
             parts = msg.topic.split('/')
             
-            if len(parts) >= 3 and parts[1] == 'command':
-                device_id = parts[2]
+            if len(parts) >= 3 and parts[2] == 'command':
+                device_id = payload.get('device_id')
                 command = payload.get('cmd')
+                
+                if not device_id:
+                    logger.warning("[VPS] Command received without device_id in payload")
+                    return
                 
                 logger.info(f"[VPS] Command received: '{command}' for {device_id}")
                 
@@ -1035,7 +1039,7 @@ class Gateway:
             'timestamp': datetime.now().isoformat()
         }
         
-        topic = CONFIG['topics'][f'vps_{msg_type}'].format(device_id=device_id)
+        topic = CONFIG['topics'][f'vps_{msg_type}']
         
         if self.vps_connected:
             self.publish_to_vps(topic, vps_payload)
