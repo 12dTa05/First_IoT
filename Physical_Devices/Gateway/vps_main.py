@@ -1,3 +1,10 @@
+#!/usr/bin/env python3
+"""
+IoT Gateway - Complete Fixed Version
+Manages communication between local devices and VPS server
+Supports LoRa (RFID), WiFi devices, automation, and remote control
+"""
+
 import serial
 import time
 import json
@@ -21,7 +28,7 @@ def setup_logging():
     os.makedirs(log_dir, exist_ok=True)
     
     logger = logging.getLogger('gateway')
-    logger.setLevel(logging.DEBUG)
+    logger.setLevel(logging.INFO)
     
     file_handler = RotatingFileHandler(
         os.path.join(log_dir, 'gateway.log'),
@@ -46,7 +53,7 @@ logger = setup_logging()
 
 # ============= CONFIGURATION =============
 CONFIG = {
-    'lora_port': 'COM5',
+    'lora_port': 'COM7',
     'lora_baudrate': 9600,
     
     'local_broker': {
@@ -75,15 +82,19 @@ CONFIG = {
     ]),
     
     'topics': {
+        # Local topics (devices -> gateway)
         'local_telemetry': 'home/devices/+/telemetry',
         'local_request': 'home/devices/+/request',
         'local_status': 'home/devices/+/status',
         'local_command': 'home/devices/{device_id}/command',
+        
+        # VPS topics (gateway -> server) - FIXED TO MATCH API SERVER
         'vps_telemetry': 'iot/Gateway1/telemetry',
         'vps_status': 'iot/Gateway1/status',
-        'vps_logs': 'iot/Gateway1/logs',
-        'vps_command': 'iot/Gateway1/command',
-        'vps_gateway_status': 'iot/Gateway1/status',
+        'vps_access': 'iot/Gateway1/access',
+        'vps_alert': 'iot/Gateway1/alert',
+        'vps_command': 'gateway/command/#',
+        'vps_gateway_status': 'gateway/status/Gateway1',
     },
     
     'db_path': './data/',
@@ -106,18 +117,25 @@ CONFIG = {
     }
 }
 
+# Message type mappings for LoRa protocol
 MESSAGE_TYPES = {
     0x01: 'rfid_scan',
     0x06: 'gate_status',
 }
 
+# Device type mappings for LoRa protocol
 DEVICE_TYPES = {
+    0x01: 'rfid_gate_01',
+}
+
+# FIXED: Map device_type_raw to actual device_id
+DEVICE_TYPE_TO_ID = {
     0x01: 'rfid_gate_01',
 }
 
 # ============= UTILITY FUNCTIONS =============
 def crc32(data: bytes, poly=0x04C11DB7, init=0xFFFFFFFF, xor_out=0xFFFFFFFF) -> int:
-    """Calculate CRC32 checksum"""
+    """Calculate CRC32 checksum matching device implementation"""
     crc = init
     for b in data:
         crc ^= (b << 24)
@@ -130,7 +148,7 @@ def crc32(data: bytes, poly=0x04C11DB7, init=0xFFFFFFFF, xor_out=0xFFFFFFFF) -> 
     return crc ^ xor_out
 
 def verify_hmac(body_str, received_hmac, key):
-    """Verify HMAC signature"""
+    """Verify HMAC signature for authentication"""
     calculated = hmac.new(key, body_str.encode(), hashlib.sha256).hexdigest()
     return hmac.compare_digest(calculated, received_hmac)
 
@@ -254,50 +272,57 @@ class Database:
             with self.lock:
                 passwords = self.devices.get('passwords', {})
                 for pwd_id, pwd_data in passwords.items():
-                    if pwd_data.get('hash') == password_hash and pwd_data.get('active'):
+                    if pwd_data.get('active', False) and pwd_data.get('hash') == password_hash:
                         return True, pwd_id
                 return False, None
         except:
             return False, None
     
-    def check_access_rules(self, method, user_id=None):
-        """Check if access is allowed based on current rules"""
+    def check_access_rules(self, method, identifier):
+        """Check if access is allowed based on rules"""
         try:
             with self.lock:
-                rules = self.devices.get('access_rules', {})
-                current_time = datetime.now().time()
+                rules = self.settings.get('access_rules', {})
                 
-                for rule_name, rule_config in rules.items():
-                    if not rule_config.get('enabled'):
-                        continue
+                if not rules.get('enabled', True):
+                    return True, None
+                
+                current_time = datetime.now()
+                current_hour = current_time.hour
+                current_day = current_time.weekday()
+                
+                time_restriction = rules.get('time_restriction', {})
+                if time_restriction.get('enabled', False):
+                    start_hour = time_restriction.get('start_hour', 0)
+                    end_hour = time_restriction.get('end_hour', 24)
                     
-                    start = datetime.strptime(rule_config['start_time'], '%H:%M').time()
-                    end = datetime.strptime(rule_config['end_time'], '%H:%M').time()
-                    
-                    in_range = start <= current_time <= end if start <= end else (current_time >= start or current_time <= end)
-                    
-                    if in_range:
-                        if method not in rule_config.get('allowed_methods', []):
-                            return False, f"method_not_allowed_{rule_name}"
-                        if user_id in rule_config.get('restricted_users', []):
-                            return False, f"user_restricted_{rule_name}"
-                        return True, None
+                    if not (start_hour <= current_hour < end_hour):
+                        return False, 'outside_allowed_hours'
+                
+                day_restriction = rules.get('day_restriction', {})
+                if day_restriction.get('enabled', False):
+                    allowed_days = day_restriction.get('allowed_days', [0,1,2,3,4,5,6])
+                    if current_day not in allowed_days:
+                        return False, 'outside_allowed_days'
                 
                 return True, None
-        except:
+        except Exception as e:
+            logger.error(f"Error checking access rules: {e}")
             return True, None
     
     def get_automation_config(self):
         """Get automation configuration"""
         with self.lock:
-            return self.settings.get('automation', CONFIG['automation'])
+            return self.settings.get('automation', {
+                'auto_fan_enabled': CONFIG['automation']['auto_fan_enabled'],
+                'default_temp_threshold': CONFIG['automation']['default_temp_threshold'],
+                'fan_device_id': CONFIG['automation']['fan_device_id'],
+                'temp_device_id': CONFIG['automation']['temp_device_id']
+            })
 
-# ============= UNIFIED REMOTE CONTROL AND AUTOMATION MANAGER =============
+# ============= REMOTE CONTROL MANAGER =============
 class RemoteControlManager:
-    """
-    Unified manager for all remote control operations and automation
-    Handles: Keypad, RFID Gate, Fan control, and Automation rules
-    """
+    """Manages remote control commands and automation"""
     
     def __init__(self, gateway):
         self.gateway = gateway
@@ -305,191 +330,103 @@ class RemoteControlManager:
         self.command_timeout = 30
         self.lock = threading.Lock()
         
-        # Automation state
         self.automation_enabled = True
         self.last_temperature = None
         self.fan_state = None
-        
-        # Device command handlers registry
-        self.device_handlers = {
-            'passkey': self.handle_keypad_command,
-            'rfid_gate': self.handle_rfid_gate_command,
-            'relay_fan': self.handle_fan_command,
-            'temp_DH11': self.handle_temp_sensor_data
-        }
-        
-        logger.info("[REMOTE] Unified Remote Control Manager initialized")
-        logger.info("[REMOTE] Supported devices: Keypad, RFID Gate, Fan")
-        logger.info("[AUTOMATION] Automation engine integrated")
     
-    def process_remote_command(self, device_id, command_data):
-        """
-        Main entry point for all remote commands from VPS
-        Routes to appropriate handler based on device type
-        """
-        command_id = command_data.get('command_id', str(time.time()))
-        command_type = command_data.get('cmd')
-        user = command_data.get('user', 'unknown')
+    def process_remote_command(self, device_id, payload):
+        """Process remote control command from VPS"""
+        command = payload.get('cmd')
+        command_id = payload.get('command_id', f"cmd_{int(time.time())}")
+        user = payload.get('user', 'system')
         
-        logger.info(f"[REMOTE] Processing command '{command_type}' for {device_id} by {user}")
+        logger.info(f"[REMOTE] Processing {command} for {device_id} by {user}")
         
-        # Validate device exists
-        device = self.gateway.db.devices.get('devices', {}).get(device_id)
-        if not device:
-            logger.error(f"[REMOTE] Device {device_id} not found")
-            self.send_command_response(device_id, command_id, False, "device_not_found")
-            return False
-        
-        # Check device status
-        if device.get('status') != 'online':
-            logger.warning(f"[REMOTE] Device {device_id} is {device.get('status')}")
-            self.send_command_response(device_id, command_id, False, f"device_{device.get('status')}")
-            return False
-        
-        # Store pending command
         with self.lock:
             self.pending_commands[command_id] = {
                 'device_id': device_id,
-                'command': command_type,
+                'command': command,
                 'user': user,
-                'timestamp': time.time(),
-                'status': 'pending'
+                'timestamp': time.time()
             }
         
-        # Route to appropriate handler
-        device_type = device.get('device_type')
-        handler = self.device_handlers.get(device_type)
-        
-        if not handler:
-            logger.error(f"[REMOTE] No handler for device type: {device_type}")
-            self.send_command_response(device_id, command_id, False, "unsupported_device_type")
-            return False
-        
-        # Execute command
-        success = handler(device_id, command_data)
-        
-        # Log remote access
-        if success:
-            self.log_remote_access(device_id, user, command_data.get('reason', 'no_reason'), command_type, command_id)
-        
-        return success
-    
-    # ===== KEYPAD COMMAND HANDLER =====
-    def handle_keypad_command(self, device_id, command_data):
-        """Handle remote commands for keypad device"""
-        command = command_data.get('cmd')
-        command_id = command_data.get('command_id')
-        user = command_data.get('user')
-        
-        if command == 'remote_unlock':
-            duration_ms = command_data.get('duration_ms', 5000)
-            reason = command_data.get('reason', 'remote_unlock')
-            
-            # Validate duration
-            if duration_ms < 1000 or duration_ms > 30000:
-                duration_ms = 5000
-                logger.warning(f"[REMOTE] Duration adjusted to {duration_ms}ms")
-            
-            mqtt_command = {
-                'cmd': 'remote_unlock',
-                'command_id': command_id,
-                'user': user,
-                'reason': reason,
-                'duration_ms': duration_ms,
-                'timestamp': int(time.time())
-            }
-            
-            return self.send_local_mqtt_command(device_id, mqtt_command)
-        
-        elif command == 'remote_lock':
-            mqtt_command = {
-                'cmd': 'remote_lock',
-                'command_id': command_id,
-                'user': user,
-                'timestamp': int(time.time())
-            }
-            
-            return self.send_local_mqtt_command(device_id, mqtt_command)
-        
+        if command in ['remote_unlock', 'remote_lock']:
+            success = self.handle_keypad_remote_command(device_id, payload)
+        elif command in ['fan_on', 'fan_off', 'fan_toggle', 'set_auto']:
+            success = self.handle_fan_remote_command(device_id, command, payload)
         else:
-            logger.error(f"[REMOTE] Unknown keypad command: {command}")
-            return False
+            logger.warning(f"[REMOTE] Unknown command: {command}")
+            success = False
+        
+        if not success:
+            self.send_command_response(device_id, command_id, False, 'command_failed')
     
-    # ===== RFID GATE COMMAND HANDLER =====
-    def handle_rfid_gate_command(self, device_id, command_data):
-        """Handle remote commands for RFID gate via LoRa"""
-        command = command_data.get('cmd')
-        command_id = command_data.get('command_id')
-        user = command_data.get('user')
-        
-        if command == 'remote_unlock':
-            duration_ms = command_data.get('duration_ms', 5000)
-            
-            # Format: "REMOTE_UNLOCK:{command_id}:{user}:{duration_ms}"
-            lora_command = f"REMOTE_UNLOCK:{command_id}:{user}:{duration_ms}"
-            
-            return self.send_lora_command(0x01, lora_command)
-        
-        elif command == 'remote_lock':
-            # Format: "REMOTE_LOCK:{command_id}:{user}"
-            lora_command = f"REMOTE_LOCK:{command_id}:{user}"
-            
-            return self.send_lora_command(0x01, lora_command)
-        
-        else:
-            logger.error(f"[REMOTE] Unknown RFID gate command: {command}")
-            return False
-    
-    # ===== FAN COMMAND HANDLER =====
-    def handle_fan_command(self, device_id, command_data):
-        """Handle remote commands for fan device"""
-        command = command_data.get('cmd')
-        command_id = command_data.get('command_id')
-        user = command_data.get('user')
-        
-        valid_commands = ['fan_on', 'fan_off', 'fan_toggle', 'set_auto']
-        
-        if command not in valid_commands:
-            logger.error(f"[REMOTE] Invalid fan command: {command}")
-            return False
+    def handle_keypad_remote_command(self, device_id, payload):
+        """Handle remote unlock/lock commands for keypad"""
+        command = payload.get('cmd')
+        command_id = payload.get('command_id')
+        user = payload.get('user', 'system')
+        reason = payload.get('reason', 'remote_access')
+        duration_ms = payload.get('duration_ms', 5000)
         
         mqtt_command = {
             'cmd': command,
             'command_id': command_id,
             'user': user,
+            'reason': reason,
+            'duration_ms': duration_ms,
             'timestamp': int(time.time())
         }
         
-        # Include additional parameters for set_auto
+        success = self.send_local_mqtt_command(device_id, mqtt_command)
+        
+        if success:
+            self.log_remote_access(device_id, user, reason, command, command_id)
+        
+        return success
+    
+    def send_local_mqtt_command(self, device_id, command):
+        """Send command to local device via MQTT"""
+        topic = CONFIG['topics']['local_command'].format(device_id=device_id)
+        
+        if self.gateway.local_mqtt and self.gateway.local_connected:
+            result = self.gateway.local_mqtt.publish(topic, json.dumps(command), qos=1)
+            return result.rc == mqtt.MQTT_ERR_SUCCESS
+        
+        return False
+    
+    def handle_fan_remote_command(self, device_id, command, command_data):
+        """Handle fan control commands"""
+        mqtt_command = {
+            'cmd': command,
+            'command_id': command_data.get('command_id'),
+            'user': command_data.get('user', 'system'),
+            'timestamp': int(time.time())
+        }
+        
         if command == 'set_auto':
             mqtt_command['enable'] = command_data.get('enable', True)
             mqtt_command['threshold'] = command_data.get('threshold', CONFIG['automation']['default_temp_threshold'])
         
         success = self.send_local_mqtt_command(device_id, mqtt_command)
         
-        # Update local fan state tracking
         if success and command in ['fan_on', 'fan_off']:
             with self.lock:
                 self.fan_state = 'on' if command == 'fan_on' else 'off'
         
         return success
     
-    # ===== TEMPERATURE SENSOR HANDLER WITH AUTOMATION =====
     def handle_temp_sensor_data(self, device_id, data):
-        """
-        Process temperature sensor data and trigger automation
-        This is called when telemetry is received from temp sensor
-        """
+        """Process temperature sensor data and trigger automation"""
         try:
             temperature = data.get('data', {}).get('temperature')
             
             if temperature is None or not isinstance(temperature, (int, float)):
-                return True  # Not an error, just no automation trigger
+                return True
             
             with self.lock:
                 self.last_temperature = temperature
             
-            # Check if automation is enabled
             automation_config = self.gateway.db.get_automation_config()
             auto_enabled = automation_config.get('auto_fan_enabled', True)
             
@@ -497,22 +434,17 @@ class RemoteControlManager:
                 logger.debug(f"[AUTOMATION] Disabled, temperature: {temperature}°C")
                 return True
             
-            # Get threshold
             threshold = automation_config.get('default_temp_threshold', CONFIG['automation']['default_temp_threshold'])
             fan_device = automation_config.get('fan_device_id', CONFIG['automation']['fan_device_id'])
             
-            # Determine if fan should be on or off
             should_be_on = (temperature >= threshold)
             
-            # Check current fan state
             if self.fan_state is None or (should_be_on and self.fan_state == 'off') or (not should_be_on and self.fan_state == 'on'):
-                # State change needed
                 command = 'fan_on' if should_be_on else 'fan_off'
                 
                 logger.info(f"[AUTOMATION] Temperature {temperature}°C (threshold: {threshold}°C)")
                 logger.info(f"[AUTOMATION] Triggering: {command}")
                 
-                # Send automation command
                 mqtt_command = {
                     'cmd': command,
                     'command_id': f"auto_{int(time.time())}",
@@ -529,7 +461,6 @@ class RemoteControlManager:
                     with self.lock:
                         self.fan_state = 'on' if should_be_on else 'off'
                     
-                    # Log automation action
                     self.log_automation_action(fan_device, command, temperature, threshold)
             
             return True
@@ -538,57 +469,9 @@ class RemoteControlManager:
             logger.error(f"[AUTOMATION] Error processing temperature: {e}")
             return False
     
-    # ===== COMMUNICATION METHODS =====
-    def send_local_mqtt_command(self, device_id, command):
-        """Send command to device via local MQTT"""
-        try:
-            topic = CONFIG['topics']['local_command'].format(device_id=device_id)
-            
-            if self.gateway.local_mqtt and self.gateway.local_connected:
-                self.gateway.local_mqtt.publish(
-                    topic,
-                    json.dumps(command),
-                    qos=1
-                )
-                logger.info(f"[REMOTE] Sent MQTT command to {device_id}: {command.get('cmd')}")
-                return True
-            else:
-                logger.error("[REMOTE] Local MQTT not connected")
-                return False
-                
-        except Exception as e:
-            logger.error(f"[REMOTE] Error sending MQTT command: {e}")
-            return False
-    
-    def send_lora_command(self, device_type_numeric, command_text):
-        """Send command via LoRa to device"""
-        try:
-            if not self.gateway.serial_conn:
-                logger.error("[REMOTE] LoRa serial not connected")
-                return False
-            
-            response_data = command_text.encode('utf-8')
-            head = b'\xC0\x00\x00'
-            addr = struct.pack('>H', int(device_type_numeric) & 0xFFFF)
-            chan = bytes([23])
-            length = bytes([len(response_data)])
-            packet = head + addr + chan + length + response_data
-            
-            self.gateway.serial_conn.write(packet)
-            logger.info(f"[REMOTE] Sent LoRa command: {command_text}")
-            return True
-            
-        except Exception as e:
-            logger.error(f"[REMOTE] LoRa send error: {e}")
-            return False
-    
     def send_command_response(self, device_id, command_id, success, status):
         """Send command response back to VPS"""
-        if not self.gateway.vps_connected:
-            return
-        
         response = {
-            'gateway_id': 'Gateway1',
             'device_id': device_id,
             'command_id': command_id,
             'success': success,
@@ -601,37 +484,37 @@ class RemoteControlManager:
         
         logger.info(f"[REMOTE] Response sent: command_id={command_id}, success={success}, status={status}")
     
-    # ===== LOGGING METHODS =====
     def log_remote_access(self, device_id, user, reason, action, command_id):
-        """Log remote access event to VPS"""
+        """Log remote access event to VPS - FIXED"""
         log_entry = {
-            'type': 'remote_access',
+            'method': 'remote_control',
             'device_id': device_id,
+            'result': 'granted',
             'action': action,
-            'user': user,
+            'initiated_by': user,
             'reason': reason,
             'command_id': command_id,
-            'timestamp': datetime.now().isoformat(),
-            'gateway_id': 'Gateway1'
+            'timestamp': datetime.now().isoformat()
         }
         
-        self.gateway.forward_to_vps(device_id, 'logs', log_entry)
+        self.gateway.forward_to_vps(device_id, 'access', log_entry)
         logger.info(f"[REMOTE] Logged {action} by {user} for {device_id}")
     
     def log_automation_action(self, device_id, action, temperature, threshold):
-        """Log automation action to VPS"""
+        """Log automation action to VPS - FIXED"""
         log_entry = {
-            'type': 'automation',
+            'alert_type': 'automation_trigger',
+            'severity': 'info',
             'device_id': device_id,
             'action': action,
             'trigger': 'temperature_threshold',
-            'temperature': temperature,
+            'value': temperature,
             'threshold': threshold,
-            'timestamp': datetime.now().isoformat(),
-            'gateway_id': 'Gateway1'
+            'message': f'Fan {action} due to temperature {temperature}°C (threshold: {threshold}°C)',
+            'timestamp': datetime.now().isoformat()
         }
         
-        self.gateway.forward_to_vps(device_id, 'logs', log_entry)
+        self.gateway.forward_to_vps(device_id, 'alert', log_entry)
         logger.info(f"[AUTOMATION] Logged {action} for {device_id} (temp: {temperature}°C)")
     
     def cleanup_old_commands(self):
@@ -660,39 +543,23 @@ class RemoteControlManager:
 
 # ============= MAIN GATEWAY CLASS =============
 class Gateway:
-    """
-    Main Gateway orchestrator
-    Manages all communication between devices, local MQTT, VPS, and LoRa
-    """
+    """Main Gateway orchestrator - manages all communication"""
     
     def __init__(self):
         logger.info("=" * 60)
-        logger.info("Initializing IoT Gateway")
+        logger.info("Initializing IoT Gateway...")
         logger.info("=" * 60)
         
-        # Core components
-        self.db = Database(CONFIG['db_path'])
-        self.security = SecurityManager(CONFIG)
-        self.remote_control = RemoteControlManager(self)
-        
-        # MQTT clients
+        self.running = False
         self.local_mqtt = None
         self.vps_mqtt = None
-        
-        # LoRa
         self.serial_conn = None
-        
-        # State
-        self.running = False
-        self.seq_cnt = 0
         self.local_connected = False
         self.vps_connected = False
         
-        # Buffer for offline messages
         self.buffer = deque(maxlen=CONFIG['buffer_max_size'])
         self.buffer_lock = threading.Lock()
         
-        # Statistics
         self.stats = {
             'messages_received': 0,
             'messages_sent': 0,
@@ -702,30 +569,35 @@ class Gateway:
             'uptime_start': datetime.now()
         }
         
-        # Initialize connections
-        self.setup_local_mqtt()
-        self.setup_vps_mqtt()
-        self.setup_serial()
+        self.db = Database(CONFIG['db_path'])
+        self.security = SecurityManager(CONFIG)
+        self.remote_control = RemoteControlManager(self)
         
-        logger.info("Gateway initialization complete")
+        logger.info(" Database loaded")
+        logger.info(" Security manager initialized")
+        logger.info(" Remote control manager initialized")
     
     # ============= LOCAL MQTT SETUP =============
     def setup_local_mqtt(self):
         """Configure and connect to local MQTT broker"""
         logger.info("Setting up Local MQTT Broker connection...")
         
-        self.local_mqtt = mqtt.Client(client_id="Gateway1")
-        
         cfg = CONFIG['local_broker']
-        self.local_mqtt.username_pw_set(cfg['username'], cfg['password'])
+        self.local_mqtt = mqtt.Client(client_id='Gateway_Local')
         
         if cfg['use_tls']:
-            context = ssl.create_default_context(ssl.Purpose.SERVER_AUTH)
-            context.load_verify_locations(cfg['ca_cert'])
-            context.check_hostname = False
-            context.verify_mode = ssl.CERT_REQUIRED
-            self.local_mqtt.tls_set_context(context)
+            try:
+                self.local_mqtt.tls_set(
+                    ca_certs=cfg['ca_cert'],
+                    tls_version=ssl.PROTOCOL_TLSv1_2
+                )
+                self.local_mqtt.tls_insecure_set(False)
+                logger.info(" Local TLS configured")
+            except Exception as e:
+                logger.error(f" Local TLS setup error: {e}")
+                return
         
+        self.local_mqtt.username_pw_set(cfg['username'], cfg['password'])
         self.local_mqtt.on_connect = self.on_local_connect
         self.local_mqtt.on_message = self.on_local_message
         self.local_mqtt.on_disconnect = self.on_local_disconnect
@@ -740,21 +612,21 @@ class Gateway:
     def on_local_connect(self, client, userdata, flags, rc):
         """Callback when connected to local MQTT"""
         if rc == 0:
-            logger.info("✓ Connected to Local MQTT Broker")
+            logger.info(" Connected to Local MQTT Broker")
             self.local_connected = True
             
             client.subscribe(CONFIG['topics']['local_telemetry'], qos=1)
             client.subscribe(CONFIG['topics']['local_request'], qos=1)
             client.subscribe(CONFIG['topics']['local_status'], qos=1)
             
-            logger.info("✓ Subscribed to local device topics")
+            logger.info(" Subscribed to local device topics")
         else:
-            logger.error(f"✗ Local MQTT connection failed with code: {rc}")
+            logger.error(f" Local MQTT connection failed with code: {rc}")
             self.local_connected = False
     
     def on_local_disconnect(self, client, userdata, rc):
         """Callback when disconnected from local MQTT"""
-        logger.warning(f"✗ Local MQTT disconnected (rc={rc})")
+        logger.warning(f" Local MQTT disconnected (rc={rc})")
         self.local_connected = False
     
     def on_local_message(self, client, userdata, msg):
@@ -762,7 +634,6 @@ class Gateway:
         try:
             self.stats['messages_received'] += 1
             
-            # Parse topic to get device_id
             parts = msg.topic.split('/')
             device_id = parts[2] if len(parts) >= 3 else 'unknown'
             
@@ -773,7 +644,6 @@ class Gateway:
             
             logger.debug(f"[LOCAL] {device_id} → {msg.topic}")
             
-            # Route to appropriate handler
             if 'telemetry' in msg.topic:
                 self.handle_telemetry(device_id, payload)
             elif 'request' in msg.topic:
@@ -792,7 +662,6 @@ class Gateway:
         cfg = CONFIG['vps_broker']
         self.vps_mqtt = mqtt.Client(client_id=cfg['client_id'])
         
-        # Configure mTLS
         try:
             self.vps_mqtt.tls_set(
                 ca_certs=cfg['ca_cert'],
@@ -801,9 +670,9 @@ class Gateway:
                 tls_version=ssl.PROTOCOL_TLSv1_2
             )
             self.vps_mqtt.tls_insecure_set(False)
-            logger.info("✓ VPS mTLS configured")
+            logger.info(" VPS mTLS configured")
         except Exception as e:
-            logger.error(f"✗ VPS TLS setup error: {e}")
+            logger.error(f" VPS TLS setup error: {e}")
             return
         
         self.vps_mqtt.on_connect = self.on_vps_connect
@@ -820,25 +689,21 @@ class Gateway:
     def on_vps_connect(self, client, userdata, flags, rc):
         """Callback when connected to VPS MQTT"""
         if rc == 0:
-            logger.info("✓ Connected to VPS MQTT Broker")
+            logger.info(" Connected to VPS MQTT Broker")
             self.vps_connected = True
             
-            # Subscribe to command topics
             client.subscribe(CONFIG['topics']['vps_command'], qos=1)
-            logger.info("✓ Subscribed to VPS command topics")
+            logger.info(" Subscribed to VPS command topics")
             
-            # Send gateway online status
             self.send_gateway_status('online')
-            
-            # Flush buffered messages
             self.flush_buffer()
         else:
-            logger.error(f"✗ VPS MQTT connection failed with code: {rc}")
+            logger.error(f" VPS MQTT connection failed with code: {rc}")
             self.vps_connected = False
     
     def on_vps_disconnect(self, client, userdata, rc):
         """Callback when disconnected from VPS"""
-        logger.warning(f"✗ VPS MQTT disconnected (rc={rc})")
+        logger.warning(f" VPS MQTT disconnected (rc={rc})")
         self.vps_connected = False
     
     def on_vps_message(self, client, userdata, msg):
@@ -846,20 +711,14 @@ class Gateway:
         try:
             payload = json.loads(msg.payload.decode())
             
-            # Extract device_id from topic: gateway/command/{device_id}
             parts = msg.topic.split('/')
             
-            if len(parts) >= 3 and parts[2] == 'command':
-                device_id = payload.get('device_id')
+            if len(parts) >= 3 and parts[1] == 'command':
+                device_id = parts[2]
                 command = payload.get('cmd')
-                
-                if not device_id:
-                    logger.warning("[VPS] Command received without device_id in payload")
-                    return
                 
                 logger.info(f"[VPS] Command received: '{command}' for {device_id}")
                 
-                # Route all remote commands through RemoteControlManager
                 if command in ['remote_unlock', 'remote_lock', 'fan_on', 'fan_off', 'fan_toggle', 'set_auto']:
                     self.remote_control.process_remote_command(device_id, payload)
                     self.stats['remote_commands_executed'] += 1
@@ -885,9 +744,9 @@ class Gateway:
                 CONFIG['lora_baudrate'],
                 timeout=1
             )
-            logger.info(f"✓ LoRa connected on {CONFIG['lora_port']}")
+            logger.info(f" LoRa connected on {CONFIG['lora_port']}")
         except Exception as e:
-            logger.error(f"✗ LoRa connection failed: {e}")
+            logger.error(f" LoRa connection failed: {e}")
             self.serial_conn = None
     
     # ============= MESSAGE HANDLERS =============
@@ -895,19 +754,16 @@ class Gateway:
         """Process telemetry data from devices"""
         logger.debug(f"[TELEMETRY] {device_id}: {payload.get('msg_type')}")
         
-        # Pass temperature data to automation engine
         if device_id == CONFIG['automation']['temp_device_id']:
             self.remote_control.handle_temp_sensor_data(device_id, payload)
             self.stats['automation_triggers'] += 1
         
-        # Forward to VPS
         self.forward_to_vps(device_id, 'telemetry', payload)
     
     def handle_request(self, device_id, payload):
         """Process authentication requests from devices"""
         logger.info(f"[REQUEST] {device_id}: {payload.get('cmd', 'unknown')}")
         
-        # Security checks
         if self.security.is_locked_out(device_id):
             self.send_local_response(device_id, {'cmd': 'LOCK', 'reason': 'locked_out'})
             return
@@ -917,19 +773,18 @@ class Gateway:
             self.send_local_response(device_id, {'cmd': 'LOCK', 'reason': 'invalid_format'})
             return
         
-        # Verify HMAC
         if not verify_hmac(payload['body'], payload['hmac'], CONFIG['hmac_key']):
             self.security.record_failed_attempt(device_id)
             self.send_local_response(device_id, {'cmd': 'LOCK', 'reason': 'invalid_signature'})
             
-            self.forward_to_vps(device_id, 'logs', {
-                'type': 'security_alert',
-                'event': 'hmac_verification_failed',
+            self.forward_to_vps(device_id, 'alert', {
+                'alert_type': 'security_alert',
+                'severity': 'high',
+                'message': 'HMAC verification failed',
                 'timestamp': datetime.now().isoformat()
             })
             return
         
-        # Parse body
         try:
             body = json.loads(payload['body'])
         except:
@@ -937,7 +792,6 @@ class Gateway:
             self.send_local_response(device_id, {'cmd': 'LOCK', 'reason': 'invalid_json'})
             return
         
-        # Validate timestamp & nonce
         if not self.security.validate_timestamp(body.get('ts', 0)):
             self.security.record_failed_attempt(device_id)
             self.send_local_response(device_id, {'cmd': 'LOCK', 'reason': 'invalid_timestamp'})
@@ -948,40 +802,35 @@ class Gateway:
             self.send_local_response(device_id, {'cmd': 'LOCK', 'reason': 'replay_attack'})
             return
         
-        # Process authentication command
         if body.get('cmd') == 'unlock_request':
             self.handle_passkey_request(device_id, body)
     
     def handle_passkey_request(self, device_id, body):
-        """Process keypad password authentication"""
+        """Process keypad password authentication - FIXED"""
         password_hash = body.get('pw')
         
-        # Authenticate
         is_valid, pwd_id = self.db.authenticate_passkey(password_hash)
         
-        # Check access rules
         access_allowed, deny_reason = True, 'invalid_password'
         if is_valid:
             access_allowed, deny_reason = self.db.check_access_rules('passkey', pwd_id)
         
-        # Log to VPS
         log_entry = {
-            'type': 'access_attempt',
             'method': 'passkey',
             'device_id': device_id,
             'result': 'granted' if (is_valid and access_allowed) else 'denied',
             'timestamp': datetime.now().isoformat()
         }
+        
         if is_valid and pwd_id:
             log_entry['password_id'] = pwd_id
         if not access_allowed:
             log_entry['deny_reason'] = deny_reason
         
-        self.forward_to_vps(device_id, 'logs', log_entry)
+        self.forward_to_vps(device_id, 'access', log_entry)
         
-        # Grant or deny
         if is_valid and access_allowed:
-            logger.info(f"✓ Access granted: {pwd_id}")
+            logger.info(f" Access granted: {pwd_id}")
             self.security.record_success(device_id)
             self.send_local_response(device_id, {'cmd': 'OPEN'})
             
@@ -992,7 +841,7 @@ class Gateway:
             }
             self.db.save_all()
         else:
-            logger.warning(f"✗ Access denied: {deny_reason}")
+            logger.warning(f" Access denied: {deny_reason}")
             self.security.record_failed_attempt(device_id)
             self.send_local_response(device_id, {'cmd': 'LOCK', 'reason': deny_reason})
     
@@ -1000,7 +849,6 @@ class Gateway:
         """Process status updates from devices"""
         logger.debug(f"[STATUS] {device_id}: {payload.get('state')}")
         
-        # Check for command acknowledgment
         if 'command_id' in payload:
             self.remote_control.send_command_response(
                 device_id,
@@ -1009,7 +857,6 @@ class Gateway:
                 payload.get('status', 'completed')
             )
         
-        # Forward to VPS
         self.forward_to_vps(device_id, 'status', payload)
     
     def handle_status_request(self, device_id, payload):
@@ -1031,35 +878,109 @@ class Gateway:
     
     # ============= VPS COMMUNICATION =============
     def forward_to_vps(self, device_id, msg_type, payload):
-        """Forward message to VPS with offline buffering"""
+        """Forward message to VPS with offline buffering - FIXED WITH DEBUG LOGGING"""
+        
+        logger.info(f"[DEBUG] forward_to_vps called: device_id={device_id}, msg_type={msg_type}")
+        logger.info(f"[DEBUG] vps_connected={self.vps_connected}")
+        
+        valid_types = ['telemetry', 'status', 'access', 'alert']
+        if msg_type not in valid_types:
+            logger.error(f"[VPS] Invalid msg_type: {msg_type}. Must be one of {valid_types}")
+            logger.error(f"[VPS] Payload: {payload}")
+            return False
+        
         vps_payload = {
             'gateway_id': 'Gateway1',
             'device_id': device_id,
-            'data': payload,
             'timestamp': datetime.now().isoformat()
         }
         
-        topic = CONFIG['topics'][f'vps_{msg_type}']
+        if msg_type == 'telemetry':
+            sensor_data = payload.get('data', {})
+            vps_payload['temperature'] = sensor_data.get('temperature')
+            vps_payload['humidity'] = sensor_data.get('humidity')
+            vps_payload['msg_type'] = payload.get('msg_type', 'unknown')
+            vps_payload['data'] = payload
+            
+        elif msg_type == 'status':
+            vps_payload['status'] = payload.get('state', 'unknown')
+            vps_payload['sequence'] = payload.get('sequence')
+            vps_payload['metadata'] = payload
+            
+        elif msg_type == 'access':
+            vps_payload['method'] = payload.get('method', 'unknown')
+            vps_payload['result'] = payload.get('result', 'unknown')
+            vps_payload['password_id'] = payload.get('password_id')
+            vps_payload['rfid_uid'] = payload.get('rfid_uid')
+            vps_payload['deny_reason'] = payload.get('deny_reason')
+            vps_payload['action'] = payload.get('action')
+            vps_payload['initiated_by'] = payload.get('initiated_by')
+            vps_payload['metadata'] = payload
+            logger.info(f"[DEBUG] Built access payload: {vps_payload}")
+            
+        elif msg_type == 'alert':
+            vps_payload['alert_type'] = payload.get('alert_type') or payload.get('event', 'unknown')
+            vps_payload['severity'] = payload.get('severity', 'warning')
+            vps_payload['value'] = payload.get('temperature') or payload.get('value')
+            vps_payload['threshold'] = payload.get('threshold')
+            vps_payload['message'] = payload.get('message', '')
+            vps_payload['action'] = payload.get('action')
+            vps_payload['trigger'] = payload.get('trigger')
+            vps_payload['metadata'] = payload
+        
+        try:
+            topic_key = f'vps_{msg_type}'
+            logger.info(f"[DEBUG] Looking for topic key: {topic_key}")
+            
+            if topic_key not in CONFIG['topics']:
+                logger.error(f"[VPS] Topic key not found: {topic_key}")
+                logger.error(f"[VPS] Available topics: {list(CONFIG['topics'].keys())}")
+                return False
+            
+            topic = CONFIG['topics'][topic_key]
+            logger.info(f"[DEBUG] Topic resolved to: {topic}")
+            
+        except KeyError as e:
+            logger.error(f"[VPS] No topic configured for msg_type: {msg_type}")
+            logger.error(f"[VPS] KeyError: {e}")
+            return False
         
         if self.vps_connected:
+            logger.info(f"[DEBUG] VPS connected, calling publish_to_vps")
             self.publish_to_vps(topic, vps_payload)
         else:
+            logger.warning(f"[DEBUG] VPS not connected, buffering message")
             with self.buffer_lock:
                 self.buffer.append({'topic': topic, 'payload': vps_payload})
                 self.stats['messages_buffered'] += 1
                 logger.debug(f"[BUFFER] Message buffered (total: {len(self.buffer)})")
+        
+        return True
     
     def publish_to_vps(self, topic, payload):
-        """Publish to VPS MQTT"""
+        """Publish to VPS MQTT - WITH DEBUG LOGGING"""
+        logger.info(f"[DEBUG] publish_to_vps called for topic: {topic}")
+        
         try:
+            if not self.vps_mqtt:
+                logger.error("[VPS] vps_mqtt client is None!")
+                return
+            
+            logger.info(f"[DEBUG] Attempting to publish to {topic}")
+            logger.info(f"[DEBUG] Payload: {json.dumps(payload)[:200]}...")
+            
             result = self.vps_mqtt.publish(topic, json.dumps(payload), qos=1)
+            
+            logger.info(f"[DEBUG] Publish result code: {result.rc}")
+            
             if result.rc == mqtt.MQTT_ERR_SUCCESS:
                 self.stats['messages_sent'] += 1
-                logger.debug(f"[VPS] Published to {topic}")
+                logger.info(f"[VPS]  Published to {topic}")
             else:
-                logger.error(f"[VPS] Publish failed with code: {result.rc}")
+                logger.error(f"[VPS]  Publish failed with code: {result.rc}")
+                
         except Exception as e:
-            logger.error(f"[VPS] Error publishing: {e}")
+            logger.error(f"[VPS]  Error publishing: {e}", exc_info=True)
     
     def flush_buffer(self):
         """Flush buffered messages when VPS reconnects"""
@@ -1129,9 +1050,9 @@ class Gateway:
             self.local_mqtt.publish(topic, json.dumps(response), qos=1)
             logger.debug(f"[LOCAL] Response to {device_id}: {response}")
     
-    # ============= LORA HANDLING =============
+    # ============= LORA HANDLING - FIXED =============
     def parse_lora_message(self, data):
-        """Parse LoRa message from RFID gate"""
+        """Parse LoRa message from RFID gate - FIXED to include device_id"""
         try:
             if len(data) < 3 or data[:3] != b'\x00\x02\x17':
                 return None
@@ -1169,18 +1090,21 @@ class Gateway:
             msg_type_str = MESSAGE_TYPES.get(msg_type_n, 'unknown')
             device_type_str = DEVICE_TYPES.get(device_type_n, 'unknown')
             
-            # Parse payload based on type
-            if msg_type_n == 0x01:  # RFID
+            # FIXED: Map device_type to actual device_id
+            device_id = DEVICE_TYPE_TO_ID.get(device_type_n, f'unknown_device_{device_type_n}')
+            
+            if msg_type_n == 0x01:
                 payload = {
                     'uid': ''.join(f'{b:02x}' for b in payload_data),
                     'uid_len': len(payload_data)
                 }
-            elif msg_type_n == 0x06:  # Gate status
-                payload = {'status': payload_data.decode('utf-8')}
+            elif msg_type_n == 0x06:
+                payload = {'status': payload_data.decode('utf-8', errors='ignore')}
             else:
                 payload = {'raw': payload_data.hex()}
             
             return {
+                'device_id': device_id,
                 'header': {
                     'version': version,
                     'msg_type': msg_type_str,
@@ -1195,87 +1119,127 @@ class Gateway:
             }
         
         except Exception as e:
-            logger.error(f"Error parsing LoRa message: {e}")
+            logger.error(f"Error parsing LoRa message: {e}", exc_info=True)
             return None
     
     def process_lora_message(self, message):
-        """Process LoRa message and generate response"""
+        """Process LoRa message and route to appropriate handler - FIXED"""
         msg_type = message['header']['msg_type']
+        device_id = message['device_id']
+        
+        logger.debug(f"[LoRa] Processing {msg_type} from {device_id}")
         
         if msg_type == 'rfid_scan':
             return self.handle_rfid_scan(message)
         elif msg_type == 'gate_status':
             return self.handle_gate_status(message)
+        else:
+            logger.warning(f"[LoRa] Unknown message type: {msg_type}")
         
         return None
     
     def handle_rfid_scan(self, message):
-        """Handle RFID scan from LoRa"""
-        uid = message['payload'].get('uid')
+        """Handle RFID card scan from LoRa - FIXED WITH DEBUG LOGGING"""
+        device_id = message['device_id']
+        uid = message['payload']['uid']
         
-        # Authenticate
+        logger.info(f"[RFID] {device_id} scanned card: {uid}")
+        logger.info(f"[DEBUG] vps_connected = {self.vps_connected}")
+        
         is_valid = self.db.authenticate_rfid(uid)
+        logger.info(f"[DEBUG] Card authentication result: {is_valid}")
         
-        # Check access rules
-        access_allowed, deny_reason = True, 'invalid_card'
+        access_allowed = False
+        deny_reason = 'invalid_card'
+        
         if is_valid:
             access_allowed, deny_reason = self.db.check_access_rules('rfid', uid)
+            logger.info(f"[DEBUG] Access rules check: allowed={access_allowed}, reason={deny_reason}")
         
-        result = 'granted' if (is_valid and access_allowed) else 'denied'
-        
-        logger.info(f"[RFID] {uid}: {result.upper()}")
-        
-        # Log to VPS
-        self.forward_to_vps('rfid_gate_01', 'logs', {
-            'type': 'access_attempt',
+        log_entry = {
             'method': 'rfid',
-            'uid': uid,
-            'result': result,
-            'device': message['header']['device_type'],
-            'timestamp': datetime.now().isoformat(),
-            'deny_reason': deny_reason if not (is_valid and access_allowed) else None
-        })
+            'device_id': device_id,
+            'result': 'granted' if (is_valid and access_allowed) else 'denied',
+            'rfid_uid': uid,
+            'timestamp': datetime.now().isoformat()
+        }
         
-        return 'GRANT' if (is_valid and access_allowed) else 'DENY5'
+        if not access_allowed:
+            log_entry['deny_reason'] = deny_reason
+        
+        logger.info(f"[DEBUG] About to call forward_to_vps with log_entry: {log_entry}")
+        
+        # Call forward_to_vps and check return value
+        result = self.forward_to_vps(device_id, 'access', log_entry)
+        logger.info(f"[DEBUG] forward_to_vps returned: {result}")
+        
+        if is_valid and access_allowed:
+            logger.info(f"[RFID] {uid}: GRANTED")
+            self.security.record_success(device_id)
+            response_status = "GRANT"
+            
+            if uid in self.db.devices.get('rfid_cards', {}):
+                self.db.devices['rfid_cards'][uid]['last_used'] = datetime.now().isoformat()
+                self.db.save_all()
+        else:
+            logger.warning(f"[RFID] {uid}: DENIED ({deny_reason})")
+            self.security.record_failed_attempt(device_id)
+            response_status = "DENY5"
+        
+        return response_status
     
     def handle_gate_status(self, message):
-        """Handle gate status update"""
-        status = message['payload'].get('status')
+        """Handle status update from RFID gate - FIXED"""
+        device_id = message['device_id']
+        status = message['payload'].get('status', 'unknown')
         
-        self.forward_to_vps('rfid_gate_01', 'status', {
-            'type': 'gate_status',
-            'status': status,
-            'device': message['header']['device_type'],
+        logger.info(f"[LoRa] {device_id} status: {status}")
+        
+        status_payload = {
+            'state': status,
+            'sequence': message['header']['seq'],
+            'device_type': message['header']['device_type'],
             'timestamp': datetime.now().isoformat()
-        })
+        }
+        
+        self.forward_to_vps(device_id, 'status', status_payload)
         
         return None
     
-    def send_lora_response(self, device_type_numeric, response_text):
-        """Send response via LoRa"""
-        if not self.serial_conn:
-            return False
-        
+    def send_lora_response(self, device_id, status):
+        """Send response back to LoRa device - FIXED"""
         try:
-            response_data = response_text.encode('utf-8')
-            head = b'\xC0\x00\x00'
-            addr = struct.pack('>H', int(device_type_numeric) & 0xFFFF)
-            chan = bytes([23])
-            length = bytes([len(response_data)])
-            packet = head + addr + chan + length + response_data
+            response_str = status
             
-            self.serial_conn.write(packet)
-            logger.info(f"[LoRa] >> {response_text}")
-            return True
+            buffer = bytearray()
+            buffer.append(0xC0)
+            buffer.append(0x00)
+            buffer.append(0x00)
+            buffer.append(0x00)
+            buffer.append(0x00)
+            buffer.append(0x17)
+            buffer.append(len(response_str))
+            buffer.extend(response_str.encode('utf-8'))
+            
+            if self.serial_conn:
+                self.serial_conn.write(buffer)
+                logger.info(f"[LoRa] Response sent to {device_id}: {status}")
+            else:
+                logger.error("[LoRa] Serial connection not available")
+                
         except Exception as e:
-            logger.error(f"[LoRa] Send error: {e}")
-            return False
+            logger.error(f"[LoRa] Error sending response: {e}")
     
     # ============= MAIN LOOP =============
     def run(self):
-        """Main gateway execution loop"""
-        self.running = True
+        """Main gateway loop"""
+        self.setup_local_mqtt()
+        self.setup_vps_mqtt()
+        self.setup_serial()
         
+        time.sleep(2)
+        
+        logger.info("Gateway initialization complete")
         logger.info("=" * 60)
         logger.info("IoT Gateway Started Successfully")
         logger.info(f"Local MQTT: {CONFIG['local_broker']['host']}:{CONFIG['local_broker']['port']}")
@@ -1283,48 +1247,35 @@ class Gateway:
         logger.info("Features: Remote Control (Keypad, RFID, Fan), Automation Engine")
         logger.info("=" * 60)
         
-        # Start background threads
+        self.running = True
+        
         heartbeat_thread = threading.Thread(target=self.heartbeat_loop, daemon=True)
         heartbeat_thread.start()
         
         cleanup_thread = threading.Thread(target=self.cleanup_loop, daemon=True)
         cleanup_thread.start()
         
-        # LoRa processing
-        lora_buffer = b''
-        last_heartbeat = time.time()
+        lora_buffer = bytearray()
         last_stats_log = time.time()
         
         while self.running:
             try:
-                # Periodic heartbeat
-                if time.time() - last_heartbeat > CONFIG['heartbeat_interval']:
-                    if self.vps_connected:
-                        self.send_gateway_status('online')
-                    last_heartbeat = time.time()
-                
-                # Periodic stats logging
-                if time.time() - last_stats_log > 300:  # Every 5 minutes
-                    remote_status = self.remote_control.get_status()
+                if time.time() - last_stats_log > 300:
                     logger.info(
-                        f"[STATS] RX: {self.stats['messages_received']}, "
-                        f"TX: {self.stats['messages_sent']}, "
+                        f"[STATS] Received: {self.stats['messages_received']}, "
+                        f"Sent: {self.stats['messages_sent']}, "
                         f"Buffered: {len(self.buffer)}, "
                         f"Remote Cmds: {self.stats['remote_commands_executed']}, "
                         f"Auto Triggers: {self.stats['automation_triggers']}, "
-                        f"Temp: {remote_status['last_temperature']}°C, "
-                        f"Fan: {remote_status['fan_state']}, "
                         f"Local: {'OK' if self.local_connected else 'DOWN'}, "
                         f"VPS: {'OK' if self.vps_connected else 'DOWN'}"
                     )
                     last_stats_log = time.time()
                 
-                # Handle LoRa messages
                 if self.serial_conn and self.serial_conn.in_waiting > 0:
                     new_data = self.serial_conn.read(self.serial_conn.in_waiting)
                     lora_buffer += new_data
                     
-                    # Process complete messages
                     while True:
                         header_idx = lora_buffer.find(b'\x00\x02\x17')
                         if header_idx == -1:
@@ -1346,8 +1297,8 @@ class Gateway:
                         if message:
                             response = self.process_lora_message(message)
                             if response:
-                                device_numeric = message['header'].get('device_type_raw', 1)
-                                self.send_lora_response(device_numeric, response)
+                                device_id = message['device_id']
+                                self.send_lora_response(device_id, response)
                         
                         lora_buffer = lora_buffer[header_idx + 3 + msg_len:]
                 
@@ -1377,7 +1328,7 @@ class Gateway:
         """Background thread for cleanup tasks"""
         while self.running:
             try:
-                time.sleep(60)  # Every minute
+                time.sleep(60)
                 self.remote_control.cleanup_old_commands()
             except Exception as e:
                 logger.error(f"[CLEANUP] Error: {e}")
@@ -1386,11 +1337,9 @@ class Gateway:
         """Cleanup all connections on shutdown"""
         logger.info("[SHUTDOWN] Cleaning up connections...")
         
-        # Send offline status
         if self.vps_connected:
             self.send_gateway_status('offline')
         
-        # Stop MQTT loops
         if self.local_mqtt:
             self.local_mqtt.loop_stop()
             self.local_mqtt.disconnect()
@@ -1399,7 +1348,6 @@ class Gateway:
             self.vps_mqtt.loop_stop()
             self.vps_mqtt.disconnect()
         
-        # Close serial
         if self.serial_conn:
             self.serial_conn.close()
         
@@ -1409,10 +1357,8 @@ class Gateway:
 def main():
     """Application entry point"""
     
-    # Check prerequisites
     logger.info("Checking prerequisites...")
     
-    # Check certificates
     local_cert = CONFIG['local_broker']['ca_cert']
     vps_ca = CONFIG['vps_broker']['ca_cert']
     vps_cert = CONFIG['vps_broker']['cert_file']
@@ -1433,21 +1379,19 @@ def main():
         logger.error("=" * 60)
         logger.error("MISSING CERTIFICATES:")
         for cert in missing_certs:
-            logger.error(f"  ✗ {cert}")
+            logger.error(f"   {cert}")
         logger.error("")
         logger.error("Please ensure all certificates are in place")
         logger.error("=" * 60)
         return
     
-    # Check database
     db_file = os.path.join(CONFIG['db_path'], CONFIG['devices_db'])
     if not os.path.exists(db_file):
         logger.error(f"Database not found: {db_file}")
         return
     
-    logger.info("✓ Prerequisites check passed")
+    logger.info(" Prerequisites check passed")
     
-    # Create and run gateway
     gateway = Gateway()
     
     try:

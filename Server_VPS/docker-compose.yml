@@ -23,20 +23,27 @@ services:
       timeout: 5s
       retries: 5
 
-  mqtt:
+  mosquitto:
     image: eclipse-mosquitto:2
-    container_name: iot-mqtt
+    container_name: iot-mosquitto
     restart: unless-stopped
     volumes:
       - ./mosquitto/config:/mosquitto/config
+      - ./mosquitto/acl:/mosquitto/acl
       - ./mosquitto/data:/mosquitto/data
       - ./mosquitto/log:/mosquitto/log
       - ./mosquitto/passwd:/mosquitto/passwd
       - ./mosquitto/certs:/mosquitto/certs
     ports:
       - "1883:1883"
+      - "8883:8883"
     networks:
       - iot-network
+    healthcheck:
+      test: ["CMD-SHELL", "chmod 0700 /mosquitto/acl/acl.conf"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
 
   api:
     build: ./api
@@ -49,7 +56,7 @@ services:
       DB_NAME: iot_db
       DB_USER: iot
       DB_PASSWORD: ${DB_PASSWORD}
-      MQTT_HOST: mqtt
+      MQTT_HOST: mosquitto
       MQTT_PORT: 1883
       MQTT_USERNAME: ${MQTT_USERNAME}
       MQTT_PASSWORD: ${MQTT_PASSWORD}
@@ -60,10 +67,15 @@ services:
     depends_on:
       postgres:
         condition: service_healthy
-      mqtt:
-        condition: service_started
+      mosquitto:
+        condition: service_healthy
     networks:
       - iot-network
+    # healthcheck:
+    #   test: ["CMD-SHELL", "curl -f http://localhost:3000/health || exit 1"]
+    #   interval: 30s
+    #   timeout: 10s
+    #   retries: 3
 
   nginx:
     image: nginx:alpine
@@ -71,8 +83,10 @@ services:
     restart: unless-stopped
     ports:
       - "80:80"
+      - "443:443"
     volumes:
-      - ./nginx/nginx.conf:/etc/nginx/nginx.conf
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./nginx/ssl:/etc/nginx/ssl:ro
     depends_on:
       - api
     networks:
@@ -84,3 +98,4 @@ networks:
 
 volumes:
   postgres_data:
+    driver: local

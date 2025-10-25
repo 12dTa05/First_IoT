@@ -561,3 +561,1342 @@
 2025-10-25 00:06:57,826 - gateway - DEBUG - [BUFFER] Message buffered (total: 14)
 2025-10-25 00:07:27,827 - gateway - DEBUG - [TELEMETRY] temp_01: temp_update
 2025-10-25 00:07:27,827 - gateway - DEBUG - [BUFFER] Message buffered (total: 15)
+2025-10-25 20:18:50,748 - gateway - INFO - Checking prerequisites...
+2025-10-25 20:18:50,778 - gateway - INFO - ============================================================
+2025-10-25 20:18:50,779 - gateway - INFO - Initializing IoT Gateway
+2025-10-25 20:18:50,779 - gateway - INFO - ============================================================
+2025-10-25 20:18:50,795 - gateway - INFO - [REMOTE] Unified Remote Control Manager initialized
+2025-10-25 20:18:50,796 - gateway - INFO - [REMOTE] Supported devices: Keypad, RFID Gate, Fan
+2025-10-25 20:18:50,796 - gateway - INFO - [AUTOMATION] Automation engine integrated
+2025-10-25 20:18:50,796 - gateway - INFO - Setting up Local MQTT Broker connection...
+2025-10-25 20:18:56,101 - gateway - ERROR - Local MQTT connection failed: timed out
+2025-10-25 20:18:56,101 - gateway - INFO - Setting up VPS MQTT Broker connection...
+2025-10-25 20:18:56,494 - gateway - INFO - VPS MQTT connection initiated
+2025-10-25 20:18:56,524 - gateway - INFO - Gateway initialization complete
+2025-10-25 20:18:56,525 - gateway - INFO - ============================================================
+2025-10-25 20:18:56,525 - gateway - INFO - IoT Gateway Started Successfully
+2025-10-25 20:18:56,525 - gateway - INFO - Local MQTT: 192.168.1.205:1884
+2025-10-25 20:18:56,525 - gateway - INFO - VPS MQTT: 159.223.63.61:8883
+2025-10-25 20:18:56,525 - gateway - INFO - Features: Remote Control (Keypad, RFID, Fan), Automation Engine
+2025-10-25 20:18:56,526 - gateway - INFO - ============================================================
+2025-10-25 20:19:16,266 - gateway - INFO - 
+[SHUTDOWN] Received interrupt signal
+2025-10-25 20:19:16,267 - gateway - INFO - [SHUTDOWN] Cleaning up connections...
+2025-10-25 20:19:16,653 - gateway - INFO - [SHUTDOWN] Gateway stopped cleanly
+2025-10-25 20:19:16,653 - gateway - INFO - [SHUTDOWN] Cleaning up connections...
+2025-10-25 20:19:16,654 - gateway - INFO - [SHUTDOWN] Gateway stopped cleanly
+2025-10-25 20:19:20,626 - gateway - INFO - Checking prerequisites...
+2025-10-25 20:19:20,627 - gateway - INFO - ============================================================
+2025-10-25 20:19:20,628 - gateway - INFO - Initializing IoT Gateway
+2025-10-25 20:19:20,628 - gateway - INFO - ============================================================
+2025-10-25 20:19:20,628 - gateway - INFO - [REMOTE] Unified Remote Control Manager initialized
+2025-10-25 20:19:20,628 - gateway - INFO - [REMOTE] Supported devices: Keypad, RFID Gate, Fan
+2025-10-25 20:19:20,630 - gateway - INFO - [AUTOMATION] Automation engine integrated
+2025-10-25 20:19:20,630 - gateway - INFO - Setting up Local MQTT Broker connection...
+2025-10-25 20:19:25,847 - gateway - ERROR - Local MQTT connection failed: timed out
+2025-10-25 20:19:25,847 - gateway - INFO - Setting up VPS MQTT Broker connection...
+2025-10-25 20:19:26,218 - gateway - INFO - VPS MQTT connection initiated
+2025-10-25 20:19:26,222 - gateway - INFO - Gateway initialization complete
+2025-10-25 20:19:26,222 - gateway - INFO - ============================================================
+2025-10-25 20:19:26,222 - gateway - INFO - IoT Gateway Started Successfully
+2025-10-25 20:19:26,223 - gateway - INFO - Local MQTT: 192.168.1.205:1884
+2025-10-25 20:19:26,223 - gateway - INFO - VPS MQTT: 159.223.63.61:8883
+2025-10-25 20:19:26,223 - gateway - INFO - Features: Remote Control (Keypad, RFID, Fan), Automation Engine
+2025-10-25 20:19:26,224 - gateway - INFO - ============================================================
+2025-10-25 20:20:42,903 - gateway - INFO - 
+[SHUTDOWN] Received interrupt signal
+2025-10-25 20:20:42,904 - gateway - INFO - [SHUTDOWN] Cleaning up connections...
+2025-10-25 20:20:43,059 - gateway - INFO - [SHUTDOWN] Gateway stopped cleanly
+2025-10-25 20:20:43,060 - gateway - INFO - [SHUTDOWN] Cleaning up connections...
+2025-10-25 20:20:43,060 - gateway - INFO - [SHUTDOWN] Gateway stopped cleanly
+2025-10-25 20:21:37,105 - gateway - INFO - Checking prerequisites...
+2025-10-25 20:21:37,108 - gateway - INFO - ============================================================
+2025-10-25 20:21:37,108 - gateway - INFO - Initializing IoT Gateway
+2025-10-25 20:21:37,109 - gateway - INFO - ============================================================
+2025-10-25 20:21:37,109 - gateway - INFO - [REMOTE] Unified Remote Control Manager initialized
+2025-10-25 20:21:37,109 - gateway - INFO - [REMOTE] Supported devices: Keypad, RFID Gate, Fan
+2025-10-25 20:21:37,110 - gateway - INFO - [AUTOMATION] Automation engine integrated
+2025-10-25 20:21:37,110 - gateway - INFO - Setting up Local MQTT Broker connection...
+2025-10-25 20:21:37,327 - gateway - INFO - Local MQTT connection initiated
+2025-10-25 20:21:37,327 - gateway - INFO - Setting up VPS MQTT Broker connection...
+2025-10-25 20:21:42,349 - gateway - ERROR - VPS MQTT connection failed: timed out
+2025-10-25 20:21:42,353 - gateway - INFO - Gateway initialization complete
+2025-10-25 20:21:42,353 - gateway - INFO - ============================================================
+2025-10-25 20:21:42,353 - gateway - INFO - IoT Gateway Started Successfully
+2025-10-25 20:21:42,354 - gateway - INFO - Local MQTT: 192.168.1.205:1884
+2025-10-25 20:21:42,354 - gateway - INFO - VPS MQTT: 159.223.63.61:8883
+2025-10-25 20:21:42,354 - gateway - INFO - Features: Remote Control (Keypad, RFID, Fan), Automation Engine
+2025-10-25 20:21:42,355 - gateway - INFO - ============================================================
+2025-10-25 20:23:25,349 - gateway - INFO - 
+[SHUTDOWN] Received interrupt signal
+2025-10-25 20:23:25,349 - gateway - INFO - [SHUTDOWN] Cleaning up connections...
+2025-10-25 20:23:26,149 - gateway - INFO - [SHUTDOWN] Gateway stopped cleanly
+2025-10-25 20:23:26,150 - gateway - INFO - [SHUTDOWN] Cleaning up connections...
+2025-10-25 20:23:26,150 - gateway - INFO - [SHUTDOWN] Gateway stopped cleanly
+2025-10-25 20:23:27,957 - gateway - INFO - Checking prerequisites...
+2025-10-25 20:23:27,961 - gateway - INFO - ============================================================
+2025-10-25 20:23:27,961 - gateway - INFO - Initializing IoT Gateway
+2025-10-25 20:23:27,961 - gateway - INFO - ============================================================
+2025-10-25 20:23:27,962 - gateway - INFO - [REMOTE] Unified Remote Control Manager initialized
+2025-10-25 20:23:27,962 - gateway - INFO - [REMOTE] Supported devices: Keypad, RFID Gate, Fan
+2025-10-25 20:23:27,963 - gateway - INFO - [AUTOMATION] Automation engine integrated
+2025-10-25 20:23:27,963 - gateway - INFO - Setting up Local MQTT Broker connection...
+2025-10-25 20:23:28,193 - gateway - INFO - Local MQTT connection initiated
+2025-10-25 20:23:28,193 - gateway - INFO - Setting up VPS MQTT Broker connection...
+2025-10-25 20:23:30,205 - gateway - INFO - VPS MQTT connection initiated
+2025-10-25 20:23:30,208 - gateway - INFO - Gateway initialization complete
+2025-10-25 20:23:30,208 - gateway - INFO - ============================================================
+2025-10-25 20:23:30,208 - gateway - INFO - IoT Gateway Started Successfully
+2025-10-25 20:23:30,208 - gateway - INFO - Local MQTT: 192.168.1.205:1884
+2025-10-25 20:23:30,210 - gateway - INFO - VPS MQTT: 159.223.63.61:8883
+2025-10-25 20:23:30,210 - gateway - INFO - Features: Remote Control (Keypad, RFID, Fan), Automation Engine
+2025-10-25 20:23:30,210 - gateway - INFO - ============================================================
+2025-10-25 20:26:51,674 - gateway - INFO - 
+[SHUTDOWN] Received interrupt signal
+2025-10-25 20:26:51,688 - gateway - INFO - [SHUTDOWN] Cleaning up connections...
+2025-10-25 20:26:53,563 - gateway - INFO - [SHUTDOWN] Gateway stopped cleanly
+2025-10-25 20:26:53,563 - gateway - INFO - [SHUTDOWN] Cleaning up connections...
+2025-10-25 20:26:53,564 - gateway - INFO - [SHUTDOWN] Gateway stopped cleanly
+2025-10-25 20:26:56,094 - gateway - INFO - Checking prerequisites...
+2025-10-25 20:26:56,097 - gateway - INFO - ============================================================
+2025-10-25 20:26:56,097 - gateway - INFO - Initializing IoT Gateway
+2025-10-25 20:26:56,098 - gateway - INFO - ============================================================
+2025-10-25 20:26:56,098 - gateway - INFO - [REMOTE] Unified Remote Control Manager initialized
+2025-10-25 20:26:56,098 - gateway - INFO - [REMOTE] Supported devices: Keypad, RFID Gate, Fan
+2025-10-25 20:26:56,099 - gateway - INFO - [AUTOMATION] Automation engine integrated
+2025-10-25 20:26:56,099 - gateway - INFO - Setting up Local MQTT Broker connection...
+2025-10-25 20:26:56,295 - gateway - INFO - Local MQTT connection initiated
+2025-10-25 20:26:56,311 - gateway - INFO - Setting up VPS MQTT Broker connection...
+2025-10-25 20:26:56,679 - gateway - INFO - VPS MQTT connection initiated
+2025-10-25 20:26:56,683 - gateway - INFO - Gateway initialization complete
+2025-10-25 20:26:56,684 - gateway - INFO - ============================================================
+2025-10-25 20:26:56,684 - gateway - INFO - IoT Gateway Started Successfully
+2025-10-25 20:26:56,684 - gateway - INFO - Local MQTT: 192.168.1.205:1884
+2025-10-25 20:26:56,684 - gateway - INFO - VPS MQTT: 159.223.63.61:8883
+2025-10-25 20:26:56,685 - gateway - INFO - Features: Remote Control (Keypad, RFID, Fan), Automation Engine
+2025-10-25 20:26:56,685 - gateway - INFO - ============================================================
+2025-10-25 20:27:35,505 - gateway - INFO - 
+[SHUTDOWN] Received interrupt signal
+2025-10-25 20:27:35,505 - gateway - INFO - [SHUTDOWN] Cleaning up connections...
+2025-10-25 20:27:35,621 - gateway - INFO - [SHUTDOWN] Gateway stopped cleanly
+2025-10-25 20:27:35,621 - gateway - INFO - [SHUTDOWN] Cleaning up connections...
+2025-10-25 20:27:35,624 - gateway - INFO - [SHUTDOWN] Gateway stopped cleanly
+2025-10-25 20:27:36,832 - gateway - INFO - Checking prerequisites...
+2025-10-25 20:27:36,835 - gateway - INFO - ============================================================
+2025-10-25 20:27:36,835 - gateway - INFO - Initializing IoT Gateway
+2025-10-25 20:27:36,835 - gateway - INFO - ============================================================
+2025-10-25 20:27:36,836 - gateway - INFO - [REMOTE] Unified Remote Control Manager initialized
+2025-10-25 20:27:36,836 - gateway - INFO - [REMOTE] Supported devices: Keypad, RFID Gate, Fan
+2025-10-25 20:27:36,836 - gateway - INFO - [AUTOMATION] Automation engine integrated
+2025-10-25 20:27:36,837 - gateway - INFO - Setting up Local MQTT Broker connection...
+2025-10-25 20:27:37,081 - gateway - INFO - Local MQTT connection initiated
+2025-10-25 20:27:37,081 - gateway - INFO - Setting up VPS MQTT Broker connection...
+2025-10-25 20:27:37,962 - gateway - INFO - VPS MQTT connection initiated
+2025-10-25 20:27:37,962 - gateway - INFO - Gateway initialization complete
+2025-10-25 20:27:37,962 - gateway - INFO - ============================================================
+2025-10-25 20:27:37,962 - gateway - INFO - IoT Gateway Started Successfully
+2025-10-25 20:27:37,962 - gateway - INFO - Local MQTT: 192.168.1.205:1884
+2025-10-25 20:27:37,962 - gateway - INFO - VPS MQTT: 159.223.63.61:8883
+2025-10-25 20:27:37,969 - gateway - INFO - Features: Remote Control (Keypad, RFID, Fan), Automation Engine
+2025-10-25 20:27:37,969 - gateway - INFO - ============================================================
+2025-10-25 20:32:38,064 - gateway - INFO - [STATS] RX: 0, TX: 0, Buffered: 0, Remote Cmds: 0, Auto Triggers: 0, Temp: None°C, Fan: None, Local: OK, VPS: OK
+2025-10-25 20:33:48,072 - gateway - INFO - 
+[SHUTDOWN] Received interrupt signal
+2025-10-25 20:33:48,072 - gateway - INFO - [SHUTDOWN] Cleaning up connections...
+2025-10-25 20:33:49,841 - gateway - INFO - [SHUTDOWN] Gateway stopped cleanly
+2025-10-25 20:33:49,841 - gateway - INFO - [SHUTDOWN] Cleaning up connections...
+2025-10-25 20:33:49,841 - gateway - INFO - [SHUTDOWN] Gateway stopped cleanly
+2025-10-25 20:33:52,010 - gateway - INFO - Checking prerequisites...
+2025-10-25 20:33:52,013 - gateway - INFO - ============================================================
+2025-10-25 20:33:52,013 - gateway - INFO - Initializing IoT Gateway
+2025-10-25 20:33:52,013 - gateway - INFO - ============================================================
+2025-10-25 20:33:52,013 - gateway - INFO - [REMOTE] Unified Remote Control Manager initialized
+2025-10-25 20:33:52,013 - gateway - INFO - [REMOTE] Supported devices: Keypad, RFID Gate, Fan
+2025-10-25 20:33:52,013 - gateway - INFO - [AUTOMATION] Automation engine integrated
+2025-10-25 20:33:52,013 - gateway - INFO - Setting up Local MQTT Broker connection...
+2025-10-25 20:33:52,223 - gateway - INFO - Local MQTT connection initiated
+2025-10-25 20:33:52,223 - gateway - INFO - Setting up VPS MQTT Broker connection...
+2025-10-25 20:33:52,596 - gateway - INFO - VPS MQTT connection initiated
+2025-10-25 20:33:52,596 - gateway - INFO - Gateway initialization complete
+2025-10-25 20:33:52,596 - gateway - INFO - ============================================================
+2025-10-25 20:33:52,596 - gateway - INFO - IoT Gateway Started Successfully
+2025-10-25 20:33:52,596 - gateway - INFO - Local MQTT: 192.168.1.205:1884
+2025-10-25 20:33:52,596 - gateway - INFO - VPS MQTT: 159.223.63.61:8883
+2025-10-25 20:33:52,596 - gateway - INFO - Features: Remote Control (Keypad, RFID, Fan), Automation Engine
+2025-10-25 20:33:52,596 - gateway - INFO - ============================================================
+2025-10-25 20:38:52,720 - gateway - INFO - [STATS] RX: 0, TX: 0, Buffered: 0, Remote Cmds: 0, Auto Triggers: 0, Temp: None°C, Fan: None, Local: OK, VPS: OK
+2025-10-25 20:39:42,311 - gateway - INFO - 
+[SHUTDOWN] Received interrupt signal
+2025-10-25 20:39:42,311 - gateway - INFO - [SHUTDOWN] Cleaning up connections...
+2025-10-25 20:39:42,569 - gateway - INFO - [SHUTDOWN] Gateway stopped cleanly
+2025-10-25 20:39:42,570 - gateway - INFO - [SHUTDOWN] Cleaning up connections...
+2025-10-25 20:39:42,570 - gateway - INFO - [SHUTDOWN] Gateway stopped cleanly
+2025-10-25 20:39:44,111 - gateway - INFO - Checking prerequisites...
+2025-10-25 20:39:44,111 - gateway - INFO - ============================================================
+2025-10-25 20:39:44,111 - gateway - INFO - Initializing IoT Gateway
+2025-10-25 20:39:44,111 - gateway - INFO - ============================================================
+2025-10-25 20:39:44,111 - gateway - INFO - [REMOTE] Unified Remote Control Manager initialized
+2025-10-25 20:39:44,111 - gateway - INFO - [REMOTE] Supported devices: Keypad, RFID Gate, Fan
+2025-10-25 20:39:44,111 - gateway - INFO - [AUTOMATION] Automation engine integrated
+2025-10-25 20:39:44,111 - gateway - INFO - Setting up Local MQTT Broker connection...
+2025-10-25 20:39:44,325 - gateway - INFO - Local MQTT connection initiated
+2025-10-25 20:39:44,328 - gateway - INFO - Setting up VPS MQTT Broker connection...
+2025-10-25 20:39:44,857 - gateway - INFO - VPS MQTT connection initiated
+2025-10-25 20:39:44,861 - gateway - INFO - Gateway initialization complete
+2025-10-25 20:39:44,861 - gateway - INFO - ============================================================
+2025-10-25 20:39:44,861 - gateway - INFO - IoT Gateway Started Successfully
+2025-10-25 20:39:44,865 - gateway - INFO - Local MQTT: 192.168.1.205:1884
+2025-10-25 20:39:44,865 - gateway - INFO - VPS MQTT: 159.223.63.61:8883
+2025-10-25 20:39:44,866 - gateway - INFO - Features: Remote Control (Keypad, RFID, Fan), Automation Engine
+2025-10-25 20:39:44,866 - gateway - INFO - ============================================================
+2025-10-25 20:40:11,579 - gateway - ERROR - [ERROR] Gateway loop error: ClearCommError failed (PermissionError(13, 'Access is denied.', None, 5))
+Traceback (most recent call last):
+  File "P:\MMT\__IoT\First_IoT\Physical_Devices\Gateway\vps_main.py", line 1375, in run
+    if self.serial_conn and self.serial_conn.in_waiting > 0:
+  File "I:\Miniconda\envs\IoT\lib\site-packages\serial\serialwin32.py", line 259, in in_waiting
+    raise SerialException("ClearCommError failed ({!r})".format(ctypes.WinError()))
+serial.serialutil.SerialException: ClearCommError failed (PermissionError(13, 'Access is denied.', None, 5))
+2025-10-25 20:40:12,582 - gateway - ERROR - [ERROR] Gateway loop error: ClearCommError failed (PermissionError(13, 'Access is denied.', None, 5))
+Traceback (most recent call last):
+  File "P:\MMT\__IoT\First_IoT\Physical_Devices\Gateway\vps_main.py", line 1375, in run
+    if self.serial_conn and self.serial_conn.in_waiting > 0:
+  File "I:\Miniconda\envs\IoT\lib\site-packages\serial\serialwin32.py", line 259, in in_waiting
+    raise SerialException("ClearCommError failed ({!r})".format(ctypes.WinError()))
+serial.serialutil.SerialException: ClearCommError failed (PermissionError(13, 'Access is denied.', None, 5))
+2025-10-25 20:40:13,583 - gateway - ERROR - [ERROR] Gateway loop error: ClearCommError failed (PermissionError(13, 'Access is denied.', None, 5))
+Traceback (most recent call last):
+  File "P:\MMT\__IoT\First_IoT\Physical_Devices\Gateway\vps_main.py", line 1375, in run
+    if self.serial_conn and self.serial_conn.in_waiting > 0:
+  File "I:\Miniconda\envs\IoT\lib\site-packages\serial\serialwin32.py", line 259, in in_waiting
+    raise SerialException("ClearCommError failed ({!r})".format(ctypes.WinError()))
+serial.serialutil.SerialException: ClearCommError failed (PermissionError(13, 'Access is denied.', None, 5))
+2025-10-25 20:40:14,590 - gateway - ERROR - [ERROR] Gateway loop error: ClearCommError failed (PermissionError(13, 'Access is denied.', None, 5))
+Traceback (most recent call last):
+  File "P:\MMT\__IoT\First_IoT\Physical_Devices\Gateway\vps_main.py", line 1375, in run
+    if self.serial_conn and self.serial_conn.in_waiting > 0:
+  File "I:\Miniconda\envs\IoT\lib\site-packages\serial\serialwin32.py", line 259, in in_waiting
+    raise SerialException("ClearCommError failed ({!r})".format(ctypes.WinError()))
+serial.serialutil.SerialException: ClearCommError failed (PermissionError(13, 'Access is denied.', None, 5))
+2025-10-25 20:40:15,594 - gateway - ERROR - [ERROR] Gateway loop error: ClearCommError failed (PermissionError(13, 'Access is denied.', None, 5))
+Traceback (most recent call last):
+  File "P:\MMT\__IoT\First_IoT\Physical_Devices\Gateway\vps_main.py", line 1375, in run
+    if self.serial_conn and self.serial_conn.in_waiting > 0:
+  File "I:\Miniconda\envs\IoT\lib\site-packages\serial\serialwin32.py", line 259, in in_waiting
+    raise SerialException("ClearCommError failed ({!r})".format(ctypes.WinError()))
+serial.serialutil.SerialException: ClearCommError failed (PermissionError(13, 'Access is denied.', None, 5))
+2025-10-25 20:40:16,607 - gateway - ERROR - [ERROR] Gateway loop error: ClearCommError failed (PermissionError(13, 'Access is denied.', None, 5))
+Traceback (most recent call last):
+  File "P:\MMT\__IoT\First_IoT\Physical_Devices\Gateway\vps_main.py", line 1375, in run
+    if self.serial_conn and self.serial_conn.in_waiting > 0:
+  File "I:\Miniconda\envs\IoT\lib\site-packages\serial\serialwin32.py", line 259, in in_waiting
+    raise SerialException("ClearCommError failed ({!r})".format(ctypes.WinError()))
+serial.serialutil.SerialException: ClearCommError failed (PermissionError(13, 'Access is denied.', None, 5))
+2025-10-25 20:40:17,616 - gateway - ERROR - [ERROR] Gateway loop error: ClearCommError failed (PermissionError(13, 'Access is denied.', None, 5))
+Traceback (most recent call last):
+  File "P:\MMT\__IoT\First_IoT\Physical_Devices\Gateway\vps_main.py", line 1375, in run
+    if self.serial_conn and self.serial_conn.in_waiting > 0:
+  File "I:\Miniconda\envs\IoT\lib\site-packages\serial\serialwin32.py", line 259, in in_waiting
+    raise SerialException("ClearCommError failed ({!r})".format(ctypes.WinError()))
+serial.serialutil.SerialException: ClearCommError failed (PermissionError(13, 'Access is denied.', None, 5))
+2025-10-25 20:40:18,624 - gateway - ERROR - [ERROR] Gateway loop error: ClearCommError failed (PermissionError(13, 'Access is denied.', None, 5))
+Traceback (most recent call last):
+  File "P:\MMT\__IoT\First_IoT\Physical_Devices\Gateway\vps_main.py", line 1375, in run
+    if self.serial_conn and self.serial_conn.in_waiting > 0:
+  File "I:\Miniconda\envs\IoT\lib\site-packages\serial\serialwin32.py", line 259, in in_waiting
+    raise SerialException("ClearCommError failed ({!r})".format(ctypes.WinError()))
+serial.serialutil.SerialException: ClearCommError failed (PermissionError(13, 'Access is denied.', None, 5))
+2025-10-25 20:40:19,628 - gateway - ERROR - [ERROR] Gateway loop error: ClearCommError failed (PermissionError(13, 'Access is denied.', None, 5))
+Traceback (most recent call last):
+  File "P:\MMT\__IoT\First_IoT\Physical_Devices\Gateway\vps_main.py", line 1375, in run
+    if self.serial_conn and self.serial_conn.in_waiting > 0:
+  File "I:\Miniconda\envs\IoT\lib\site-packages\serial\serialwin32.py", line 259, in in_waiting
+    raise SerialException("ClearCommError failed ({!r})".format(ctypes.WinError()))
+serial.serialutil.SerialException: ClearCommError failed (PermissionError(13, 'Access is denied.', None, 5))
+2025-10-25 20:40:20,635 - gateway - ERROR - [ERROR] Gateway loop error: ClearCommError failed (PermissionError(13, 'Access is denied.', None, 5))
+Traceback (most recent call last):
+  File "P:\MMT\__IoT\First_IoT\Physical_Devices\Gateway\vps_main.py", line 1375, in run
+    if self.serial_conn and self.serial_conn.in_waiting > 0:
+  File "I:\Miniconda\envs\IoT\lib\site-packages\serial\serialwin32.py", line 259, in in_waiting
+    raise SerialException("ClearCommError failed ({!r})".format(ctypes.WinError()))
+serial.serialutil.SerialException: ClearCommError failed (PermissionError(13, 'Access is denied.', None, 5))
+2025-10-25 20:40:21,639 - gateway - ERROR - [ERROR] Gateway loop error: ClearCommError failed (PermissionError(13, 'Access is denied.', None, 5))
+Traceback (most recent call last):
+  File "P:\MMT\__IoT\First_IoT\Physical_Devices\Gateway\vps_main.py", line 1375, in run
+    if self.serial_conn and self.serial_conn.in_waiting > 0:
+  File "I:\Miniconda\envs\IoT\lib\site-packages\serial\serialwin32.py", line 259, in in_waiting
+    raise SerialException("ClearCommError failed ({!r})".format(ctypes.WinError()))
+serial.serialutil.SerialException: ClearCommError failed (PermissionError(13, 'Access is denied.', None, 5))
+2025-10-25 20:40:22,652 - gateway - ERROR - [ERROR] Gateway loop error: ClearCommError failed (PermissionError(13, 'Access is denied.', None, 5))
+Traceback (most recent call last):
+  File "P:\MMT\__IoT\First_IoT\Physical_Devices\Gateway\vps_main.py", line 1375, in run
+    if self.serial_conn and self.serial_conn.in_waiting > 0:
+  File "I:\Miniconda\envs\IoT\lib\site-packages\serial\serialwin32.py", line 259, in in_waiting
+    raise SerialException("ClearCommError failed ({!r})".format(ctypes.WinError()))
+serial.serialutil.SerialException: ClearCommError failed (PermissionError(13, 'Access is denied.', None, 5))
+2025-10-25 20:40:23,653 - gateway - ERROR - [ERROR] Gateway loop error: ClearCommError failed (PermissionError(13, 'Access is denied.', None, 5))
+Traceback (most recent call last):
+  File "P:\MMT\__IoT\First_IoT\Physical_Devices\Gateway\vps_main.py", line 1375, in run
+    if self.serial_conn and self.serial_conn.in_waiting > 0:
+  File "I:\Miniconda\envs\IoT\lib\site-packages\serial\serialwin32.py", line 259, in in_waiting
+    raise SerialException("ClearCommError failed ({!r})".format(ctypes.WinError()))
+serial.serialutil.SerialException: ClearCommError failed (PermissionError(13, 'Access is denied.', None, 5))
+2025-10-25 20:40:24,656 - gateway - ERROR - [ERROR] Gateway loop error: ClearCommError failed (PermissionError(13, 'Access is denied.', None, 5))
+Traceback (most recent call last):
+  File "P:\MMT\__IoT\First_IoT\Physical_Devices\Gateway\vps_main.py", line 1375, in run
+    if self.serial_conn and self.serial_conn.in_waiting > 0:
+  File "I:\Miniconda\envs\IoT\lib\site-packages\serial\serialwin32.py", line 259, in in_waiting
+    raise SerialException("ClearCommError failed ({!r})".format(ctypes.WinError()))
+serial.serialutil.SerialException: ClearCommError failed (PermissionError(13, 'Access is denied.', None, 5))
+2025-10-25 20:40:25,668 - gateway - ERROR - [ERROR] Gateway loop error: ClearCommError failed (PermissionError(13, 'Access is denied.', None, 5))
+Traceback (most recent call last):
+  File "P:\MMT\__IoT\First_IoT\Physical_Devices\Gateway\vps_main.py", line 1375, in run
+    if self.serial_conn and self.serial_conn.in_waiting > 0:
+  File "I:\Miniconda\envs\IoT\lib\site-packages\serial\serialwin32.py", line 259, in in_waiting
+    raise SerialException("ClearCommError failed ({!r})".format(ctypes.WinError()))
+serial.serialutil.SerialException: ClearCommError failed (PermissionError(13, 'Access is denied.', None, 5))
+2025-10-25 20:40:26,673 - gateway - ERROR - [ERROR] Gateway loop error: ClearCommError failed (PermissionError(13, 'Access is denied.', None, 5))
+Traceback (most recent call last):
+  File "P:\MMT\__IoT\First_IoT\Physical_Devices\Gateway\vps_main.py", line 1375, in run
+    if self.serial_conn and self.serial_conn.in_waiting > 0:
+  File "I:\Miniconda\envs\IoT\lib\site-packages\serial\serialwin32.py", line 259, in in_waiting
+    raise SerialException("ClearCommError failed ({!r})".format(ctypes.WinError()))
+serial.serialutil.SerialException: ClearCommError failed (PermissionError(13, 'Access is denied.', None, 5))
+2025-10-25 20:40:27,676 - gateway - ERROR - [ERROR] Gateway loop error: ClearCommError failed (PermissionError(13, 'Access is denied.', None, 5))
+Traceback (most recent call last):
+  File "P:\MMT\__IoT\First_IoT\Physical_Devices\Gateway\vps_main.py", line 1375, in run
+    if self.serial_conn and self.serial_conn.in_waiting > 0:
+  File "I:\Miniconda\envs\IoT\lib\site-packages\serial\serialwin32.py", line 259, in in_waiting
+    raise SerialException("ClearCommError failed ({!r})".format(ctypes.WinError()))
+serial.serialutil.SerialException: ClearCommError failed (PermissionError(13, 'Access is denied.', None, 5))
+2025-10-25 20:40:28,683 - gateway - ERROR - [ERROR] Gateway loop error: ClearCommError failed (PermissionError(13, 'Access is denied.', None, 5))
+Traceback (most recent call last):
+  File "P:\MMT\__IoT\First_IoT\Physical_Devices\Gateway\vps_main.py", line 1375, in run
+    if self.serial_conn and self.serial_conn.in_waiting > 0:
+  File "I:\Miniconda\envs\IoT\lib\site-packages\serial\serialwin32.py", line 259, in in_waiting
+    raise SerialException("ClearCommError failed ({!r})".format(ctypes.WinError()))
+serial.serialutil.SerialException: ClearCommError failed (PermissionError(13, 'Access is denied.', None, 5))
+2025-10-25 20:40:29,691 - gateway - ERROR - [ERROR] Gateway loop error: ClearCommError failed (PermissionError(13, 'Access is denied.', None, 5))
+Traceback (most recent call last):
+  File "P:\MMT\__IoT\First_IoT\Physical_Devices\Gateway\vps_main.py", line 1375, in run
+    if self.serial_conn and self.serial_conn.in_waiting > 0:
+  File "I:\Miniconda\envs\IoT\lib\site-packages\serial\serialwin32.py", line 259, in in_waiting
+    raise SerialException("ClearCommError failed ({!r})".format(ctypes.WinError()))
+serial.serialutil.SerialException: ClearCommError failed (PermissionError(13, 'Access is denied.', None, 5))
+2025-10-25 20:40:30,706 - gateway - ERROR - [ERROR] Gateway loop error: ClearCommError failed (PermissionError(13, 'Access is denied.', None, 5))
+Traceback (most recent call last):
+  File "P:\MMT\__IoT\First_IoT\Physical_Devices\Gateway\vps_main.py", line 1375, in run
+    if self.serial_conn and self.serial_conn.in_waiting > 0:
+  File "I:\Miniconda\envs\IoT\lib\site-packages\serial\serialwin32.py", line 259, in in_waiting
+    raise SerialException("ClearCommError failed ({!r})".format(ctypes.WinError()))
+serial.serialutil.SerialException: ClearCommError failed (PermissionError(13, 'Access is denied.', None, 5))
+2025-10-25 20:40:31,715 - gateway - ERROR - [ERROR] Gateway loop error: ClearCommError failed (PermissionError(13, 'Access is denied.', None, 5))
+Traceback (most recent call last):
+  File "P:\MMT\__IoT\First_IoT\Physical_Devices\Gateway\vps_main.py", line 1375, in run
+    if self.serial_conn and self.serial_conn.in_waiting > 0:
+  File "I:\Miniconda\envs\IoT\lib\site-packages\serial\serialwin32.py", line 259, in in_waiting
+    raise SerialException("ClearCommError failed ({!r})".format(ctypes.WinError()))
+serial.serialutil.SerialException: ClearCommError failed (PermissionError(13, 'Access is denied.', None, 5))
+2025-10-25 20:40:32,718 - gateway - ERROR - [ERROR] Gateway loop error: ClearCommError failed (PermissionError(13, 'Access is denied.', None, 5))
+Traceback (most recent call last):
+  File "P:\MMT\__IoT\First_IoT\Physical_Devices\Gateway\vps_main.py", line 1375, in run
+    if self.serial_conn and self.serial_conn.in_waiting > 0:
+  File "I:\Miniconda\envs\IoT\lib\site-packages\serial\serialwin32.py", line 259, in in_waiting
+    raise SerialException("ClearCommError failed ({!r})".format(ctypes.WinError()))
+serial.serialutil.SerialException: ClearCommError failed (PermissionError(13, 'Access is denied.', None, 5))
+2025-10-25 20:40:33,724 - gateway - ERROR - [ERROR] Gateway loop error: ClearCommError failed (PermissionError(13, 'Access is denied.', None, 5))
+Traceback (most recent call last):
+  File "P:\MMT\__IoT\First_IoT\Physical_Devices\Gateway\vps_main.py", line 1375, in run
+    if self.serial_conn and self.serial_conn.in_waiting > 0:
+  File "I:\Miniconda\envs\IoT\lib\site-packages\serial\serialwin32.py", line 259, in in_waiting
+    raise SerialException("ClearCommError failed ({!r})".format(ctypes.WinError()))
+serial.serialutil.SerialException: ClearCommError failed (PermissionError(13, 'Access is denied.', None, 5))
+2025-10-25 20:40:34,727 - gateway - ERROR - [ERROR] Gateway loop error: ClearCommError failed (PermissionError(13, 'Access is denied.', None, 5))
+Traceback (most recent call last):
+  File "P:\MMT\__IoT\First_IoT\Physical_Devices\Gateway\vps_main.py", line 1375, in run
+    if self.serial_conn and self.serial_conn.in_waiting > 0:
+  File "I:\Miniconda\envs\IoT\lib\site-packages\serial\serialwin32.py", line 259, in in_waiting
+    raise SerialException("ClearCommError failed ({!r})".format(ctypes.WinError()))
+serial.serialutil.SerialException: ClearCommError failed (PermissionError(13, 'Access is denied.', None, 5))
+2025-10-25 20:40:35,732 - gateway - ERROR - [ERROR] Gateway loop error: ClearCommError failed (PermissionError(13, 'Access is denied.', None, 5))
+Traceback (most recent call last):
+  File "P:\MMT\__IoT\First_IoT\Physical_Devices\Gateway\vps_main.py", line 1375, in run
+    if self.serial_conn and self.serial_conn.in_waiting > 0:
+  File "I:\Miniconda\envs\IoT\lib\site-packages\serial\serialwin32.py", line 259, in in_waiting
+    raise SerialException("ClearCommError failed ({!r})".format(ctypes.WinError()))
+serial.serialutil.SerialException: ClearCommError failed (PermissionError(13, 'Access is denied.', None, 5))
+2025-10-25 20:40:36,735 - gateway - ERROR - [ERROR] Gateway loop error: ClearCommError failed (PermissionError(13, 'Access is denied.', None, 5))
+Traceback (most recent call last):
+  File "P:\MMT\__IoT\First_IoT\Physical_Devices\Gateway\vps_main.py", line 1375, in run
+    if self.serial_conn and self.serial_conn.in_waiting > 0:
+  File "I:\Miniconda\envs\IoT\lib\site-packages\serial\serialwin32.py", line 259, in in_waiting
+    raise SerialException("ClearCommError failed ({!r})".format(ctypes.WinError()))
+serial.serialutil.SerialException: ClearCommError failed (PermissionError(13, 'Access is denied.', None, 5))
+2025-10-25 20:40:37,740 - gateway - ERROR - [ERROR] Gateway loop error: ClearCommError failed (PermissionError(13, 'Access is denied.', None, 5))
+Traceback (most recent call last):
+  File "P:\MMT\__IoT\First_IoT\Physical_Devices\Gateway\vps_main.py", line 1375, in run
+    if self.serial_conn and self.serial_conn.in_waiting > 0:
+  File "I:\Miniconda\envs\IoT\lib\site-packages\serial\serialwin32.py", line 259, in in_waiting
+    raise SerialException("ClearCommError failed ({!r})".format(ctypes.WinError()))
+serial.serialutil.SerialException: ClearCommError failed (PermissionError(13, 'Access is denied.', None, 5))
+2025-10-25 20:40:38,750 - gateway - ERROR - [ERROR] Gateway loop error: ClearCommError failed (PermissionError(13, 'Access is denied.', None, 5))
+Traceback (most recent call last):
+  File "P:\MMT\__IoT\First_IoT\Physical_Devices\Gateway\vps_main.py", line 1375, in run
+    if self.serial_conn and self.serial_conn.in_waiting > 0:
+  File "I:\Miniconda\envs\IoT\lib\site-packages\serial\serialwin32.py", line 259, in in_waiting
+    raise SerialException("ClearCommError failed ({!r})".format(ctypes.WinError()))
+serial.serialutil.SerialException: ClearCommError failed (PermissionError(13, 'Access is denied.', None, 5))
+2025-10-25 20:40:39,756 - gateway - ERROR - [ERROR] Gateway loop error: ClearCommError failed (PermissionError(13, 'Access is denied.', None, 5))
+Traceback (most recent call last):
+  File "P:\MMT\__IoT\First_IoT\Physical_Devices\Gateway\vps_main.py", line 1375, in run
+    if self.serial_conn and self.serial_conn.in_waiting > 0:
+  File "I:\Miniconda\envs\IoT\lib\site-packages\serial\serialwin32.py", line 259, in in_waiting
+    raise SerialException("ClearCommError failed ({!r})".format(ctypes.WinError()))
+serial.serialutil.SerialException: ClearCommError failed (PermissionError(13, 'Access is denied.', None, 5))
+2025-10-25 20:40:40,758 - gateway - ERROR - [ERROR] Gateway loop error: ClearCommError failed (PermissionError(13, 'Access is denied.', None, 5))
+Traceback (most recent call last):
+  File "P:\MMT\__IoT\First_IoT\Physical_Devices\Gateway\vps_main.py", line 1375, in run
+    if self.serial_conn and self.serial_conn.in_waiting > 0:
+  File "I:\Miniconda\envs\IoT\lib\site-packages\serial\serialwin32.py", line 259, in in_waiting
+    raise SerialException("ClearCommError failed ({!r})".format(ctypes.WinError()))
+serial.serialutil.SerialException: ClearCommError failed (PermissionError(13, 'Access is denied.', None, 5))
+2025-10-25 20:40:41,766 - gateway - ERROR - [ERROR] Gateway loop error: ClearCommError failed (PermissionError(13, 'Access is denied.', None, 5))
+Traceback (most recent call last):
+  File "P:\MMT\__IoT\First_IoT\Physical_Devices\Gateway\vps_main.py", line 1375, in run
+    if self.serial_conn and self.serial_conn.in_waiting > 0:
+  File "I:\Miniconda\envs\IoT\lib\site-packages\serial\serialwin32.py", line 259, in in_waiting
+    raise SerialException("ClearCommError failed ({!r})".format(ctypes.WinError()))
+serial.serialutil.SerialException: ClearCommError failed (PermissionError(13, 'Access is denied.', None, 5))
+2025-10-25 20:40:42,774 - gateway - ERROR - [ERROR] Gateway loop error: ClearCommError failed (PermissionError(13, 'Access is denied.', None, 5))
+Traceback (most recent call last):
+  File "P:\MMT\__IoT\First_IoT\Physical_Devices\Gateway\vps_main.py", line 1375, in run
+    if self.serial_conn and self.serial_conn.in_waiting > 0:
+  File "I:\Miniconda\envs\IoT\lib\site-packages\serial\serialwin32.py", line 259, in in_waiting
+    raise SerialException("ClearCommError failed ({!r})".format(ctypes.WinError()))
+serial.serialutil.SerialException: ClearCommError failed (PermissionError(13, 'Access is denied.', None, 5))
+2025-10-25 20:40:43,775 - gateway - ERROR - [ERROR] Gateway loop error: ClearCommError failed (PermissionError(13, 'Access is denied.', None, 5))
+Traceback (most recent call last):
+  File "P:\MMT\__IoT\First_IoT\Physical_Devices\Gateway\vps_main.py", line 1375, in run
+    if self.serial_conn and self.serial_conn.in_waiting > 0:
+  File "I:\Miniconda\envs\IoT\lib\site-packages\serial\serialwin32.py", line 259, in in_waiting
+    raise SerialException("ClearCommError failed ({!r})".format(ctypes.WinError()))
+serial.serialutil.SerialException: ClearCommError failed (PermissionError(13, 'Access is denied.', None, 5))
+2025-10-25 20:40:44,781 - gateway - ERROR - [ERROR] Gateway loop error: ClearCommError failed (PermissionError(13, 'Access is denied.', None, 5))
+Traceback (most recent call last):
+  File "P:\MMT\__IoT\First_IoT\Physical_Devices\Gateway\vps_main.py", line 1375, in run
+    if self.serial_conn and self.serial_conn.in_waiting > 0:
+  File "I:\Miniconda\envs\IoT\lib\site-packages\serial\serialwin32.py", line 259, in in_waiting
+    raise SerialException("ClearCommError failed ({!r})".format(ctypes.WinError()))
+serial.serialutil.SerialException: ClearCommError failed (PermissionError(13, 'Access is denied.', None, 5))
+2025-10-25 20:40:45,797 - gateway - ERROR - [ERROR] Gateway loop error: ClearCommError failed (PermissionError(13, 'Access is denied.', None, 5))
+Traceback (most recent call last):
+  File "P:\MMT\__IoT\First_IoT\Physical_Devices\Gateway\vps_main.py", line 1375, in run
+    if self.serial_conn and self.serial_conn.in_waiting > 0:
+  File "I:\Miniconda\envs\IoT\lib\site-packages\serial\serialwin32.py", line 259, in in_waiting
+    raise SerialException("ClearCommError failed ({!r})".format(ctypes.WinError()))
+serial.serialutil.SerialException: ClearCommError failed (PermissionError(13, 'Access is denied.', None, 5))
+2025-10-25 20:40:46,799 - gateway - ERROR - [ERROR] Gateway loop error: ClearCommError failed (PermissionError(13, 'Access is denied.', None, 5))
+Traceback (most recent call last):
+  File "P:\MMT\__IoT\First_IoT\Physical_Devices\Gateway\vps_main.py", line 1375, in run
+    if self.serial_conn and self.serial_conn.in_waiting > 0:
+  File "I:\Miniconda\envs\IoT\lib\site-packages\serial\serialwin32.py", line 259, in in_waiting
+    raise SerialException("ClearCommError failed ({!r})".format(ctypes.WinError()))
+serial.serialutil.SerialException: ClearCommError failed (PermissionError(13, 'Access is denied.', None, 5))
+2025-10-25 20:40:47,801 - gateway - ERROR - [ERROR] Gateway loop error: ClearCommError failed (PermissionError(13, 'Access is denied.', None, 5))
+Traceback (most recent call last):
+  File "P:\MMT\__IoT\First_IoT\Physical_Devices\Gateway\vps_main.py", line 1375, in run
+    if self.serial_conn and self.serial_conn.in_waiting > 0:
+  File "I:\Miniconda\envs\IoT\lib\site-packages\serial\serialwin32.py", line 259, in in_waiting
+    raise SerialException("ClearCommError failed ({!r})".format(ctypes.WinError()))
+serial.serialutil.SerialException: ClearCommError failed (PermissionError(13, 'Access is denied.', None, 5))
+2025-10-25 20:40:48,808 - gateway - ERROR - [ERROR] Gateway loop error: ClearCommError failed (PermissionError(13, 'Access is denied.', None, 5))
+Traceback (most recent call last):
+  File "P:\MMT\__IoT\First_IoT\Physical_Devices\Gateway\vps_main.py", line 1375, in run
+    if self.serial_conn and self.serial_conn.in_waiting > 0:
+  File "I:\Miniconda\envs\IoT\lib\site-packages\serial\serialwin32.py", line 259, in in_waiting
+    raise SerialException("ClearCommError failed ({!r})".format(ctypes.WinError()))
+serial.serialutil.SerialException: ClearCommError failed (PermissionError(13, 'Access is denied.', None, 5))
+2025-10-25 20:40:49,809 - gateway - ERROR - [ERROR] Gateway loop error: ClearCommError failed (PermissionError(13, 'Access is denied.', None, 5))
+Traceback (most recent call last):
+  File "P:\MMT\__IoT\First_IoT\Physical_Devices\Gateway\vps_main.py", line 1375, in run
+    if self.serial_conn and self.serial_conn.in_waiting > 0:
+  File "I:\Miniconda\envs\IoT\lib\site-packages\serial\serialwin32.py", line 259, in in_waiting
+    raise SerialException("ClearCommError failed ({!r})".format(ctypes.WinError()))
+serial.serialutil.SerialException: ClearCommError failed (PermissionError(13, 'Access is denied.', None, 5))
+2025-10-25 20:40:50,823 - gateway - ERROR - [ERROR] Gateway loop error: ClearCommError failed (PermissionError(13, 'Access is denied.', None, 5))
+Traceback (most recent call last):
+  File "P:\MMT\__IoT\First_IoT\Physical_Devices\Gateway\vps_main.py", line 1375, in run
+    if self.serial_conn and self.serial_conn.in_waiting > 0:
+  File "I:\Miniconda\envs\IoT\lib\site-packages\serial\serialwin32.py", line 259, in in_waiting
+    raise SerialException("ClearCommError failed ({!r})".format(ctypes.WinError()))
+serial.serialutil.SerialException: ClearCommError failed (PermissionError(13, 'Access is denied.', None, 5))
+2025-10-25 20:40:51,831 - gateway - ERROR - [ERROR] Gateway loop error: ClearCommError failed (PermissionError(13, 'Access is denied.', None, 5))
+Traceback (most recent call last):
+  File "P:\MMT\__IoT\First_IoT\Physical_Devices\Gateway\vps_main.py", line 1375, in run
+    if self.serial_conn and self.serial_conn.in_waiting > 0:
+  File "I:\Miniconda\envs\IoT\lib\site-packages\serial\serialwin32.py", line 259, in in_waiting
+    raise SerialException("ClearCommError failed ({!r})".format(ctypes.WinError()))
+serial.serialutil.SerialException: ClearCommError failed (PermissionError(13, 'Access is denied.', None, 5))
+2025-10-25 20:40:52,832 - gateway - ERROR - [ERROR] Gateway loop error: ClearCommError failed (PermissionError(13, 'Access is denied.', None, 5))
+Traceback (most recent call last):
+  File "P:\MMT\__IoT\First_IoT\Physical_Devices\Gateway\vps_main.py", line 1375, in run
+    if self.serial_conn and self.serial_conn.in_waiting > 0:
+  File "I:\Miniconda\envs\IoT\lib\site-packages\serial\serialwin32.py", line 259, in in_waiting
+    raise SerialException("ClearCommError failed ({!r})".format(ctypes.WinError()))
+serial.serialutil.SerialException: ClearCommError failed (PermissionError(13, 'Access is denied.', None, 5))
+2025-10-25 20:40:53,833 - gateway - ERROR - [ERROR] Gateway loop error: ClearCommError failed (PermissionError(13, 'Access is denied.', None, 5))
+Traceback (most recent call last):
+  File "P:\MMT\__IoT\First_IoT\Physical_Devices\Gateway\vps_main.py", line 1375, in run
+    if self.serial_conn and self.serial_conn.in_waiting > 0:
+  File "I:\Miniconda\envs\IoT\lib\site-packages\serial\serialwin32.py", line 259, in in_waiting
+    raise SerialException("ClearCommError failed ({!r})".format(ctypes.WinError()))
+serial.serialutil.SerialException: ClearCommError failed (PermissionError(13, 'Access is denied.', None, 5))
+2025-10-25 20:40:54,841 - gateway - ERROR - [ERROR] Gateway loop error: ClearCommError failed (PermissionError(13, 'Access is denied.', None, 5))
+Traceback (most recent call last):
+  File "P:\MMT\__IoT\First_IoT\Physical_Devices\Gateway\vps_main.py", line 1375, in run
+    if self.serial_conn and self.serial_conn.in_waiting > 0:
+  File "I:\Miniconda\envs\IoT\lib\site-packages\serial\serialwin32.py", line 259, in in_waiting
+    raise SerialException("ClearCommError failed ({!r})".format(ctypes.WinError()))
+serial.serialutil.SerialException: ClearCommError failed (PermissionError(13, 'Access is denied.', None, 5))
+2025-10-25 20:40:55,841 - gateway - ERROR - [ERROR] Gateway loop error: ClearCommError failed (PermissionError(13, 'Access is denied.', None, 5))
+Traceback (most recent call last):
+  File "P:\MMT\__IoT\First_IoT\Physical_Devices\Gateway\vps_main.py", line 1375, in run
+    if self.serial_conn and self.serial_conn.in_waiting > 0:
+  File "I:\Miniconda\envs\IoT\lib\site-packages\serial\serialwin32.py", line 259, in in_waiting
+    raise SerialException("ClearCommError failed ({!r})".format(ctypes.WinError()))
+serial.serialutil.SerialException: ClearCommError failed (PermissionError(13, 'Access is denied.', None, 5))
+2025-10-25 20:40:56,841 - gateway - ERROR - [ERROR] Gateway loop error: ClearCommError failed (PermissionError(13, 'Access is denied.', None, 5))
+Traceback (most recent call last):
+  File "P:\MMT\__IoT\First_IoT\Physical_Devices\Gateway\vps_main.py", line 1375, in run
+    if self.serial_conn and self.serial_conn.in_waiting > 0:
+  File "I:\Miniconda\envs\IoT\lib\site-packages\serial\serialwin32.py", line 259, in in_waiting
+    raise SerialException("ClearCommError failed ({!r})".format(ctypes.WinError()))
+serial.serialutil.SerialException: ClearCommError failed (PermissionError(13, 'Access is denied.', None, 5))
+2025-10-25 20:40:57,849 - gateway - ERROR - [ERROR] Gateway loop error: ClearCommError failed (PermissionError(13, 'Access is denied.', None, 5))
+Traceback (most recent call last):
+  File "P:\MMT\__IoT\First_IoT\Physical_Devices\Gateway\vps_main.py", line 1375, in run
+    if self.serial_conn and self.serial_conn.in_waiting > 0:
+  File "I:\Miniconda\envs\IoT\lib\site-packages\serial\serialwin32.py", line 259, in in_waiting
+    raise SerialException("ClearCommError failed ({!r})".format(ctypes.WinError()))
+serial.serialutil.SerialException: ClearCommError failed (PermissionError(13, 'Access is denied.', None, 5))
+2025-10-25 20:40:58,864 - gateway - ERROR - [ERROR] Gateway loop error: ClearCommError failed (PermissionError(13, 'Access is denied.', None, 5))
+Traceback (most recent call last):
+  File "P:\MMT\__IoT\First_IoT\Physical_Devices\Gateway\vps_main.py", line 1375, in run
+    if self.serial_conn and self.serial_conn.in_waiting > 0:
+  File "I:\Miniconda\envs\IoT\lib\site-packages\serial\serialwin32.py", line 259, in in_waiting
+    raise SerialException("ClearCommError failed ({!r})".format(ctypes.WinError()))
+serial.serialutil.SerialException: ClearCommError failed (PermissionError(13, 'Access is denied.', None, 5))
+2025-10-25 20:40:59,864 - gateway - ERROR - [ERROR] Gateway loop error: ClearCommError failed (PermissionError(13, 'Access is denied.', None, 5))
+Traceback (most recent call last):
+  File "P:\MMT\__IoT\First_IoT\Physical_Devices\Gateway\vps_main.py", line 1375, in run
+    if self.serial_conn and self.serial_conn.in_waiting > 0:
+  File "I:\Miniconda\envs\IoT\lib\site-packages\serial\serialwin32.py", line 259, in in_waiting
+    raise SerialException("ClearCommError failed ({!r})".format(ctypes.WinError()))
+serial.serialutil.SerialException: ClearCommError failed (PermissionError(13, 'Access is denied.', None, 5))
+2025-10-25 20:41:00,777 - gateway - INFO - [SHUTDOWN] Cleaning up connections...
+2025-10-25 20:41:02,524 - gateway - INFO - [SHUTDOWN] Gateway stopped cleanly
+2025-10-25 20:41:32,766 - gateway - INFO - Checking prerequisites...
+2025-10-25 20:41:32,766 - gateway - INFO -  Prerequisites check passed
+2025-10-25 20:41:32,766 - gateway - INFO - ============================================================
+2025-10-25 20:41:32,766 - gateway - INFO - Initializing IoT Gateway
+2025-10-25 20:41:32,766 - gateway - INFO - ============================================================
+2025-10-25 20:41:32,766 - gateway - INFO - [REMOTE] Unified Remote Control Manager initialized
+2025-10-25 20:41:32,766 - gateway - INFO - [REMOTE] Supported devices: Keypad, RFID Gate, Fan
+2025-10-25 20:41:32,766 - gateway - INFO - [AUTOMATION] Automation engine integrated
+2025-10-25 20:41:32,766 - gateway - INFO - Setting up Local MQTT Broker connection...
+2025-10-25 20:41:32,977 - gateway - INFO - Local MQTT connection initiated
+2025-10-25 20:41:32,977 - gateway - INFO -  Connected to Local MQTT Broker
+2025-10-25 20:41:32,977 - gateway - INFO - Setting up VPS MQTT Broker connection...
+2025-10-25 20:41:32,977 - gateway - INFO -  Subscribed to local device topics
+2025-10-25 20:41:32,982 - gateway - INFO -  VPS mTLS configured
+2025-10-25 20:41:33,247 - gateway - INFO - VPS MQTT connection initiated
+2025-10-25 20:41:33,254 - gateway - ERROR -  LoRa connection failed: could not open port 'COM5': FileNotFoundError(2, 'The system cannot find the file specified.', None, 2)
+2025-10-25 20:41:33,254 - gateway - INFO - Gateway initialization complete
+2025-10-25 20:41:33,254 - gateway - INFO - ============================================================
+2025-10-25 20:41:33,255 - gateway - INFO - IoT Gateway Started Successfully
+2025-10-25 20:41:33,255 - gateway - INFO - Local MQTT: 192.168.1.205:1884
+2025-10-25 20:41:33,255 - gateway - INFO - VPS MQTT: 159.223.63.61:8883
+2025-10-25 20:41:33,255 - gateway - INFO - Features: Remote Control (Keypad, RFID, Fan), Automation Engine
+2025-10-25 20:41:33,255 - gateway - INFO - ============================================================
+2025-10-25 20:41:33,326 - gateway - INFO -  Connected to VPS MQTT Broker
+2025-10-25 20:41:33,327 - gateway - INFO -  Subscribed to VPS command topics
+2025-10-25 20:41:48,326 - gateway - INFO - 
+[SHUTDOWN] Received interrupt signal
+2025-10-25 20:41:48,327 - gateway - INFO - [SHUTDOWN] Cleaning up connections...
+2025-10-25 20:41:49,094 - gateway - WARNING -  Local MQTT disconnected (rc=0)
+2025-10-25 20:41:49,808 - gateway - WARNING -  VPS MQTT disconnected (rc=0)
+2025-10-25 20:41:49,808 - gateway - INFO - [SHUTDOWN] Gateway stopped cleanly
+2025-10-25 20:41:49,808 - gateway - INFO - [SHUTDOWN] Cleaning up connections...
+2025-10-25 20:41:49,808 - gateway - INFO - [SHUTDOWN] Gateway stopped cleanly
+2025-10-25 20:41:51,298 - gateway - INFO - Checking prerequisites...
+2025-10-25 20:41:51,298 - gateway - INFO -  Prerequisites check passed
+2025-10-25 20:41:51,298 - gateway - INFO - ============================================================
+2025-10-25 20:41:51,298 - gateway - INFO - Initializing IoT Gateway
+2025-10-25 20:41:51,298 - gateway - INFO - ============================================================
+2025-10-25 20:41:51,298 - gateway - INFO - [REMOTE] Unified Remote Control Manager initialized
+2025-10-25 20:41:51,298 - gateway - INFO - [REMOTE] Supported devices: Keypad, RFID Gate, Fan
+2025-10-25 20:41:51,298 - gateway - INFO - [AUTOMATION] Automation engine integrated
+2025-10-25 20:41:51,298 - gateway - INFO - Setting up Local MQTT Broker connection...
+2025-10-25 20:41:51,523 - gateway - INFO - Local MQTT connection initiated
+2025-10-25 20:41:51,523 - gateway - INFO -  Connected to Local MQTT Broker
+2025-10-25 20:41:51,523 - gateway - INFO - Setting up VPS MQTT Broker connection...
+2025-10-25 20:41:51,523 - gateway - INFO -  Subscribed to local device topics
+2025-10-25 20:41:51,523 - gateway - INFO -  VPS mTLS configured
+2025-10-25 20:41:51,929 - gateway - INFO - VPS MQTT connection initiated
+2025-10-25 20:41:51,945 - gateway - ERROR -  LoRa connection failed: could not open port 'COM5': FileNotFoundError(2, 'The system cannot find the file specified.', None, 2)
+2025-10-25 20:41:51,945 - gateway - INFO - Gateway initialization complete
+2025-10-25 20:41:51,945 - gateway - INFO - ============================================================
+2025-10-25 20:41:51,945 - gateway - INFO - IoT Gateway Started Successfully
+2025-10-25 20:41:51,945 - gateway - INFO - Local MQTT: 192.168.1.205:1884
+2025-10-25 20:41:51,945 - gateway - INFO - VPS MQTT: 159.223.63.61:8883
+2025-10-25 20:41:51,945 - gateway - INFO - Features: Remote Control (Keypad, RFID, Fan), Automation Engine
+2025-10-25 20:41:51,945 - gateway - INFO - ============================================================
+2025-10-25 20:41:52,049 - gateway - INFO -  Connected to VPS MQTT Broker
+2025-10-25 20:41:52,049 - gateway - INFO -  Subscribed to VPS command topics
+2025-10-25 20:43:05,546 - gateway - INFO - 
+[SHUTDOWN] Received interrupt signal
+2025-10-25 20:43:05,553 - gateway - INFO - [SHUTDOWN] Cleaning up connections...
+2025-10-25 20:43:06,061 - gateway - WARNING -  Local MQTT disconnected (rc=0)
+2025-10-25 20:43:06,641 - gateway - WARNING -  VPS MQTT disconnected (rc=0)
+2025-10-25 20:43:06,643 - gateway - INFO - [SHUTDOWN] Gateway stopped cleanly
+2025-10-25 20:43:06,643 - gateway - INFO - [SHUTDOWN] Cleaning up connections...
+2025-10-25 20:43:06,643 - gateway - INFO - [SHUTDOWN] Gateway stopped cleanly
+2025-10-25 20:43:08,965 - gateway - INFO - Checking prerequisites...
+2025-10-25 20:43:08,965 - gateway - INFO -  Prerequisites check passed
+2025-10-25 20:43:08,965 - gateway - INFO - ============================================================
+2025-10-25 20:43:08,965 - gateway - INFO - Initializing IoT Gateway
+2025-10-25 20:43:08,965 - gateway - INFO - ============================================================
+2025-10-25 20:43:08,965 - gateway - INFO - [REMOTE] Unified Remote Control Manager initialized
+2025-10-25 20:43:08,970 - gateway - INFO - [REMOTE] Supported devices: Keypad, RFID Gate, Fan
+2025-10-25 20:43:08,970 - gateway - INFO - [AUTOMATION] Automation engine integrated
+2025-10-25 20:43:08,970 - gateway - INFO - Setting up Local MQTT Broker connection...
+2025-10-25 20:43:09,183 - gateway - INFO - Local MQTT connection initiated
+2025-10-25 20:43:09,183 - gateway - INFO -  Connected to Local MQTT Broker
+2025-10-25 20:43:09,183 - gateway - INFO - Setting up VPS MQTT Broker connection...
+2025-10-25 20:43:09,183 - gateway - INFO -  Subscribed to local device topics
+2025-10-25 20:43:09,187 - gateway - INFO -  VPS mTLS configured
+2025-10-25 20:43:09,519 - gateway - INFO - VPS MQTT connection initiated
+2025-10-25 20:43:09,519 - gateway - ERROR -  LoRa connection failed: could not open port 'COM5': FileNotFoundError(2, 'The system cannot find the file specified.', None, 2)
+2025-10-25 20:43:09,519 - gateway - INFO - Gateway initialization complete
+2025-10-25 20:43:09,519 - gateway - INFO - ============================================================
+2025-10-25 20:43:09,521 - gateway - INFO - IoT Gateway Started Successfully
+2025-10-25 20:43:09,521 - gateway - INFO - Local MQTT: 192.168.1.205:1884
+2025-10-25 20:43:09,521 - gateway - INFO - VPS MQTT: 159.223.63.61:8883
+2025-10-25 20:43:09,521 - gateway - INFO - Features: Remote Control (Keypad, RFID, Fan), Automation Engine
+2025-10-25 20:43:09,521 - gateway - INFO - ============================================================
+2025-10-25 20:43:09,593 - gateway - INFO -  Connected to VPS MQTT Broker
+2025-10-25 20:43:09,594 - gateway - INFO -  Subscribed to VPS command topics
+2025-10-25 20:44:01,383 - gateway - INFO - 
+[SHUTDOWN] Received interrupt signal
+2025-10-25 20:44:01,383 - gateway - INFO - [SHUTDOWN] Cleaning up connections...
+2025-10-25 20:44:01,467 - gateway - WARNING -  Local MQTT disconnected (rc=0)
+2025-10-25 20:44:01,502 - gateway - WARNING -  VPS MQTT disconnected (rc=0)
+2025-10-25 20:44:01,502 - gateway - INFO - [SHUTDOWN] Gateway stopped cleanly
+2025-10-25 20:44:01,508 - gateway - INFO - [SHUTDOWN] Cleaning up connections...
+2025-10-25 20:44:01,509 - gateway - INFO - [SHUTDOWN] Gateway stopped cleanly
+2025-10-25 20:44:04,715 - gateway - INFO - Checking prerequisites...
+2025-10-25 20:44:04,715 - gateway - INFO -  Prerequisites check passed
+2025-10-25 20:44:04,715 - gateway - INFO - ============================================================
+2025-10-25 20:44:04,715 - gateway - INFO - Initializing IoT Gateway
+2025-10-25 20:44:04,718 - gateway - INFO - ============================================================
+2025-10-25 20:44:04,718 - gateway - INFO - [REMOTE] Unified Remote Control Manager initialized
+2025-10-25 20:44:04,718 - gateway - INFO - [REMOTE] Supported devices: Keypad, RFID Gate, Fan
+2025-10-25 20:44:04,718 - gateway - INFO - [AUTOMATION] Automation engine integrated
+2025-10-25 20:44:04,718 - gateway - INFO - Setting up Local MQTT Broker connection...
+2025-10-25 20:44:04,933 - gateway - INFO - Local MQTT connection initiated
+2025-10-25 20:44:04,933 - gateway - INFO -  Connected to Local MQTT Broker
+2025-10-25 20:44:04,933 - gateway - INFO - Setting up VPS MQTT Broker connection...
+2025-10-25 20:44:04,933 - gateway - INFO -  Subscribed to local device topics
+2025-10-25 20:44:04,937 - gateway - INFO -  VPS mTLS configured
+2025-10-25 20:44:05,194 - gateway - INFO - VPS MQTT connection initiated
+2025-10-25 20:44:05,194 - gateway - ERROR -  LoRa connection failed: could not open port 'COM5': FileNotFoundError(2, 'The system cannot find the file specified.', None, 2)
+2025-10-25 20:44:05,194 - gateway - INFO - Gateway initialization complete
+2025-10-25 20:44:05,194 - gateway - INFO - ============================================================
+2025-10-25 20:44:05,194 - gateway - INFO - IoT Gateway Started Successfully
+2025-10-25 20:44:05,194 - gateway - INFO - Local MQTT: 192.168.1.205:1884
+2025-10-25 20:44:05,194 - gateway - INFO - VPS MQTT: 159.223.63.61:8883
+2025-10-25 20:44:05,194 - gateway - INFO - Features: Remote Control (Keypad, RFID, Fan), Automation Engine
+2025-10-25 20:44:05,194 - gateway - INFO - ============================================================
+2025-10-25 20:44:05,276 - gateway - INFO -  Connected to VPS MQTT Broker
+2025-10-25 20:44:05,276 - gateway - INFO -  Subscribed to VPS command topics
+2025-10-25 20:44:06,812 - gateway - INFO - 
+[SHUTDOWN] Received interrupt signal
+2025-10-25 20:44:06,812 - gateway - INFO - [SHUTDOWN] Cleaning up connections...
+2025-10-25 20:44:06,956 - gateway - WARNING -  Local MQTT disconnected (rc=0)
+2025-10-25 20:44:07,908 - gateway - WARNING -  VPS MQTT disconnected (rc=0)
+2025-10-25 20:44:07,910 - gateway - INFO - [SHUTDOWN] Gateway stopped cleanly
+2025-10-25 20:44:07,910 - gateway - INFO - [SHUTDOWN] Cleaning up connections...
+2025-10-25 20:44:07,910 - gateway - INFO - [SHUTDOWN] Gateway stopped cleanly
+2025-10-25 20:44:26,128 - gateway - INFO - Checking prerequisites...
+2025-10-25 20:44:26,128 - gateway - INFO -  Prerequisites check passed
+2025-10-25 20:44:26,128 - gateway - INFO - ============================================================
+2025-10-25 20:44:26,128 - gateway - INFO - Initializing IoT Gateway
+2025-10-25 20:44:26,128 - gateway - INFO - ============================================================
+2025-10-25 20:44:26,128 - gateway - INFO - [REMOTE] Unified Remote Control Manager initialized
+2025-10-25 20:44:26,128 - gateway - INFO - [REMOTE] Supported devices: Keypad, RFID Gate, Fan
+2025-10-25 20:44:26,128 - gateway - INFO - [AUTOMATION] Automation engine integrated
+2025-10-25 20:44:26,128 - gateway - INFO - Setting up Local MQTT Broker connection...
+2025-10-25 20:44:26,360 - gateway - INFO - Local MQTT connection initiated
+2025-10-25 20:44:26,360 - gateway - INFO -  Connected to Local MQTT Broker
+2025-10-25 20:44:26,360 - gateway - INFO - Setting up VPS MQTT Broker connection...
+2025-10-25 20:44:26,362 - gateway - INFO -  Subscribed to local device topics
+2025-10-25 20:44:26,362 - gateway - INFO -  VPS mTLS configured
+2025-10-25 20:44:27,717 - gateway - INFO - VPS MQTT connection initiated
+2025-10-25 20:44:27,718 - gateway - ERROR -  LoRa connection failed: could not open port 'COM5': FileNotFoundError(2, 'The system cannot find the file specified.', None, 2)
+2025-10-25 20:44:27,718 - gateway - INFO - Gateway initialization complete
+2025-10-25 20:44:27,718 - gateway - INFO - ============================================================
+2025-10-25 20:44:27,718 - gateway - INFO - IoT Gateway Started Successfully
+2025-10-25 20:44:27,718 - gateway - INFO - Local MQTT: 192.168.1.205:1884
+2025-10-25 20:44:27,720 - gateway - INFO - VPS MQTT: 159.223.63.61:8883
+2025-10-25 20:44:27,720 - gateway - INFO - Features: Remote Control (Keypad, RFID, Fan), Automation Engine
+2025-10-25 20:44:27,720 - gateway - INFO - ============================================================
+2025-10-25 20:44:27,775 - gateway - INFO -  Connected to VPS MQTT Broker
+2025-10-25 20:44:27,791 - gateway - INFO -  Subscribed to VPS command topics
+2025-10-25 20:49:27,827 - gateway - INFO - [STATS] RX: 0, TX: 0, Buffered: 0, Remote Cmds: 0, Auto Triggers: 0, Temp: None°C, Fan: None, Local: OK, VPS: OK
+2025-10-25 20:52:59,502 - gateway - WARNING -  VPS MQTT disconnected (rc=7)
+2025-10-25 20:53:32,764 - gateway - INFO -  Connected to VPS MQTT Broker
+2025-10-25 20:53:32,764 - gateway - INFO -  Subscribed to VPS command topics
+2025-10-25 20:54:27,844 - gateway - INFO - [STATS] RX: 0, TX: 0, Buffered: 0, Remote Cmds: 0, Auto Triggers: 0, Temp: None°C, Fan: None, Local: OK, VPS: OK
+2025-10-25 20:59:27,940 - gateway - INFO - [STATS] RX: 0, TX: 0, Buffered: 0, Remote Cmds: 0, Auto Triggers: 0, Temp: None°C, Fan: None, Local: OK, VPS: OK
+2025-10-25 21:00:16,217 - gateway - WARNING -  VPS MQTT disconnected (rc=7)
+2025-10-25 21:00:22,299 - gateway - INFO -  Connected to VPS MQTT Broker
+2025-10-25 21:00:22,299 - gateway - INFO -  Subscribed to VPS command topics
+2025-10-25 21:02:50,505 - gateway - INFO - 
+[SHUTDOWN] Received interrupt signal
+2025-10-25 21:02:50,506 - gateway - INFO - [SHUTDOWN] Cleaning up connections...
+2025-10-25 21:02:51,062 - gateway - WARNING -  Local MQTT disconnected (rc=0)
+2025-10-25 21:02:52,011 - gateway - WARNING -  VPS MQTT disconnected (rc=0)
+2025-10-25 21:02:52,012 - gateway - INFO - [SHUTDOWN] Gateway stopped cleanly
+2025-10-25 21:02:52,012 - gateway - INFO - [SHUTDOWN] Cleaning up connections...
+2025-10-25 21:02:52,012 - gateway - INFO - [SHUTDOWN] Gateway stopped cleanly
+2025-10-25 21:02:55,374 - gateway - INFO - Checking prerequisites...
+2025-10-25 21:02:55,374 - gateway - INFO -  Prerequisites check passed
+2025-10-25 21:02:55,375 - gateway - INFO - ============================================================
+2025-10-25 21:02:55,375 - gateway - INFO - Initializing IoT Gateway
+2025-10-25 21:02:55,376 - gateway - INFO - ============================================================
+2025-10-25 21:02:55,391 - gateway - INFO - [REMOTE] Unified Remote Control Manager initialized
+2025-10-25 21:02:55,391 - gateway - INFO - [REMOTE] Supported devices: Keypad, RFID Gate, Fan
+2025-10-25 21:02:55,392 - gateway - INFO - [AUTOMATION] Automation engine integrated
+2025-10-25 21:02:55,392 - gateway - INFO - Setting up Local MQTT Broker connection...
+2025-10-25 21:02:55,650 - gateway - INFO - Local MQTT connection initiated
+2025-10-25 21:02:55,650 - gateway - INFO -  Connected to Local MQTT Broker
+2025-10-25 21:02:55,650 - gateway - INFO - Setting up VPS MQTT Broker connection...
+2025-10-25 21:02:55,651 - gateway - INFO -  Subscribed to local device topics
+2025-10-25 21:02:55,669 - gateway - INFO -  VPS mTLS configured
+2025-10-25 21:02:56,112 - gateway - INFO - VPS MQTT connection initiated
+2025-10-25 21:02:56,113 - gateway - ERROR -  LoRa connection failed: could not open port 'COM5': FileNotFoundError(2, 'The system cannot find the file specified.', None, 2)
+2025-10-25 21:02:56,114 - gateway - INFO - Gateway initialization complete
+2025-10-25 21:02:56,114 - gateway - INFO - ============================================================
+2025-10-25 21:02:56,114 - gateway - INFO - IoT Gateway Started Successfully
+2025-10-25 21:02:56,115 - gateway - INFO - Local MQTT: 192.168.1.205:1884
+2025-10-25 21:02:56,115 - gateway - INFO - VPS MQTT: 159.223.63.61:8883
+2025-10-25 21:02:56,115 - gateway - INFO - Features: Remote Control (Keypad, RFID, Fan), Automation Engine
+2025-10-25 21:02:56,115 - gateway - INFO - ============================================================
+2025-10-25 21:02:56,199 - gateway - INFO -  Connected to VPS MQTT Broker
+2025-10-25 21:02:56,200 - gateway - INFO -  Subscribed to VPS command topics
+2025-10-25 21:07:56,173 - gateway - INFO - [STATS] RX: 0, TX: 0, Buffered: 0, Remote Cmds: 0, Auto Triggers: 0, Temp: None°C, Fan: None, Local: OK, VPS: OK
+2025-10-25 21:09:16,725 - gateway - WARNING -  VPS MQTT disconnected (rc=7)
+2025-10-25 21:09:45,375 - gateway - INFO - 
+[SHUTDOWN] Received interrupt signal
+2025-10-25 21:09:45,376 - gateway - INFO - [SHUTDOWN] Cleaning up connections...
+2025-10-25 21:09:45,854 - gateway - WARNING -  Local MQTT disconnected (rc=0)
+2025-10-25 21:09:46,763 - gateway - INFO - [SHUTDOWN] Gateway stopped cleanly
+2025-10-25 21:09:46,763 - gateway - INFO - [SHUTDOWN] Cleaning up connections...
+2025-10-25 21:09:46,764 - gateway - INFO - [SHUTDOWN] Gateway stopped cleanly
+2025-10-25 21:09:51,083 - gateway - INFO - Checking prerequisites...
+2025-10-25 21:09:51,083 - gateway - INFO -  Prerequisites check passed
+2025-10-25 21:09:51,084 - gateway - INFO - ============================================================
+2025-10-25 21:09:51,084 - gateway - INFO - Initializing IoT Gateway
+2025-10-25 21:09:51,084 - gateway - INFO - ============================================================
+2025-10-25 21:09:51,085 - gateway - INFO - [REMOTE] Unified Remote Control Manager initialized
+2025-10-25 21:09:51,085 - gateway - INFO - [REMOTE] Supported devices: Keypad, RFID Gate, Fan
+2025-10-25 21:09:51,086 - gateway - INFO - [AUTOMATION] Automation engine integrated
+2025-10-25 21:09:51,086 - gateway - INFO - Setting up Local MQTT Broker connection...
+2025-10-25 21:09:51,324 - gateway - INFO - Local MQTT connection initiated
+2025-10-25 21:09:51,325 - gateway - INFO -  Connected to Local MQTT Broker
+2025-10-25 21:09:51,325 - gateway - INFO - Setting up VPS MQTT Broker connection...
+2025-10-25 21:09:51,326 - gateway - INFO -  Subscribed to local device topics
+2025-10-25 21:09:51,328 - gateway - INFO -  VPS mTLS configured
+2025-10-25 21:09:51,920 - gateway - INFO - VPS MQTT connection initiated
+2025-10-25 21:09:51,921 - gateway - ERROR -  LoRa connection failed: could not open port 'COM5': FileNotFoundError(2, 'The system cannot find the file specified.', None, 2)
+2025-10-25 21:09:51,921 - gateway - INFO - Gateway initialization complete
+2025-10-25 21:09:51,921 - gateway - INFO - ============================================================
+2025-10-25 21:09:51,922 - gateway - INFO - IoT Gateway Started Successfully
+2025-10-25 21:09:51,922 - gateway - INFO - Local MQTT: 192.168.1.205:1884
+2025-10-25 21:09:51,922 - gateway - INFO - VPS MQTT: 159.223.63.61:8883
+2025-10-25 21:09:51,923 - gateway - INFO - Features: Remote Control (Keypad, RFID, Fan), Automation Engine
+2025-10-25 21:09:51,923 - gateway - INFO - ============================================================
+2025-10-25 21:09:52,005 - gateway - INFO -  Connected to VPS MQTT Broker
+2025-10-25 21:09:52,005 - gateway - INFO -  Subscribed to VPS command topics
+2025-10-25 21:12:19,159 - gateway - INFO - Checking prerequisites...
+2025-10-25 21:12:19,159 - gateway - INFO -  Prerequisites check passed
+2025-10-25 21:12:19,159 - gateway - INFO - ============================================================
+2025-10-25 21:12:19,159 - gateway - INFO - Initializing IoT Gateway
+2025-10-25 21:12:19,159 - gateway - INFO - ============================================================
+2025-10-25 21:12:19,179 - gateway - INFO - [REMOTE] Unified Remote Control Manager initialized
+2025-10-25 21:12:19,180 - gateway - INFO - [REMOTE] Supported devices: Keypad, RFID Gate, Fan
+2025-10-25 21:12:19,180 - gateway - INFO - [AUTOMATION] Automation engine integrated
+2025-10-25 21:12:19,180 - gateway - INFO - Setting up Local MQTT Broker connection...
+2025-10-25 21:12:24,486 - gateway - ERROR - Local MQTT connection failed: timed out
+2025-10-25 21:12:24,486 - gateway - INFO - Setting up VPS MQTT Broker connection...
+2025-10-25 21:12:24,507 - gateway - INFO -  VPS mTLS configured
+2025-10-25 21:12:24,843 - gateway - INFO - VPS MQTT connection initiated
+2025-10-25 21:12:24,843 - gateway - ERROR -  LoRa connection failed: could not open port 'COM5': FileNotFoundError(2, 'The system cannot find the file specified.', None, 2)
+2025-10-25 21:12:24,843 - gateway - INFO - Gateway initialization complete
+2025-10-25 21:12:24,843 - gateway - INFO - ============================================================
+2025-10-25 21:12:24,844 - gateway - INFO - IoT Gateway Started Successfully
+2025-10-25 21:12:24,844 - gateway - INFO - Local MQTT: 192.168.1.205:1884
+2025-10-25 21:12:24,844 - gateway - INFO - VPS MQTT: 159.223.63.61:8883
+2025-10-25 21:12:24,844 - gateway - INFO - Features: Remote Control (Keypad, RFID, Fan), Automation Engine
+2025-10-25 21:12:24,845 - gateway - INFO - ============================================================
+2025-10-25 21:12:24,925 - gateway - INFO -  Connected to VPS MQTT Broker
+2025-10-25 21:12:24,926 - gateway - INFO -  Subscribed to VPS command topics
+2025-10-25 21:12:29,429 - gateway - INFO - 
+[SHUTDOWN] Received interrupt signal
+2025-10-25 21:12:29,429 - gateway - INFO - [SHUTDOWN] Cleaning up connections...
+2025-10-25 21:12:29,575 - gateway - WARNING -  VPS MQTT disconnected (rc=0)
+2025-10-25 21:12:29,576 - gateway - INFO - [SHUTDOWN] Gateway stopped cleanly
+2025-10-25 21:12:29,576 - gateway - INFO - [SHUTDOWN] Cleaning up connections...
+2025-10-25 21:12:29,577 - gateway - INFO - [SHUTDOWN] Gateway stopped cleanly
+2025-10-25 21:13:43,222 - gateway - INFO - Checking prerequisites...
+2025-10-25 21:13:43,222 - gateway - INFO -  Prerequisites check passed
+2025-10-25 21:13:43,222 - gateway - INFO - ============================================================
+2025-10-25 21:13:43,222 - gateway - INFO - Initializing IoT Gateway
+2025-10-25 21:13:43,222 - gateway - INFO - ============================================================
+2025-10-25 21:13:43,224 - gateway - INFO - [REMOTE] Unified Remote Control Manager initialized
+2025-10-25 21:13:43,224 - gateway - INFO - [REMOTE] Supported devices: Keypad, RFID Gate, Fan
+2025-10-25 21:13:43,224 - gateway - INFO - [AUTOMATION] Automation engine integrated
+2025-10-25 21:13:43,224 - gateway - INFO - Setting up Local MQTT Broker connection...
+2025-10-25 21:13:43,443 - gateway - INFO - Local MQTT connection initiated
+2025-10-25 21:13:43,445 - gateway - INFO -  Connected to Local MQTT Broker
+2025-10-25 21:13:43,445 - gateway - INFO - Setting up VPS MQTT Broker connection...
+2025-10-25 21:13:43,445 - gateway - INFO -  Subscribed to local device topics
+2025-10-25 21:13:43,447 - gateway - INFO -  VPS mTLS configured
+2025-10-25 21:13:44,243 - gateway - INFO - VPS MQTT connection initiated
+2025-10-25 21:13:44,311 - gateway - INFO -  LoRa connected on COM7
+2025-10-25 21:13:44,311 - gateway - INFO - Gateway initialization complete
+2025-10-25 21:13:44,311 - gateway - INFO - ============================================================
+2025-10-25 21:13:44,313 - gateway - INFO - IoT Gateway Started Successfully
+2025-10-25 21:13:44,313 - gateway - INFO - Local MQTT: 192.168.1.205:1884
+2025-10-25 21:13:44,313 - gateway - INFO - VPS MQTT: 159.223.63.61:8883
+2025-10-25 21:13:44,313 - gateway - INFO - Features: Remote Control (Keypad, RFID, Fan), Automation Engine
+2025-10-25 21:13:44,313 - gateway - INFO - ============================================================
+2025-10-25 21:13:44,327 - gateway - INFO -  Connected to VPS MQTT Broker
+2025-10-25 21:13:44,327 - gateway - INFO -  Subscribed to VPS command topics
+2025-10-25 21:13:53,544 - gateway - INFO - [RFID] 8675f205: GRANTED
+2025-10-25 21:13:53,544 - gateway - ERROR - [ERROR] Gateway loop error: 'vps_logs'
+Traceback (most recent call last):
+  File "P:\MMT\__IoT\First_IoT\Physical_Devices\Gateway\vps_main.py", line 1399, in run
+    response = self.process_lora_message(message)
+  File "P:\MMT\__IoT\First_IoT\Physical_Devices\Gateway\vps_main.py", line 1258, in process_lora_message
+    return self.handle_rfid_scan(message)
+  File "P:\MMT\__IoT\First_IoT\Physical_Devices\Gateway\vps_main.py", line 1281, in handle_rfid_scan
+    self.forward_to_vps('rfid_gate_01', 'logs', {
+  File "P:\MMT\__IoT\First_IoT\Physical_Devices\Gateway\vps_main.py", line 1094, in forward_to_vps
+    topic = CONFIG['topics'][f'vps_{msg_type}']
+KeyError: 'vps_logs'
+2025-10-25 21:18:44,355 - gateway - INFO - [STATS] RX: 0, TX: 0, Buffered: 0, Remote Cmds: 0, Auto Triggers: 0, Temp: None°C, Fan: None, Local: OK, VPS: OK
+2025-10-25 21:21:13,167 - gateway - INFO - 
+[SHUTDOWN] Received interrupt signal
+2025-10-25 21:21:13,167 - gateway - INFO - [SHUTDOWN] Cleaning up connections...
+2025-10-25 21:21:13,661 - gateway - WARNING -  Local MQTT disconnected (rc=0)
+2025-10-25 21:21:14,279 - gateway - WARNING -  VPS MQTT disconnected (rc=0)
+2025-10-25 21:21:14,279 - gateway - INFO - [SHUTDOWN] Gateway stopped cleanly
+2025-10-25 21:21:14,279 - gateway - INFO - [SHUTDOWN] Cleaning up connections...
+2025-10-25 21:21:14,279 - gateway - INFO - [SHUTDOWN] Gateway stopped cleanly
+2025-10-25 21:21:15,873 - gateway - INFO - Checking prerequisites...
+2025-10-25 21:21:15,873 - gateway - INFO -  Prerequisites check passed
+2025-10-25 21:21:15,873 - gateway - INFO - ============================================================
+2025-10-25 21:21:15,873 - gateway - INFO - Initializing IoT Gateway
+2025-10-25 21:21:15,873 - gateway - INFO - ============================================================
+2025-10-25 21:21:15,873 - gateway - INFO - [REMOTE] Unified Remote Control Manager initialized
+2025-10-25 21:21:15,873 - gateway - INFO - [REMOTE] Supported devices: Keypad, RFID Gate, Fan
+2025-10-25 21:21:15,873 - gateway - INFO - [AUTOMATION] Automation engine integrated
+2025-10-25 21:21:15,873 - gateway - INFO - Setting up Local MQTT Broker connection...
+2025-10-25 21:21:16,101 - gateway - INFO - Local MQTT connection initiated
+2025-10-25 21:21:16,101 - gateway - INFO -  Connected to Local MQTT Broker
+2025-10-25 21:21:16,101 - gateway - INFO - Setting up VPS MQTT Broker connection...
+2025-10-25 21:21:16,101 - gateway - INFO -  Subscribed to local device topics
+2025-10-25 21:21:16,105 - gateway - INFO -  VPS mTLS configured
+2025-10-25 21:21:16,870 - gateway - INFO - VPS MQTT connection initiated
+2025-10-25 21:21:16,879 - gateway - INFO -  LoRa connected on COM7
+2025-10-25 21:21:16,879 - gateway - INFO - Gateway initialization complete
+2025-10-25 21:21:16,879 - gateway - INFO - ============================================================
+2025-10-25 21:21:16,879 - gateway - INFO - IoT Gateway Started Successfully
+2025-10-25 21:21:16,879 - gateway - INFO - Local MQTT: 192.168.1.205:1884
+2025-10-25 21:21:16,879 - gateway - INFO - VPS MQTT: 159.223.63.61:8883
+2025-10-25 21:21:16,879 - gateway - INFO - Features: Remote Control (Keypad, RFID, Fan), Automation Engine
+2025-10-25 21:21:16,879 - gateway - INFO - ============================================================
+2025-10-25 21:21:17,112 - gateway - INFO -  Connected to VPS MQTT Broker
+2025-10-25 21:21:17,112 - gateway - INFO -  Subscribed to VPS command topics
+2025-10-25 21:21:19,727 - gateway - ERROR - [ERROR] Gateway loop error: 'device_id'
+Traceback (most recent call last):
+  File "P:\MMT\__IoT\First_IoT\Physical_Devices\Gateway\vps_main.py", line 1447, in run
+    response = self.process_lora_message(message)
+  File "P:\MMT\__IoT\First_IoT\Physical_Devices\Gateway\vps_main.py", line 1279, in process_lora_message
+    return self.handle_rfid_scan(message)
+  File "P:\MMT\__IoT\First_IoT\Physical_Devices\Gateway\vps_main.py", line 1287, in handle_rfid_scan
+    device_id = message['device_id']
+KeyError: 'device_id'
+2025-10-25 21:26:03,316 - gateway - INFO - 
+[SHUTDOWN] Received interrupt signal
+2025-10-25 21:26:03,316 - gateway - INFO - [SHUTDOWN] Cleaning up connections...
+2025-10-25 21:26:04,006 - gateway - WARNING -  Local MQTT disconnected (rc=0)
+2025-10-25 21:26:04,440 - gateway - INFO - [SHUTDOWN] Cleaning up connections...
+2025-10-25 21:26:04,440 - gateway - WARNING -  VPS MQTT disconnected (rc=0)
+2025-10-25 21:26:04,442 - gateway - INFO - [SHUTDOWN] Gateway stopped cleanly
+2025-10-25 21:26:06,726 - gateway - INFO - Checking prerequisites...
+2025-10-25 21:26:06,726 - gateway - INFO -  Prerequisites check passed
+2025-10-25 21:26:06,727 - gateway - INFO - ============================================================
+2025-10-25 21:26:06,727 - gateway - INFO - Initializing IoT Gateway
+2025-10-25 21:26:06,728 - gateway - INFO - ============================================================
+2025-10-25 21:26:06,732 - gateway - INFO - [REMOTE] Unified Remote Control Manager initialized
+2025-10-25 21:26:06,732 - gateway - INFO - [REMOTE] Supported devices: Keypad, RFID Gate, Fan
+2025-10-25 21:26:06,732 - gateway - INFO - [AUTOMATION] Automation engine integrated
+2025-10-25 21:26:06,732 - gateway - INFO - Setting up Local MQTT Broker connection...
+2025-10-25 21:26:06,992 - gateway - INFO - Local MQTT connection initiated
+2025-10-25 21:26:06,992 - gateway - INFO -  Connected to Local MQTT Broker
+2025-10-25 21:26:06,992 - gateway - INFO - Setting up VPS MQTT Broker connection...
+2025-10-25 21:26:06,992 - gateway - INFO -  Subscribed to local device topics
+2025-10-25 21:26:07,000 - gateway - INFO -  VPS mTLS configured
+2025-10-25 21:26:07,426 - gateway - INFO - VPS MQTT connection initiated
+2025-10-25 21:26:07,445 - gateway - INFO -  LoRa connected on COM7
+2025-10-25 21:26:07,445 - gateway - INFO - Gateway initialization complete
+2025-10-25 21:26:07,445 - gateway - INFO - ============================================================
+2025-10-25 21:26:07,445 - gateway - INFO - IoT Gateway Started Successfully
+2025-10-25 21:26:07,447 - gateway - INFO - Local MQTT: 192.168.1.205:1884
+2025-10-25 21:26:07,448 - gateway - INFO - VPS MQTT: 159.223.63.61:8883
+2025-10-25 21:26:07,448 - gateway - INFO - Features: Remote Control (Keypad, RFID, Fan), Automation Engine
+2025-10-25 21:26:07,448 - gateway - INFO - ============================================================
+2025-10-25 21:26:07,549 - gateway - INFO -  Connected to VPS MQTT Broker
+2025-10-25 21:26:07,550 - gateway - INFO -  Subscribed to VPS command topics
+2025-10-25 21:26:09,421 - gateway - ERROR - Error parsing LoRa message: name 'DEVICE_TYPES' is not defined
+Traceback (most recent call last):
+  File "P:\MMT\__IoT\First_IoT\Physical_Devices\Gateway\vps_main.py", line 1243, in parse_lora_message
+    device_type_str = DEVICE_TYPES.get(device_type_n, 'unknown')
+NameError: name 'DEVICE_TYPES' is not defined
+2025-10-25 21:26:35,718 - gateway - INFO - 
+[SHUTDOWN] Received interrupt signal
+2025-10-25 21:26:35,729 - gateway - INFO - [SHUTDOWN] Cleaning up connections...
+2025-10-25 21:26:36,176 - gateway - INFO - [SHUTDOWN] Cleaning up connections...
+2025-10-25 21:26:36,176 - gateway - WARNING -  Local MQTT disconnected (rc=0)
+2025-10-25 21:26:37,498 - gateway - INFO - Checking prerequisites...
+2025-10-25 21:26:37,498 - gateway - INFO -  Prerequisites check passed
+2025-10-25 21:26:37,498 - gateway - INFO - ============================================================
+2025-10-25 21:26:37,498 - gateway - INFO - Initializing IoT Gateway
+2025-10-25 21:26:37,498 - gateway - INFO - ============================================================
+2025-10-25 21:26:37,498 - gateway - INFO - [REMOTE] Unified Remote Control Manager initialized
+2025-10-25 21:26:37,506 - gateway - INFO - [REMOTE] Supported devices: Keypad, RFID Gate, Fan
+2025-10-25 21:26:37,506 - gateway - INFO - [AUTOMATION] Automation engine integrated
+2025-10-25 21:26:37,506 - gateway - INFO - Setting up Local MQTT Broker connection...
+2025-10-25 21:26:37,715 - gateway - INFO - Local MQTT connection initiated
+2025-10-25 21:26:37,715 - gateway - INFO -  Connected to Local MQTT Broker
+2025-10-25 21:26:37,715 - gateway - INFO - Setting up VPS MQTT Broker connection...
+2025-10-25 21:26:37,715 - gateway - INFO -  Subscribed to local device topics
+2025-10-25 21:26:37,721 - gateway - INFO -  VPS mTLS configured
+2025-10-25 21:26:38,162 - gateway - INFO - VPS MQTT connection initiated
+2025-10-25 21:26:38,162 - gateway - INFO -  LoRa connected on COM7
+2025-10-25 21:26:38,178 - gateway - INFO - Gateway initialization complete
+2025-10-25 21:26:38,178 - gateway - INFO - ============================================================
+2025-10-25 21:26:38,179 - gateway - INFO - IoT Gateway Started Successfully
+2025-10-25 21:26:38,179 - gateway - INFO - Local MQTT: 192.168.1.205:1884
+2025-10-25 21:26:38,179 - gateway - INFO - VPS MQTT: 159.223.63.61:8883
+2025-10-25 21:26:38,180 - gateway - INFO - Features: Remote Control (Keypad, RFID, Fan), Automation Engine
+2025-10-25 21:26:38,180 - gateway - INFO - ============================================================
+2025-10-25 21:26:38,241 - gateway - INFO -  Connected to VPS MQTT Broker
+2025-10-25 21:26:38,241 - gateway - INFO -  Subscribed to VPS command topics
+2025-10-25 21:26:42,405 - gateway - ERROR - Error parsing LoRa message: name 'DEVICE_TYPE_TO_ID' is not defined
+Traceback (most recent call last):
+  File "P:\MMT\__IoT\First_IoT\Physical_Devices\Gateway\vps_main.py", line 1246, in parse_lora_message
+    device_id = DEVICE_TYPE_TO_ID.get(device_type_n, f'unknown_device_{device_type_n}')
+NameError: name 'DEVICE_TYPE_TO_ID' is not defined
+2025-10-25 21:31:38,274 - gateway - INFO - [STATS] RX: 0, TX: 0, Buffered: 0, Remote Cmds: 0, Auto Triggers: 0, Temp: None°C, Fan: None, Local: OK, VPS: OK
+2025-10-25 21:36:02,689 - gateway - INFO - 
+[SHUTDOWN] Received interrupt signal
+2025-10-25 21:36:02,689 - gateway - INFO - [SHUTDOWN] Cleaning up connections...
+2025-10-25 21:36:02,768 - gateway - WARNING -  Local MQTT disconnected (rc=0)
+2025-10-25 21:36:03,415 - gateway - WARNING -  VPS MQTT disconnected (rc=0)
+2025-10-25 21:36:03,417 - gateway - INFO - [SHUTDOWN] Gateway stopped cleanly
+2025-10-25 21:36:03,417 - gateway - INFO - [SHUTDOWN] Cleaning up connections...
+2025-10-25 21:36:03,417 - gateway - INFO - [SHUTDOWN] Gateway stopped cleanly
+2025-10-25 21:36:21,237 - gateway - INFO - Checking prerequisites...
+2025-10-25 21:36:21,261 - gateway - INFO - ============================================================
+2025-10-25 21:36:21,261 - gateway - INFO - Initializing IoT Gateway...
+2025-10-25 21:36:21,261 - gateway - INFO - ============================================================
+2025-10-25 21:36:21,271 - gateway - INFO - Setting up Local MQTT Broker connection...
+2025-10-25 21:36:21,284 - gateway - INFO - Local MQTT connection initiated
+2025-10-25 21:36:21,284 - gateway - INFO - Setting up VPS MQTT Broker connection...
+2025-10-25 21:36:22,695 - gateway - INFO - VPS MQTT connection initiated
+2025-10-25 21:36:24,769 - gateway - INFO - Gateway initialization complete
+2025-10-25 21:36:24,769 - gateway - INFO - ============================================================
+2025-10-25 21:36:24,770 - gateway - INFO - IoT Gateway Started Successfully
+2025-10-25 21:36:24,770 - gateway - INFO - Local MQTT: 192.168.1.205:1884
+2025-10-25 21:36:24,770 - gateway - INFO - VPS MQTT: 159.223.63.61:8883
+2025-10-25 21:36:24,771 - gateway - INFO - Features: Remote Control (Keypad, RFID, Fan), Automation Engine
+2025-10-25 21:36:24,771 - gateway - INFO - ============================================================
+2025-10-25 21:36:27,732 - gateway - INFO - [RFID] rfid_gate_01 scanned card: 8675f205
+2025-10-25 21:36:27,732 - gateway - INFO - [RFID] 8675f205: GRANTED
+2025-10-25 21:36:27,732 - gateway - INFO - [LoRa] Response sent to rfid_gate_01: GRANT
+2025-10-25 21:41:24,839 - gateway - INFO - [STATS] Received: 0, Sent: 1, Buffered: 0, Remote Cmds: 0, Auto Triggers: 0, Local: OK, VPS: OK
+2025-10-25 21:46:24,853 - gateway - INFO - [STATS] Received: 0, Sent: 1, Buffered: 0, Remote Cmds: 0, Auto Triggers: 0, Local: OK, VPS: OK
+2025-10-25 21:51:24,884 - gateway - INFO - [STATS] Received: 0, Sent: 1, Buffered: 0, Remote Cmds: 0, Auto Triggers: 0, Local: OK, VPS: OK
+2025-10-25 21:56:24,959 - gateway - INFO - [STATS] Received: 0, Sent: 1, Buffered: 0, Remote Cmds: 0, Auto Triggers: 0, Local: OK, VPS: OK
+2025-10-25 22:01:24,994 - gateway - INFO - [STATS] Received: 0, Sent: 1, Buffered: 0, Remote Cmds: 0, Auto Triggers: 0, Local: OK, VPS: OK
+2025-10-25 22:06:25,048 - gateway - INFO - [STATS] Received: 0, Sent: 1, Buffered: 0, Remote Cmds: 0, Auto Triggers: 0, Local: OK, VPS: OK
+2025-10-25 22:11:25,057 - gateway - INFO - [STATS] Received: 0, Sent: 1, Buffered: 0, Remote Cmds: 0, Auto Triggers: 0, Local: OK, VPS: OK
+2025-10-25 22:16:25,154 - gateway - INFO - [STATS] Received: 0, Sent: 1, Buffered: 0, Remote Cmds: 0, Auto Triggers: 0, Local: OK, VPS: OK
+2025-10-25 22:21:25,212 - gateway - INFO - [STATS] Received: 0, Sent: 1, Buffered: 0, Remote Cmds: 0, Auto Triggers: 0, Local: OK, VPS: OK
+2025-10-25 22:26:25,321 - gateway - INFO - [STATS] Received: 0, Sent: 1, Buffered: 0, Remote Cmds: 0, Auto Triggers: 0, Local: OK, VPS: OK
+2025-10-25 22:31:25,401 - gateway - INFO - [STATS] Received: 0, Sent: 1, Buffered: 0, Remote Cmds: 0, Auto Triggers: 0, Local: OK, VPS: OK
+2025-10-25 22:36:25,508 - gateway - INFO - [STATS] Received: 0, Sent: 1, Buffered: 0, Remote Cmds: 0, Auto Triggers: 0, Local: OK, VPS: OK
+2025-10-25 22:37:53,607 - gateway - INFO - 
+[SHUTDOWN] Received interrupt signal
+2025-10-25 22:37:53,607 - gateway - INFO - [SHUTDOWN] Cleaning up connections...
+2025-10-25 22:37:54,315 - gateway - INFO - [SHUTDOWN] Gateway stopped cleanly
+2025-10-25 22:37:54,315 - gateway - INFO - [SHUTDOWN] Cleaning up connections...
+2025-10-25 22:37:54,316 - gateway - INFO - [SHUTDOWN] Gateway stopped cleanly
+2025-10-26 00:25:37,415 - gateway - INFO - Checking prerequisites...
+2025-10-26 00:25:37,415 - gateway - INFO - ============================================================
+2025-10-26 00:25:37,415 - gateway - INFO - Initializing IoT Gateway...
+2025-10-26 00:25:37,415 - gateway - INFO - ============================================================
+2025-10-26 00:25:37,435 - gateway - INFO - Setting up Local MQTT Broker connection...
+2025-10-26 00:25:37,450 - gateway - INFO - Local MQTT connection initiated
+2025-10-26 00:25:37,450 - gateway - INFO - Setting up VPS MQTT Broker connection...
+2025-10-26 00:25:37,727 - gateway - INFO - VPS MQTT connection initiated
+2025-10-26 00:25:39,806 - gateway - INFO - Gateway initialization complete
+2025-10-26 00:25:39,807 - gateway - INFO - ============================================================
+2025-10-26 00:25:39,807 - gateway - INFO - IoT Gateway Started Successfully
+2025-10-26 00:25:39,808 - gateway - INFO - Local MQTT: 192.168.1.205:1884
+2025-10-26 00:25:39,808 - gateway - INFO - VPS MQTT: 159.223.63.61:8883
+2025-10-26 00:25:39,809 - gateway - INFO - Features: Remote Control (Keypad, RFID, Fan), Automation Engine
+2025-10-26 00:25:39,809 - gateway - INFO - ============================================================
+2025-10-26 00:25:59,276 - gateway - INFO - [LoRa] rfid_gate_01 status: ONLINE
+2025-10-26 00:25:59,276 - gateway - INFO - [DEBUG] forward_to_vps called: device_id=rfid_gate_01, msg_type=status
+2025-10-26 00:25:59,276 - gateway - INFO - [DEBUG] vps_connected=True
+2025-10-26 00:25:59,276 - gateway - INFO - [DEBUG] Looking for topic key: vps_status
+2025-10-26 00:25:59,276 - gateway - INFO - [DEBUG] Topic resolved to: iot/Gateway1/status
+2025-10-26 00:25:59,276 - gateway - INFO - [DEBUG] VPS connected, calling publish_to_vps
+2025-10-26 00:25:59,276 - gateway - INFO - [DEBUG] publish_to_vps called for topic: iot/Gateway1/status
+2025-10-26 00:25:59,276 - gateway - INFO - [DEBUG] Attempting to publish to iot/Gateway1/status
+2025-10-26 00:25:59,276 - gateway - INFO - [DEBUG] Payload: {"gateway_id": "Gateway1", "device_id": "rfid_gate_01", "timestamp": "2025-10-26T00:25:59.276360", "status": "ONLINE", "sequence": 0, "metadata": {"state": "ONLINE", "sequence": 0, "device_type": "rfi...
+2025-10-26 00:25:59,276 - gateway - INFO - [DEBUG] Publish result code: 0
+2025-10-26 00:26:06,355 - gateway - INFO - [LoRa] rfid_gate_01 status: ONLINE
+2025-10-26 00:26:06,355 - gateway - INFO - [DEBUG] forward_to_vps called: device_id=rfid_gate_01, msg_type=status
+2025-10-26 00:26:06,356 - gateway - INFO - [DEBUG] vps_connected=True
+2025-10-26 00:26:06,356 - gateway - INFO - [DEBUG] Looking for topic key: vps_status
+2025-10-26 00:26:06,357 - gateway - INFO - [DEBUG] Topic resolved to: iot/Gateway1/status
+2025-10-26 00:26:06,357 - gateway - INFO - [DEBUG] VPS connected, calling publish_to_vps
+2025-10-26 00:26:06,357 - gateway - INFO - [DEBUG] publish_to_vps called for topic: iot/Gateway1/status
+2025-10-26 00:26:06,358 - gateway - INFO - [DEBUG] Attempting to publish to iot/Gateway1/status
+2025-10-26 00:26:06,358 - gateway - INFO - [DEBUG] Payload: {"gateway_id": "Gateway1", "device_id": "rfid_gate_01", "timestamp": "2025-10-26T00:26:06.356258", "status": "ONLINE", "sequence": 0, "metadata": {"state": "ONLINE", "sequence": 0, "device_type": "rfi...
+2025-10-26 00:26:06,358 - gateway - INFO - [DEBUG] Publish result code: 0
+2025-10-26 00:26:10,587 - gateway - INFO - [RFID] rfid_gate_01 scanned card: 8675f205
+2025-10-26 00:26:10,587 - gateway - INFO - [DEBUG] vps_connected = True
+2025-10-26 00:26:10,587 - gateway - INFO - [DEBUG] Card authentication result: True
+2025-10-26 00:26:10,589 - gateway - INFO - [DEBUG] Access rules check: allowed=True, reason=None
+2025-10-26 00:26:10,589 - gateway - INFO - [DEBUG] About to call forward_to_vps with log_entry: {'method': 'rfid', 'device_id': 'rfid_gate_01', 'result': 'granted', 'rfid_uid': '8675f205', 'timestamp': '2025-10-26T00:26:10.589325'}
+2025-10-26 00:26:10,589 - gateway - INFO - [DEBUG] forward_to_vps called: device_id=rfid_gate_01, msg_type=access
+2025-10-26 00:26:10,589 - gateway - INFO - [DEBUG] vps_connected=True
+2025-10-26 00:26:10,589 - gateway - INFO - [DEBUG] Built access payload: {'gateway_id': 'Gateway1', 'device_id': 'rfid_gate_01', 'timestamp': '2025-10-26T00:26:10.589325', 'method': 'rfid', 'result': 'granted', 'password_id': None, 'rfid_uid': '8675f205', 'deny_reason': None, 'action': None, 'initiated_by': None, 'metadata': {'method': 'rfid', 'device_id': 'rfid_gate_01', 'result': 'granted', 'rfid_uid': '8675f205', 'timestamp': '2025-10-26T00:26:10.589325'}}
+2025-10-26 00:26:10,589 - gateway - INFO - [DEBUG] Looking for topic key: vps_access
+2025-10-26 00:26:10,589 - gateway - INFO - [DEBUG] Topic resolved to: iot/Gateway1/access
+2025-10-26 00:26:10,589 - gateway - INFO - [DEBUG] VPS connected, calling publish_to_vps
+2025-10-26 00:26:10,592 - gateway - INFO - [DEBUG] publish_to_vps called for topic: iot/Gateway1/access
+2025-10-26 00:26:10,592 - gateway - INFO - [DEBUG] Attempting to publish to iot/Gateway1/access
+2025-10-26 00:26:10,592 - gateway - INFO - [DEBUG] Payload: {"gateway_id": "Gateway1", "device_id": "rfid_gate_01", "timestamp": "2025-10-26T00:26:10.589325", "method": "rfid", "result": "granted", "password_id": null, "rfid_uid": "8675f205", "deny_reason": nu...
+2025-10-26 00:26:10,594 - gateway - INFO - [DEBUG] Publish result code: 0
+2025-10-26 00:26:10,594 - gateway - INFO - [DEBUG] forward_to_vps returned: True
+2025-10-26 00:26:10,594 - gateway - INFO - [RFID] 8675f205: GRANTED
+2025-10-26 00:26:10,600 - gateway - INFO - [LoRa] Response sent to rfid_gate_01: GRANT
+2025-10-26 00:26:12,414 - gateway - INFO - [LoRa] rfid_gate_01 status: open
+2025-10-26 00:26:12,414 - gateway - INFO - [DEBUG] forward_to_vps called: device_id=rfid_gate_01, msg_type=status
+2025-10-26 00:26:12,414 - gateway - INFO - [DEBUG] vps_connected=True
+2025-10-26 00:26:12,414 - gateway - INFO - [DEBUG] Looking for topic key: vps_status
+2025-10-26 00:26:12,414 - gateway - INFO - [DEBUG] Topic resolved to: iot/Gateway1/status
+2025-10-26 00:26:12,414 - gateway - INFO - [DEBUG] VPS connected, calling publish_to_vps
+2025-10-26 00:26:12,414 - gateway - INFO - [DEBUG] publish_to_vps called for topic: iot/Gateway1/status
+2025-10-26 00:26:12,414 - gateway - INFO - [DEBUG] Attempting to publish to iot/Gateway1/status
+2025-10-26 00:26:12,414 - gateway - INFO - [DEBUG] Payload: {"gateway_id": "Gateway1", "device_id": "rfid_gate_01", "timestamp": "2025-10-26T00:26:12.414928", "status": "open", "sequence": 2, "metadata": {"state": "open", "sequence": 2, "device_type": "rfid_ga...
+2025-10-26 00:26:12,414 - gateway - INFO - [DEBUG] Publish result code: 0
+2025-10-26 00:26:17,551 - gateway - INFO - [LoRa] rfid_gate_01 status: clos
+2025-10-26 00:26:17,551 - gateway - INFO - [DEBUG] forward_to_vps called: device_id=rfid_gate_01, msg_type=status
+2025-10-26 00:26:17,551 - gateway - INFO - [DEBUG] vps_connected=True
+2025-10-26 00:26:17,552 - gateway - INFO - [DEBUG] Looking for topic key: vps_status
+2025-10-26 00:26:17,552 - gateway - INFO - [DEBUG] Topic resolved to: iot/Gateway1/status
+2025-10-26 00:26:17,552 - gateway - INFO - [DEBUG] VPS connected, calling publish_to_vps
+2025-10-26 00:26:17,552 - gateway - INFO - [DEBUG] publish_to_vps called for topic: iot/Gateway1/status
+2025-10-26 00:26:17,552 - gateway - INFO - [DEBUG] Attempting to publish to iot/Gateway1/status
+2025-10-26 00:26:17,552 - gateway - INFO - [DEBUG] Payload: {"gateway_id": "Gateway1", "device_id": "rfid_gate_01", "timestamp": "2025-10-26T00:26:17.552622", "status": "clos", "sequence": 3, "metadata": {"state": "clos", "sequence": 3, "device_type": "rfid_ga...
+2025-10-26 00:26:17,552 - gateway - INFO - [DEBUG] Publish result code: 0
+2025-10-26 00:27:07,150 - gateway - INFO - 
+[SHUTDOWN] Received interrupt signal
+2025-10-26 00:27:07,150 - gateway - INFO - [SHUTDOWN] Cleaning up connections...
+2025-10-26 00:27:08,262 - gateway - INFO - [SHUTDOWN] Gateway stopped cleanly
+2025-10-26 00:27:08,263 - gateway - INFO - [SHUTDOWN] Cleaning up connections...
+2025-10-26 00:27:08,263 - gateway - INFO - [SHUTDOWN] Gateway stopped cleanly
+2025-10-26 00:27:09,791 - gateway - INFO - Checking prerequisites...
+2025-10-26 00:27:09,791 - gateway - INFO -  Prerequisites check passed
+2025-10-26 00:27:09,791 - gateway - INFO - ============================================================
+2025-10-26 00:27:09,791 - gateway - INFO - Initializing IoT Gateway...
+2025-10-26 00:27:09,791 - gateway - INFO - ============================================================
+2025-10-26 00:27:09,806 - gateway - INFO -  Database loaded
+2025-10-26 00:27:09,806 - gateway - INFO -  Security manager initialized
+2025-10-26 00:27:09,806 - gateway - INFO -  Remote control manager initialized
+2025-10-26 00:27:09,806 - gateway - INFO - Setting up Local MQTT Broker connection...
+2025-10-26 00:27:09,820 - gateway - INFO -  Local TLS configured
+2025-10-26 00:27:09,845 - gateway - INFO - Local MQTT connection initiated
+2025-10-26 00:27:09,845 - gateway - INFO -  Connected to Local MQTT Broker
+2025-10-26 00:27:09,845 - gateway - INFO - Setting up VPS MQTT Broker connection...
+2025-10-26 00:27:09,845 - gateway - INFO -  Subscribed to local device topics
+2025-10-26 00:27:09,851 - gateway - INFO -  VPS mTLS configured
+2025-10-26 00:27:10,151 - gateway - INFO - VPS MQTT connection initiated
+2025-10-26 00:27:10,166 - gateway - INFO -  LoRa connected on COM7
+2025-10-26 00:27:10,238 - gateway - INFO -  Connected to VPS MQTT Broker
+2025-10-26 00:27:10,239 - gateway - INFO -  Subscribed to VPS command topics
+2025-10-26 00:27:12,167 - gateway - INFO - Gateway initialization complete
+2025-10-26 00:27:12,167 - gateway - INFO - ============================================================
+2025-10-26 00:27:12,167 - gateway - INFO - IoT Gateway Started Successfully
+2025-10-26 00:27:12,167 - gateway - INFO - Local MQTT: 192.168.1.205:1884
+2025-10-26 00:27:12,167 - gateway - INFO - VPS MQTT: 159.223.63.61:8883
+2025-10-26 00:27:12,167 - gateway - INFO - Features: Remote Control (Keypad, RFID, Fan), Automation Engine
+2025-10-26 00:27:12,167 - gateway - INFO - ============================================================
+2025-10-26 00:27:19,855 - gateway - INFO - [RFID] rfid_gate_01 scanned card: 8675f205
+2025-10-26 00:27:19,856 - gateway - INFO - [DEBUG] vps_connected = True
+2025-10-26 00:27:19,856 - gateway - INFO - [DEBUG] Card authentication result: True
+2025-10-26 00:27:19,857 - gateway - INFO - [DEBUG] Access rules check: allowed=True, reason=None
+2025-10-26 00:27:19,857 - gateway - INFO - [DEBUG] About to call forward_to_vps with log_entry: {'method': 'rfid', 'device_id': 'rfid_gate_01', 'result': 'granted', 'rfid_uid': '8675f205', 'timestamp': '2025-10-26T00:27:19.857587'}
+2025-10-26 00:27:19,858 - gateway - INFO - [DEBUG] forward_to_vps called: device_id=rfid_gate_01, msg_type=access
+2025-10-26 00:27:19,858 - gateway - INFO - [DEBUG] vps_connected=True
+2025-10-26 00:27:19,858 - gateway - INFO - [DEBUG] Built access payload: {'gateway_id': 'Gateway1', 'device_id': 'rfid_gate_01', 'timestamp': '2025-10-26T00:27:19.858586', 'method': 'rfid', 'result': 'granted', 'password_id': None, 'rfid_uid': '8675f205', 'deny_reason': None, 'action': None, 'initiated_by': None, 'metadata': {'method': 'rfid', 'device_id': 'rfid_gate_01', 'result': 'granted', 'rfid_uid': '8675f205', 'timestamp': '2025-10-26T00:27:19.857587'}}
+2025-10-26 00:27:19,859 - gateway - INFO - [DEBUG] Looking for topic key: vps_access
+2025-10-26 00:27:19,859 - gateway - INFO - [DEBUG] Topic resolved to: iot/Gateway1/access
+2025-10-26 00:27:19,859 - gateway - INFO - [DEBUG] VPS connected, calling publish_to_vps
+2025-10-26 00:27:19,860 - gateway - INFO - [DEBUG] publish_to_vps called for topic: iot/Gateway1/access
+2025-10-26 00:27:19,860 - gateway - INFO - [DEBUG] Attempting to publish to iot/Gateway1/access
+2025-10-26 00:27:19,860 - gateway - INFO - [DEBUG] Payload: {"gateway_id": "Gateway1", "device_id": "rfid_gate_01", "timestamp": "2025-10-26T00:27:19.858586", "method": "rfid", "result": "granted", "password_id": null, "rfid_uid": "8675f205", "deny_reason": nu...
+2025-10-26 00:27:19,861 - gateway - INFO - [DEBUG] Publish result code: 0
+2025-10-26 00:27:19,861 - gateway - INFO - [VPS]  Published to iot/Gateway1/access
+2025-10-26 00:27:19,861 - gateway - INFO - [DEBUG] forward_to_vps returned: True
+2025-10-26 00:27:19,862 - gateway - INFO - [RFID] 8675f205: GRANTED
+2025-10-26 00:27:19,865 - gateway - INFO - [LoRa] Response sent to rfid_gate_01: GRANT
+2025-10-26 00:27:21,714 - gateway - INFO - [LoRa] rfid_gate_01 status: open
+2025-10-26 00:27:21,714 - gateway - INFO - [DEBUG] forward_to_vps called: device_id=rfid_gate_01, msg_type=status
+2025-10-26 00:27:21,715 - gateway - INFO - [DEBUG] vps_connected=True
+2025-10-26 00:27:21,715 - gateway - INFO - [DEBUG] Looking for topic key: vps_status
+2025-10-26 00:27:21,715 - gateway - INFO - [DEBUG] Topic resolved to: iot/Gateway1/status
+2025-10-26 00:27:21,716 - gateway - INFO - [DEBUG] VPS connected, calling publish_to_vps
+2025-10-26 00:27:21,716 - gateway - INFO - [DEBUG] publish_to_vps called for topic: iot/Gateway1/status
+2025-10-26 00:27:21,716 - gateway - INFO - [DEBUG] Attempting to publish to iot/Gateway1/status
+2025-10-26 00:27:21,717 - gateway - INFO - [DEBUG] Payload: {"gateway_id": "Gateway1", "device_id": "rfid_gate_01", "timestamp": "2025-10-26T00:27:21.715872", "status": "open", "sequence": 5, "metadata": {"state": "open", "sequence": 5, "device_type": "rfid_ga...
+2025-10-26 00:27:21,717 - gateway - INFO - [DEBUG] Publish result code: 0
+2025-10-26 00:27:21,717 - gateway - INFO - [VPS]  Published to iot/Gateway1/status
+2025-10-26 00:27:26,898 - gateway - INFO - [LoRa] rfid_gate_01 status: clos
+2025-10-26 00:27:26,899 - gateway - INFO - [DEBUG] forward_to_vps called: device_id=rfid_gate_01, msg_type=status
+2025-10-26 00:27:26,899 - gateway - INFO - [DEBUG] vps_connected=True
+2025-10-26 00:27:26,899 - gateway - INFO - [DEBUG] Looking for topic key: vps_status
+2025-10-26 00:27:26,900 - gateway - INFO - [DEBUG] Topic resolved to: iot/Gateway1/status
+2025-10-26 00:27:26,900 - gateway - INFO - [DEBUG] VPS connected, calling publish_to_vps
+2025-10-26 00:27:26,900 - gateway - INFO - [DEBUG] publish_to_vps called for topic: iot/Gateway1/status
+2025-10-26 00:27:26,900 - gateway - INFO - [DEBUG] Attempting to publish to iot/Gateway1/status
+2025-10-26 00:27:26,902 - gateway - INFO - [DEBUG] Payload: {"gateway_id": "Gateway1", "device_id": "rfid_gate_01", "timestamp": "2025-10-26T00:27:26.899334", "status": "clos", "sequence": 6, "metadata": {"state": "clos", "sequence": 6, "device_type": "rfid_ga...
+2025-10-26 00:27:26,902 - gateway - INFO - [DEBUG] Publish result code: 0
+2025-10-26 00:27:26,903 - gateway - INFO - [VPS]  Published to iot/Gateway1/status
+2025-10-26 00:32:12,243 - gateway - INFO - [STATS] Received: 0, Sent: 3, Buffered: 0, Remote Cmds: 0, Auto Triggers: 0, Local: OK, VPS: OK
+2025-10-26 00:33:10,130 - gateway - INFO - [RFID] rfid_gate_01 scanned card: 8675f205
+2025-10-26 00:33:10,131 - gateway - INFO - [DEBUG] vps_connected = True
+2025-10-26 00:33:10,131 - gateway - INFO - [DEBUG] Card authentication result: True
+2025-10-26 00:33:10,132 - gateway - INFO - [DEBUG] Access rules check: allowed=True, reason=None
+2025-10-26 00:33:10,132 - gateway - INFO - [DEBUG] About to call forward_to_vps with log_entry: {'method': 'rfid', 'device_id': 'rfid_gate_01', 'result': 'granted', 'rfid_uid': '8675f205', 'timestamp': '2025-10-26T00:33:10.132314'}
+2025-10-26 00:33:10,132 - gateway - INFO - [DEBUG] forward_to_vps called: device_id=rfid_gate_01, msg_type=access
+2025-10-26 00:33:10,133 - gateway - INFO - [DEBUG] vps_connected=True
+2025-10-26 00:33:10,133 - gateway - INFO - [DEBUG] Built access payload: {'gateway_id': 'Gateway1', 'device_id': 'rfid_gate_01', 'timestamp': '2025-10-26T00:33:10.133413', 'method': 'rfid', 'result': 'granted', 'password_id': None, 'rfid_uid': '8675f205', 'deny_reason': None, 'action': None, 'initiated_by': None, 'metadata': {'method': 'rfid', 'device_id': 'rfid_gate_01', 'result': 'granted', 'rfid_uid': '8675f205', 'timestamp': '2025-10-26T00:33:10.132314'}}
+2025-10-26 00:33:10,134 - gateway - INFO - [DEBUG] Looking for topic key: vps_access
+2025-10-26 00:33:10,134 - gateway - INFO - [DEBUG] Topic resolved to: iot/Gateway1/access
+2025-10-26 00:33:10,134 - gateway - INFO - [DEBUG] VPS connected, calling publish_to_vps
+2025-10-26 00:33:10,135 - gateway - INFO - [DEBUG] publish_to_vps called for topic: iot/Gateway1/access
+2025-10-26 00:33:10,135 - gateway - INFO - [DEBUG] Attempting to publish to iot/Gateway1/access
+2025-10-26 00:33:10,135 - gateway - INFO - [DEBUG] Payload: {"gateway_id": "Gateway1", "device_id": "rfid_gate_01", "timestamp": "2025-10-26T00:33:10.133413", "method": "rfid", "result": "granted", "password_id": null, "rfid_uid": "8675f205", "deny_reason": nu...
+2025-10-26 00:33:10,136 - gateway - INFO - [DEBUG] Publish result code: 0
+2025-10-26 00:33:10,136 - gateway - INFO - [VPS]  Published to iot/Gateway1/access
+2025-10-26 00:33:10,137 - gateway - INFO - [DEBUG] forward_to_vps returned: True
+2025-10-26 00:33:10,137 - gateway - INFO - [RFID] 8675f205: GRANTED
+2025-10-26 00:33:10,141 - gateway - INFO - [LoRa] Response sent to rfid_gate_01: GRANT
+2025-10-26 00:33:12,005 - gateway - INFO - [LoRa] rfid_gate_01 status: open
+2025-10-26 00:33:12,005 - gateway - INFO - [DEBUG] forward_to_vps called: device_id=rfid_gate_01, msg_type=status
+2025-10-26 00:33:12,007 - gateway - INFO - [DEBUG] vps_connected=True
+2025-10-26 00:33:12,007 - gateway - INFO - [DEBUG] Looking for topic key: vps_status
+2025-10-26 00:33:12,008 - gateway - INFO - [DEBUG] Topic resolved to: iot/Gateway1/status
+2025-10-26 00:33:12,008 - gateway - INFO - [DEBUG] VPS connected, calling publish_to_vps
+2025-10-26 00:33:12,008 - gateway - INFO - [DEBUG] publish_to_vps called for topic: iot/Gateway1/status
+2025-10-26 00:33:12,008 - gateway - INFO - [DEBUG] Attempting to publish to iot/Gateway1/status
+2025-10-26 00:33:12,009 - gateway - INFO - [DEBUG] Payload: {"gateway_id": "Gateway1", "device_id": "rfid_gate_01", "timestamp": "2025-10-26T00:33:12.007019", "status": "open", "sequence": 8, "metadata": {"state": "open", "sequence": 8, "device_type": "rfid_ga...
+2025-10-26 00:33:12,009 - gateway - INFO - [DEBUG] Publish result code: 0
+2025-10-26 00:33:12,010 - gateway - INFO - [VPS]  Published to iot/Gateway1/status
+2025-10-26 00:33:17,164 - gateway - INFO - [LoRa] rfid_gate_01 status: clos
+2025-10-26 00:33:17,165 - gateway - INFO - [DEBUG] forward_to_vps called: device_id=rfid_gate_01, msg_type=status
+2025-10-26 00:33:17,165 - gateway - INFO - [DEBUG] vps_connected=True
+2025-10-26 00:33:17,165 - gateway - INFO - [DEBUG] Looking for topic key: vps_status
+2025-10-26 00:33:17,166 - gateway - INFO - [DEBUG] Topic resolved to: iot/Gateway1/status
+2025-10-26 00:33:17,166 - gateway - INFO - [DEBUG] VPS connected, calling publish_to_vps
+2025-10-26 00:33:17,166 - gateway - INFO - [DEBUG] publish_to_vps called for topic: iot/Gateway1/status
+2025-10-26 00:33:17,167 - gateway - INFO - [DEBUG] Attempting to publish to iot/Gateway1/status
+2025-10-26 00:33:17,167 - gateway - INFO - [DEBUG] Payload: {"gateway_id": "Gateway1", "device_id": "rfid_gate_01", "timestamp": "2025-10-26T00:33:17.165128", "status": "clos", "sequence": 9, "metadata": {"state": "clos", "sequence": 9, "device_type": "rfid_ga...
+2025-10-26 00:33:17,168 - gateway - INFO - [DEBUG] Publish result code: 0
+2025-10-26 00:33:17,168 - gateway - INFO - [VPS]  Published to iot/Gateway1/status
+2025-10-26 00:37:12,272 - gateway - INFO - [STATS] Received: 0, Sent: 6, Buffered: 0, Remote Cmds: 0, Auto Triggers: 0, Local: OK, VPS: OK
+2025-10-26 00:37:12,715 - gateway - INFO - [RFID] rfid_gate_01 scanned card: 8675f205
+2025-10-26 00:37:12,716 - gateway - INFO - [DEBUG] vps_connected = True
+2025-10-26 00:37:12,716 - gateway - INFO - [DEBUG] Card authentication result: True
+2025-10-26 00:37:12,716 - gateway - INFO - [DEBUG] Access rules check: allowed=True, reason=None
+2025-10-26 00:37:12,716 - gateway - INFO - [DEBUG] About to call forward_to_vps with log_entry: {'method': 'rfid', 'device_id': 'rfid_gate_01', 'result': 'granted', 'rfid_uid': '8675f205', 'timestamp': '2025-10-26T00:37:12.716303'}
+2025-10-26 00:37:12,717 - gateway - INFO - [DEBUG] forward_to_vps called: device_id=rfid_gate_01, msg_type=access
+2025-10-26 00:37:12,717 - gateway - INFO - [DEBUG] vps_connected=True
+2025-10-26 00:37:12,717 - gateway - INFO - [DEBUG] Built access payload: {'gateway_id': 'Gateway1', 'device_id': 'rfid_gate_01', 'timestamp': '2025-10-26T00:37:12.717884', 'method': 'rfid', 'result': 'granted', 'password_id': None, 'rfid_uid': '8675f205', 'deny_reason': None, 'action': None, 'initiated_by': None, 'metadata': {'method': 'rfid', 'device_id': 'rfid_gate_01', 'result': 'granted', 'rfid_uid': '8675f205', 'timestamp': '2025-10-26T00:37:12.716303'}}
+2025-10-26 00:37:12,719 - gateway - INFO - [DEBUG] Looking for topic key: vps_access
+2025-10-26 00:37:12,719 - gateway - INFO - [DEBUG] Topic resolved to: iot/Gateway1/access
+2025-10-26 00:37:12,719 - gateway - INFO - [DEBUG] VPS connected, calling publish_to_vps
+2025-10-26 00:37:12,720 - gateway - INFO - [DEBUG] publish_to_vps called for topic: iot/Gateway1/access
+2025-10-26 00:37:12,720 - gateway - INFO - [DEBUG] Attempting to publish to iot/Gateway1/access
+2025-10-26 00:37:12,720 - gateway - INFO - [DEBUG] Payload: {"gateway_id": "Gateway1", "device_id": "rfid_gate_01", "timestamp": "2025-10-26T00:37:12.717884", "method": "rfid", "result": "granted", "password_id": null, "rfid_uid": "8675f205", "deny_reason": nu...
+2025-10-26 00:37:12,721 - gateway - INFO - [DEBUG] Publish result code: 0
+2025-10-26 00:37:12,721 - gateway - INFO - [VPS]  Published to iot/Gateway1/access
+2025-10-26 00:37:12,722 - gateway - INFO - [DEBUG] forward_to_vps returned: True
+2025-10-26 00:37:12,722 - gateway - INFO - [RFID] 8675f205: GRANTED
+2025-10-26 00:37:12,725 - gateway - INFO - [LoRa] Response sent to rfid_gate_01: GRANT
+2025-10-26 00:37:14,605 - gateway - INFO - [LoRa] rfid_gate_01 status: open
+2025-10-26 00:37:14,606 - gateway - INFO - [DEBUG] forward_to_vps called: device_id=rfid_gate_01, msg_type=status
+2025-10-26 00:37:14,607 - gateway - INFO - [DEBUG] vps_connected=True
+2025-10-26 00:37:14,607 - gateway - INFO - [DEBUG] Looking for topic key: vps_status
+2025-10-26 00:37:14,607 - gateway - INFO - [DEBUG] Topic resolved to: iot/Gateway1/status
+2025-10-26 00:37:14,607 - gateway - INFO - [DEBUG] VPS connected, calling publish_to_vps
+2025-10-26 00:37:14,609 - gateway - INFO - [DEBUG] publish_to_vps called for topic: iot/Gateway1/status
+2025-10-26 00:37:14,609 - gateway - INFO - [DEBUG] Attempting to publish to iot/Gateway1/status
+2025-10-26 00:37:14,610 - gateway - INFO - [DEBUG] Payload: {"gateway_id": "Gateway1", "device_id": "rfid_gate_01", "timestamp": "2025-10-26T00:37:14.607425", "status": "open", "sequence": 11, "metadata": {"state": "open", "sequence": 11, "device_type": "rfid_...
+2025-10-26 00:37:14,610 - gateway - INFO - [DEBUG] Publish result code: 0
+2025-10-26 00:37:14,611 - gateway - INFO - [VPS]  Published to iot/Gateway1/status
+2025-10-26 00:37:19,752 - gateway - INFO - [LoRa] rfid_gate_01 status: clos
+2025-10-26 00:37:19,753 - gateway - INFO - [DEBUG] forward_to_vps called: device_id=rfid_gate_01, msg_type=status
+2025-10-26 00:37:19,753 - gateway - INFO - [DEBUG] vps_connected=True
+2025-10-26 00:37:19,753 - gateway - INFO - [DEBUG] Looking for topic key: vps_status
+2025-10-26 00:37:19,754 - gateway - INFO - [DEBUG] Topic resolved to: iot/Gateway1/status
+2025-10-26 00:37:19,755 - gateway - INFO - [DEBUG] VPS connected, calling publish_to_vps
+2025-10-26 00:37:19,755 - gateway - INFO - [DEBUG] publish_to_vps called for topic: iot/Gateway1/status
+2025-10-26 00:37:19,755 - gateway - INFO - [DEBUG] Attempting to publish to iot/Gateway1/status
+2025-10-26 00:37:19,756 - gateway - INFO - [DEBUG] Payload: {"gateway_id": "Gateway1", "device_id": "rfid_gate_01", "timestamp": "2025-10-26T00:37:19.753332", "status": "clos", "sequence": 12, "metadata": {"state": "clos", "sequence": 12, "device_type": "rfid_...
+2025-10-26 00:37:19,756 - gateway - INFO - [DEBUG] Publish result code: 0
+2025-10-26 00:37:19,757 - gateway - INFO - [VPS]  Published to iot/Gateway1/status
+2025-10-26 00:39:40,053 - gateway - INFO - [RFID] rfid_gate_01 scanned card: 8675f205
+2025-10-26 00:39:40,053 - gateway - INFO - [DEBUG] vps_connected = True
+2025-10-26 00:39:40,054 - gateway - INFO - [DEBUG] Card authentication result: True
+2025-10-26 00:39:40,054 - gateway - INFO - [DEBUG] Access rules check: allowed=True, reason=None
+2025-10-26 00:39:40,055 - gateway - INFO - [DEBUG] About to call forward_to_vps with log_entry: {'method': 'rfid', 'device_id': 'rfid_gate_01', 'result': 'granted', 'rfid_uid': '8675f205', 'timestamp': '2025-10-26T00:39:40.055485'}
+2025-10-26 00:39:40,055 - gateway - INFO - [DEBUG] forward_to_vps called: device_id=rfid_gate_01, msg_type=access
+2025-10-26 00:39:40,056 - gateway - INFO - [DEBUG] vps_connected=True
+2025-10-26 00:39:40,056 - gateway - INFO - [DEBUG] Built access payload: {'gateway_id': 'Gateway1', 'device_id': 'rfid_gate_01', 'timestamp': '2025-10-26T00:39:40.056470', 'method': 'rfid', 'result': 'granted', 'password_id': None, 'rfid_uid': '8675f205', 'deny_reason': None, 'action': None, 'initiated_by': None, 'metadata': {'method': 'rfid', 'device_id': 'rfid_gate_01', 'result': 'granted', 'rfid_uid': '8675f205', 'timestamp': '2025-10-26T00:39:40.055485'}}
+2025-10-26 00:39:40,057 - gateway - INFO - [DEBUG] Looking for topic key: vps_access
+2025-10-26 00:39:40,057 - gateway - INFO - [DEBUG] Topic resolved to: iot/Gateway1/access
+2025-10-26 00:39:40,057 - gateway - INFO - [DEBUG] VPS connected, calling publish_to_vps
+2025-10-26 00:39:40,058 - gateway - INFO - [DEBUG] publish_to_vps called for topic: iot/Gateway1/access
+2025-10-26 00:39:40,058 - gateway - INFO - [DEBUG] Attempting to publish to iot/Gateway1/access
+2025-10-26 00:39:40,058 - gateway - INFO - [DEBUG] Payload: {"gateway_id": "Gateway1", "device_id": "rfid_gate_01", "timestamp": "2025-10-26T00:39:40.056470", "method": "rfid", "result": "granted", "password_id": null, "rfid_uid": "8675f205", "deny_reason": nu...
+2025-10-26 00:39:40,059 - gateway - INFO - [DEBUG] Publish result code: 0
+2025-10-26 00:39:40,060 - gateway - INFO - [VPS]  Published to iot/Gateway1/access
+2025-10-26 00:39:40,060 - gateway - INFO - [DEBUG] forward_to_vps returned: True
+2025-10-26 00:39:40,060 - gateway - INFO - [RFID] 8675f205: GRANTED
+2025-10-26 00:39:40,063 - gateway - INFO - [LoRa] Response sent to rfid_gate_01: GRANT
+2025-10-26 00:39:41,940 - gateway - INFO - [LoRa] rfid_gate_01 status: open
+2025-10-26 00:39:41,941 - gateway - INFO - [DEBUG] forward_to_vps called: device_id=rfid_gate_01, msg_type=status
+2025-10-26 00:39:41,942 - gateway - INFO - [DEBUG] vps_connected=True
+2025-10-26 00:39:41,942 - gateway - INFO - [DEBUG] Looking for topic key: vps_status
+2025-10-26 00:39:41,942 - gateway - INFO - [DEBUG] Topic resolved to: iot/Gateway1/status
+2025-10-26 00:39:41,943 - gateway - INFO - [DEBUG] VPS connected, calling publish_to_vps
+2025-10-26 00:39:41,943 - gateway - INFO - [DEBUG] publish_to_vps called for topic: iot/Gateway1/status
+2025-10-26 00:39:41,943 - gateway - INFO - [DEBUG] Attempting to publish to iot/Gateway1/status
+2025-10-26 00:39:41,944 - gateway - INFO - [DEBUG] Payload: {"gateway_id": "Gateway1", "device_id": "rfid_gate_01", "timestamp": "2025-10-26T00:39:41.942130", "status": "open", "sequence": 14, "metadata": {"state": "open", "sequence": 14, "device_type": "rfid_...
+2025-10-26 00:39:41,944 - gateway - INFO - [DEBUG] Publish result code: 0
+2025-10-26 00:39:41,945 - gateway - INFO - [VPS]  Published to iot/Gateway1/status
+2025-10-26 00:39:47,060 - gateway - INFO - [LoRa] rfid_gate_01 status: clos
+2025-10-26 00:39:47,061 - gateway - INFO - [DEBUG] forward_to_vps called: device_id=rfid_gate_01, msg_type=status
+2025-10-26 00:39:47,061 - gateway - INFO - [DEBUG] vps_connected=True
+2025-10-26 00:39:47,061 - gateway - INFO - [DEBUG] Looking for topic key: vps_status
+2025-10-26 00:39:47,061 - gateway - INFO - [DEBUG] Topic resolved to: iot/Gateway1/status
+2025-10-26 00:39:47,062 - gateway - INFO - [DEBUG] VPS connected, calling publish_to_vps
+2025-10-26 00:39:47,062 - gateway - INFO - [DEBUG] publish_to_vps called for topic: iot/Gateway1/status
+2025-10-26 00:39:47,062 - gateway - INFO - [DEBUG] Attempting to publish to iot/Gateway1/status
+2025-10-26 00:39:47,062 - gateway - INFO - [DEBUG] Payload: {"gateway_id": "Gateway1", "device_id": "rfid_gate_01", "timestamp": "2025-10-26T00:39:47.061679", "status": "clos", "sequence": 15, "metadata": {"state": "clos", "sequence": 15, "device_type": "rfid_...
+2025-10-26 00:39:47,064 - gateway - INFO - [DEBUG] Publish result code: 0
+2025-10-26 00:39:47,064 - gateway - INFO - [VPS]  Published to iot/Gateway1/status
+2025-10-26 00:42:12,277 - gateway - INFO - [STATS] Received: 0, Sent: 12, Buffered: 0, Remote Cmds: 0, Auto Triggers: 0, Local: OK, VPS: OK
+2025-10-26 00:44:43,994 - gateway - INFO - 
+[SHUTDOWN] Received interrupt signal
+2025-10-26 00:44:43,994 - gateway - INFO - [SHUTDOWN] Cleaning up connections...
+2025-10-26 00:44:44,484 - gateway - WARNING -  Local MQTT disconnected (rc=0)
+2025-10-26 00:44:45,080 - gateway - WARNING -  VPS MQTT disconnected (rc=0)
+2025-10-26 00:44:45,081 - gateway - INFO - [SHUTDOWN] Gateway stopped cleanly
+2025-10-26 00:44:45,083 - gateway - INFO - [SHUTDOWN] Cleaning up connections...
+2025-10-26 00:44:45,083 - gateway - INFO - [SHUTDOWN] Gateway stopped cleanly
+2025-10-26 00:49:33,181 - gateway - INFO - Checking prerequisites...
+2025-10-26 00:49:33,181 - gateway - INFO -  Prerequisites check passed
+2025-10-26 00:49:33,181 - gateway - INFO - ============================================================
+2025-10-26 00:49:33,181 - gateway - INFO - Initializing IoT Gateway...
+2025-10-26 00:49:33,181 - gateway - INFO - ============================================================
+2025-10-26 00:49:33,196 - gateway - INFO -  Database loaded
+2025-10-26 00:49:33,196 - gateway - INFO -  Security manager initialized
+2025-10-26 00:49:33,196 - gateway - INFO -  Remote control manager initialized
+2025-10-26 00:49:33,197 - gateway - INFO - Setting up Local MQTT Broker connection...
+2025-10-26 00:49:33,200 - gateway - INFO -  Local TLS configured
+2025-10-26 00:49:33,209 - gateway - INFO - Local MQTT connection initiated
+2025-10-26 00:49:33,210 - gateway - INFO -  Connected to Local MQTT Broker
+2025-10-26 00:49:33,210 - gateway - INFO - Setting up VPS MQTT Broker connection...
+2025-10-26 00:49:33,211 - gateway - INFO -  Subscribed to local device topics
+2025-10-26 00:49:33,213 - gateway - INFO -  VPS mTLS configured
+2025-10-26 00:49:33,534 - gateway - INFO - VPS MQTT connection initiated
+2025-10-26 00:49:33,602 - gateway - INFO -  LoRa connected on COM7
+2025-10-26 00:49:33,629 - gateway - INFO -  Connected to VPS MQTT Broker
+2025-10-26 00:49:33,629 - gateway - INFO -  Subscribed to VPS command topics
+2025-10-26 00:49:35,618 - gateway - INFO - Gateway initialization complete
+2025-10-26 00:49:35,618 - gateway - INFO - ============================================================
+2025-10-26 00:49:35,619 - gateway - INFO - IoT Gateway Started Successfully
+2025-10-26 00:49:35,619 - gateway - INFO - Local MQTT: 192.168.1.205:1884
+2025-10-26 00:49:35,620 - gateway - INFO - VPS MQTT: 159.223.63.61:8883
+2025-10-26 00:49:35,620 - gateway - INFO - Features: Remote Control (Keypad, RFID, Fan), Automation Engine
+2025-10-26 00:49:35,620 - gateway - INFO - ============================================================
+2025-10-26 00:49:37,373 - gateway - INFO - [RFID] rfid_gate_01 scanned card: 8675f205
+2025-10-26 00:49:37,374 - gateway - INFO - [DEBUG] vps_connected = True
+2025-10-26 00:49:37,374 - gateway - INFO - [DEBUG] Card authentication result: True
+2025-10-26 00:49:37,374 - gateway - INFO - [DEBUG] Access rules check: allowed=True, reason=None
+2025-10-26 00:49:37,374 - gateway - INFO - [DEBUG] About to call forward_to_vps with log_entry: {'method': 'rfid', 'device_id': 'rfid_gate_01', 'result': 'granted', 'rfid_uid': '8675f205', 'timestamp': '2025-10-26T00:49:37.374130'}
+2025-10-26 00:49:37,374 - gateway - INFO - [DEBUG] forward_to_vps called: device_id=rfid_gate_01, msg_type=access
+2025-10-26 00:49:37,374 - gateway - INFO - [DEBUG] vps_connected=True
+2025-10-26 00:49:37,374 - gateway - INFO - [DEBUG] Built access payload: {'gateway_id': 'Gateway1', 'device_id': 'rfid_gate_01', 'timestamp': '2025-10-26T00:49:37.374130', 'method': 'rfid', 'result': 'granted', 'password_id': None, 'rfid_uid': '8675f205', 'deny_reason': None, 'action': None, 'initiated_by': None, 'metadata': {'method': 'rfid', 'device_id': 'rfid_gate_01', 'result': 'granted', 'rfid_uid': '8675f205', 'timestamp': '2025-10-26T00:49:37.374130'}}
+2025-10-26 00:49:37,376 - gateway - INFO - [DEBUG] Looking for topic key: vps_access
+2025-10-26 00:49:37,376 - gateway - INFO - [DEBUG] Topic resolved to: iot/Gateway1/access
+2025-10-26 00:49:37,376 - gateway - INFO - [DEBUG] VPS connected, calling publish_to_vps
+2025-10-26 00:49:37,376 - gateway - INFO - [DEBUG] publish_to_vps called for topic: iot/Gateway1/access
+2025-10-26 00:49:37,376 - gateway - INFO - [DEBUG] Attempting to publish to iot/Gateway1/access
+2025-10-26 00:49:37,376 - gateway - INFO - [DEBUG] Payload: {"gateway_id": "Gateway1", "device_id": "rfid_gate_01", "timestamp": "2025-10-26T00:49:37.374130", "method": "rfid", "result": "granted", "password_id": null, "rfid_uid": "8675f205", "deny_reason": nu...
+2025-10-26 00:49:37,376 - gateway - INFO - [DEBUG] Publish result code: 0
+2025-10-26 00:49:37,378 - gateway - INFO - [VPS]  Published to iot/Gateway1/access
+2025-10-26 00:49:37,378 - gateway - INFO - [DEBUG] forward_to_vps returned: True
+2025-10-26 00:49:37,378 - gateway - INFO - [RFID] 8675f205: GRANTED
+2025-10-26 00:49:37,382 - gateway - INFO - [LoRa] Response sent to rfid_gate_01: GRANT
+2025-10-26 00:49:39,240 - gateway - INFO - [LoRa] rfid_gate_01 status: open
+2025-10-26 00:49:39,240 - gateway - INFO - [DEBUG] forward_to_vps called: device_id=rfid_gate_01, msg_type=status
+2025-10-26 00:49:39,241 - gateway - INFO - [DEBUG] vps_connected=True
+2025-10-26 00:49:39,241 - gateway - INFO - [DEBUG] Looking for topic key: vps_status
+2025-10-26 00:49:39,242 - gateway - INFO - [DEBUG] Topic resolved to: iot/Gateway1/status
+2025-10-26 00:49:39,242 - gateway - INFO - [DEBUG] VPS connected, calling publish_to_vps
+2025-10-26 00:49:39,242 - gateway - INFO - [DEBUG] publish_to_vps called for topic: iot/Gateway1/status
+2025-10-26 00:49:39,242 - gateway - INFO - [DEBUG] Attempting to publish to iot/Gateway1/status
+2025-10-26 00:49:39,243 - gateway - INFO - [DEBUG] Payload: {"gateway_id": "Gateway1", "device_id": "rfid_gate_01", "timestamp": "2025-10-26T00:49:39.241306", "status": "open", "sequence": 17, "metadata": {"state": "open", "sequence": 17, "device_type": "rfid_...
+2025-10-26 00:49:39,243 - gateway - INFO - [DEBUG] Publish result code: 0
+2025-10-26 00:49:39,244 - gateway - INFO - [VPS]  Published to iot/Gateway1/status
+2025-10-26 00:49:44,349 - gateway - INFO - [LoRa] rfid_gate_01 status: clos
+2025-10-26 00:49:44,349 - gateway - INFO - [DEBUG] forward_to_vps called: device_id=rfid_gate_01, msg_type=status
+2025-10-26 00:49:44,351 - gateway - INFO - [DEBUG] vps_connected=True
+2025-10-26 00:49:44,351 - gateway - INFO - [DEBUG] Looking for topic key: vps_status
+2025-10-26 00:49:44,351 - gateway - INFO - [DEBUG] Topic resolved to: iot/Gateway1/status
+2025-10-26 00:49:44,352 - gateway - INFO - [DEBUG] VPS connected, calling publish_to_vps
+2025-10-26 00:49:44,352 - gateway - INFO - [DEBUG] publish_to_vps called for topic: iot/Gateway1/status
+2025-10-26 00:49:44,353 - gateway - INFO - [DEBUG] Attempting to publish to iot/Gateway1/status
+2025-10-26 00:49:44,353 - gateway - INFO - [DEBUG] Payload: {"gateway_id": "Gateway1", "device_id": "rfid_gate_01", "timestamp": "2025-10-26T00:49:44.351029", "status": "clos", "sequence": 18, "metadata": {"state": "clos", "sequence": 18, "device_type": "rfid_...
+2025-10-26 00:49:44,354 - gateway - INFO - [DEBUG] Publish result code: 0

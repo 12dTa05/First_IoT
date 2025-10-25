@@ -294,23 +294,67 @@ SELECT add_continuous_aggregate_policy('alerts_daily',
 -- DATA RETENTION POLICIES
 -- ============================================================================
 
+-- Add this at the end of the schema.sql file, after the CREATE MATERIALIZED VIEW statements
+
+-- ============================================================================
+-- CONTINUOUS AGGREGATE REFRESH POLICIES
+-- ============================================================================
+
+-- Refresh telemetry_hourly every hour
 DO $$
 BEGIN
-    PERFORM remove_retention_policy('telemetry', if_exists => true);
-    PERFORM remove_retention_policy('device_status', if_exists => true);
-    PERFORM remove_retention_policy('access_logs', if_exists => true);
-    PERFORM remove_retention_policy('system_logs', if_exists => true);
-    PERFORM remove_retention_policy('alerts', if_exists => true);
+    PERFORM remove_continuous_aggregate_policy('telemetry_hourly', if_exists => true);
 EXCEPTION
     WHEN OTHERS THEN
-        RAISE NOTICE 'Could not remove existing retention policies: %', SQLERRM;
+        RAISE NOTICE 'Could not remove existing policy for telemetry_hourly';
 END $$;
 
-SELECT add_retention_policy('telemetry', INTERVAL '90 days', if_not_exists => TRUE);
-SELECT add_retention_policy('device_status', INTERVAL '30 days', if_not_exists => TRUE);
-SELECT add_retention_policy('access_logs', INTERVAL '365 days', if_not_exists => TRUE);
-SELECT add_retention_policy('system_logs', INTERVAL '90 days', if_not_exists => TRUE);
-SELECT add_retention_policy('alerts', INTERVAL '180 days', if_not_exists => TRUE);
+SELECT add_continuous_aggregate_policy('telemetry_hourly',
+  start_offset => INTERVAL '3 hours',
+  end_offset => INTERVAL '1 hour',
+  schedule_interval => INTERVAL '1 hour',
+  if_not_exists => TRUE);
+
+-- Refresh access_daily every day
+DO $$
+BEGIN
+    PERFORM remove_continuous_aggregate_policy('access_daily', if_exists => true);
+EXCEPTION
+    WHEN OTHERS THEN
+        RAISE NOTICE 'Could not remove existing policy for access_daily';
+END $$;
+
+SELECT add_continuous_aggregate_policy('access_daily',
+  start_offset => INTERVAL '3 days',
+  end_offset => INTERVAL '1 day',
+  schedule_interval => INTERVAL '1 day',
+  if_not_exists => TRUE);
+
+-- Refresh alerts_daily every day
+DO $$
+BEGIN
+    PERFORM remove_continuous_aggregate_policy('alerts_daily', if_exists => true);
+EXCEPTION
+    WHEN OTHERS THEN
+        RAISE NOTICE 'Could not remove existing policy for alerts_daily';
+END $$;
+
+SELECT add_continuous_aggregate_policy('alerts_daily',
+  start_offset => INTERVAL '3 days',
+  end_offset => INTERVAL '1 day',
+  schedule_interval => INTERVAL '1 day',
+  if_not_exists => TRUE);
+
+-- ============================================================================
+-- INITIAL DATA REFRESH
+-- ============================================================================
+
+-- Refresh all continuous aggregates with existing data
+CALL refresh_continuous_aggregate('telemetry_hourly', NULL, NULL);
+CALL refresh_continuous_aggregate('access_daily', NULL, NULL);
+CALL refresh_continuous_aggregate('alerts_daily', NULL, NULL);
+
+COMMIT;
 
 -- ============================================================================
 -- FUNCTIONS
