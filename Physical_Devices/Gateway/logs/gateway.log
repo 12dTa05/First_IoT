@@ -1900,3 +1900,12 @@ NameError: name 'DEVICE_TYPE_TO_ID' is not defined
 2025-10-26 00:49:44,353 - gateway - INFO - [DEBUG] Attempting to publish to iot/Gateway1/status
 2025-10-26 00:49:44,353 - gateway - INFO - [DEBUG] Payload: {"gateway_id": "Gateway1", "device_id": "rfid_gate_01", "timestamp": "2025-10-26T00:49:44.351029", "status": "clos", "sequence": 18, "metadata": {"state": "clos", "sequence": 18, "device_type": "rfid_...
 2025-10-26 00:49:44,354 - gateway - INFO - [DEBUG] Publish result code: 0
+2025-10-26 00:49:44,354 - gateway - INFO - [VPS]  Published to iot/Gateway1/status
+2025-10-26 00:52:28,242 - gateway - INFO - 
+[SHUTDOWN] Received interrupt signal
+2025-10-26 00:52:28,243 - gateway - INFO - [SHUTDOWN] Cleaning up connections...
+2025-10-26 00:52:28,595 - gateway - WARNING -  Local MQTT disconnected (rc=0)
+2025-10-26 00:52:29,338 - gateway - WARNING -  VPS MQTT disconnected (rc=0)
+2025-10-26 00:52:29,341 - gateway - INFO - [SHUTDOWN] Gateway stopped cleanly
+2025-10-26 00:52:29,341 - gateway - INFO - [SHUTDOWN] Cleaning up connections...
+2025-10-26 00:52:29,341 - gateway - INFO - [SHUTDOWN] Gateway stopped cleanly
