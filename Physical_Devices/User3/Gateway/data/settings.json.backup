@@ -1,0 +1,63 @@
+{
+  "home_occupied": true,
+  "last_access": {
+    "method": "passkey",
+    "password_id": "user_001",
+    "timestamp": "2025-10-15T15:48:53.486416"
+  },
+  "system_mode": "normal",
+  "security_level": "medium",
+  "notifications": {
+    "email_enabled": true,
+    "sms_enabled": false,
+    "push_enabled": true,
+    "recipients": [
+      {
+        "name": "John Doe",
+        "email": "john@example.com",
+        "phone": "+84123456789",
+        "notify_on": [
+          "failed_access",
+          "new_device",
+          "system_alert"
+        ]
+      }
+    ]
+  },
+  "sync": {
+    "last_sync_server": "1970-01-01T00:00:00Z",
+    "sync_interval": 300
+  },
+  "automation": {
+    "auto_lock_delay": 300,
+    "lights_on_entry": true,
+    "climate_control": true,
+    "away_mode_enabled": false
+  },
+  "logging": {
+    "log_all_events": true,
+    "log_level": "info",
+    "retention_days": 90,
+    "export_to_aws": true
+  },
+  "mqtt": {
+    "local_broker_enabled": true,
+    "aws_iot_enabled": true,
+    "connection_timeout": 30,
+    "keepalive_interval": 60,
+    "retry_attempts": 3
+  },
+  "lora": {
+    "enabled": true,
+    "channel": 23,
+    "spreading_factor": 7,
+    "bandwidth": 125,
+    "tx_power": 14
+  },
+  "maintenance": {
+    "last_system_update": "2025-10-01T10:00:00Z",
+    "next_scheduled_maintenance": "2025-11-01T00:00:00Z",
+    "backup_frequency_days": 7,
+    "auto_backup_enabled": true
+  }
+}

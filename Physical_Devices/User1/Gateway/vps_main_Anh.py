@@ -1,0 +1,418 @@
+import serial
+import time
+import json
+import struct
+import os
+from datetime import datetime, timedelta
+from collections import deque
+import paho.mqtt.client as mqtt
+import ssl
+import threading
+import hashlib
+import hmac
+import logging
+from logging.handlers import RotatingFileHandler
+
+# ============= LOGGING SETUP =============
+def setup_logging():
+    log_dir = './logs'
+    os.makedirs(log_dir, exist_ok=True)
+    
+    logger = logging.getLogger('gateway1')
+    logger.setLevel(logging.INFO)
+    
+    file_handler = RotatingFileHandler(
+        os.path.join(log_dir, 'gateway1.log'),
+        maxBytes=10*1024*1024,
+        backupCount=5
+    )
+    file_handler.setFormatter(logging.Formatter(
+        '%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+    ))
+    
+    console_handler = logging.StreamHandler()
+    console_handler.setFormatter(logging.Formatter(
+        '%(asctime)s - %(levelname)s - %(message)s'
+    ))
+    
+    logger.addHandler(file_handler)
+    logger.addHandler(console_handler)
+    
+    return logger
+
+logger = setup_logging()
+
+# ============= CONFIGURATION =============
+CONFIG = {
+    'gateway_id': 'Gateway1',
+    'user_id': 'user1',
+    
+    # LoRa configuration cho RFID Gate
+    'lora_port': 'COM5',  # Thay đổi theo port của bạn
+    'lora_baudrate': 9600,
+    
+    # VPS broker
+    'vps_broker': {
+        'host': '159.223.63.61',
+        'port': 8883,
+        'client_id': 'Gateway1',
+        'ca_cert': './certs/ca.cert.pem',
+        'cert_file': './certs/gateway1.cert.pem',
+        'key_file': './certs/gateway1.key.pem',
+    },
+    
+    'topics': {
+        # RFID Gate KHÔNG dùng MQTT local - chỉ LoRa serial
+        'vps_status': 'gateway/Gateway1/status/{device_id}',
+        'vps_access': 'gateway/Gateway1/access/{device_id}',
+        'vps_command': 'gateway/Gateway1/command/#',
+        'vps_gateway_status': 'gateway/Gateway1/status/gateway',
+    },
+    
+    'db_path': './data',
+    'devices_db': 'devices.json',
+    'heartbeat_interval': 60,
+}
+
+MESSAGE_TYPES = {
+    0x01: 'rfid_scan',
+    0x06: 'gate_status',
+}
+
+# ============= CRC32 =============
+def crc32(data: bytes, poly=0x04C11DB7, init=0xFFFFFFFF, xor_out=0xFFFFFFFF) -> int:
+    crc = init
+    for b in data:
+        crc ^= (b << 24)
+        for _ in range(8):
+            if crc & 0x80000000:
+                crc = (crc << 1) ^ poly
+            else:
+                crc <<= 1
+            crc &= 0xFFFFFFFF
+    return crc ^ xor_out
+
+# ============= DATABASE MANAGER =============
+class DatabaseManager:
+    def __init__(self, db_path, devices_db):
+        self.db_path = db_path
+        self.devices_file = os.path.join(db_path, devices_db)
+        os.makedirs(db_path, exist_ok=True)
+        self.devices_data = self.load_devices()
+        
+    def load_devices(self):
+        if os.path.exists(self.devices_file):
+            with open(self.devices_file, 'r') as f:
+                return json.load(f)
+        return {'rfid_cards': {}, 'devices': {}}
+    
+    def save_devices(self):
+        with open(self.devices_file, 'w') as f:
+            json.dump(self.devices_data, f, indent=2)
+    
+    def check_rfid_access(self, uid):
+        """Check if RFID card has access permission"""
+        card = self.devices_data.get('rfid_cards', {}).get(uid)
+        
+        if not card:
+            return False, 'invalid_card'
+        
+        if not card.get('active', False):
+            return False, 'inactive_card'
+        
+        # Check expiration
+        expires_at = card.get('expires_at')
+        if expires_at:
+            try:
+                expire_time = datetime.fromisoformat(expires_at.replace('Z', '+00:00'))
+                if datetime.now(expire_time.tzinfo) > expire_time:
+                    return False, 'expired_card'
+            except:
+                pass
+        
+        return True, None
+
+# ============= VPS MQTT MANAGER (Chỉ VPS, không local) =============
+class VPSMQTTManager:
+    def __init__(self, config):
+        self.config = config
+        self.vps_client = None
+        self.connected_vps = False
+        
+    def setup_vps_broker(self):
+        self.vps_client = mqtt.Client(client_id=self.config['vps_broker']['client_id'])
+        
+        self.vps_client.tls_set(
+            ca_certs=self.config['vps_broker']['ca_cert'],
+            certfile=self.config['vps_broker']['cert_file'],
+            keyfile=self.config['vps_broker']['key_file'],
+            tls_version=ssl.PROTOCOL_TLSv1_2
+        )
+        
+        self.vps_client.on_connect = self.on_vps_connect
+        self.vps_client.on_disconnect = self.on_vps_disconnect
+        self.vps_client.on_message = self.on_vps_message
+        
+        try:
+            self.vps_client.connect(
+                self.config['vps_broker']['host'],
+                self.config['vps_broker']['port'],
+                60
+            )
+            self.vps_client.loop_start()
+            logger.info(" Connected to VPS Broker")
+        except Exception as e:
+            logger.error(f" Failed to connect to VPS Broker: {e}")
+    
+    def on_vps_connect(self, client, userdata, flags, rc):
+        if rc == 0:
+            self.connected_vps = True
+            logger.info(" VPS Broker Connected")
+            
+            # Subscribe to command topic
+            topic = self.config['topics']['vps_command']
+            client.subscribe(topic)
+            logger.info(f" Subscribed to: {topic}")
+            
+            # Publish gateway online status
+            self.publish_gateway_status('online')
+        else:
+            logger.error(f" VPS Broker Connection Failed: {rc}")
+    
+    def on_vps_disconnect(self, client, userdata, rc):
+        self.connected_vps = False
+        logger.warning(" VPS Broker Disconnected")
+    
+    def on_vps_message(self, client, userdata, msg):
+        try:
+            logger.info(f" VPS Command: {msg.topic}")
+            data = json.loads(msg.payload.decode())
+            # Commands for RFID gate (if any) can be handled here
+            # For now, just log
+            logger.info(f"Command data: {data}")
+        except Exception as e:
+            logger.error(f" Error processing VPS message: {e}")
+    
+    def publish_to_vps(self, topic, payload):
+        if self.connected_vps:
+            self.vps_client.publish(topic, json.dumps(payload), qos=1)
+            logger.info(f" Published to VPS: {topic}")
+        else:
+            logger.warning(" VPS not connected, message not sent")
+    
+    def publish_gateway_status(self, status):
+        payload = {
+            'gateway_id': self.config['gateway_id'],
+            'status': status,
+            'timestamp': datetime.now().isoformat()
+        }
+        topic = self.config['topics']['vps_gateway_status']
+        self.publish_to_vps(topic, payload)
+
+# ============= LORA HANDLER (Xử lý RFID qua Serial) =============
+class LoRaHandler:
+    def __init__(self, config, db_manager, mqtt_manager):
+        self.config = config
+        self.db_manager = db_manager
+        self.mqtt_manager = mqtt_manager
+        self.serial_port = None
+        self.running = False
+        
+    def connect(self):
+        try:
+            self.serial_port = serial.Serial(
+                self.config['lora_port'],
+                self.config['lora_baudrate'],
+                timeout=1
+            )
+            logger.info(f" LoRa Serial Connected: {self.config['lora_port']}")
+            return True
+        except Exception as e:
+            logger.error(f" LoRa Serial Connection Failed: {e}")
+            return False
+    
+    def start(self):
+        self.running = True
+        thread = threading.Thread(target=self.read_loop)
+        thread.daemon = True
+        thread.start()
+        logger.info(" LoRa Handler Started")
+    
+    def read_loop(self):
+        """Continuously read from LoRa serial port"""
+        buffer = bytearray()
+        
+        while self.running:
+            try:
+                if self.serial_port and self.serial_port.in_waiting > 0:
+                    buffer.extend(self.serial_port.read(self.serial_port.in_waiting))
+                    
+                    # Parse packets from buffer
+                    while len(buffer) >= 10:  # Minimum packet size
+                        # Look for packet header: AA 55
+                        if buffer[0] == 0xAA and buffer[1] == 0x55:
+                            msg_type = buffer[2]
+                            length = buffer[3]
+                            total_length = 4 + length + 4  # header + payload + CRC
+                            
+                            if len(buffer) >= total_length:
+                                packet = buffer[:total_length]
+                                buffer = buffer[total_length:]
+                                
+                                # Verify CRC
+                                received_crc = struct.unpack('<I', packet[-4:])[0]
+                                calculated_crc = crc32(packet[:-4])
+                                
+                                if received_crc == calculated_crc:
+                                    payload = packet[4:-4]
+                                    self.process_packet(msg_type, payload)
+                                else:
+                                    logger.warning(" CRC mismatch, packet dropped")
+                            else:
+                                break
+                        else:
+                            # Invalid header, remove first byte
+                            buffer.pop(0)
+                
+                time.sleep(0.01)
+            except Exception as e:
+                logger.error(f" LoRa read error: {e}")
+                time.sleep(1)
+    
+    def process_packet(self, msg_type, payload):
+        """Process received LoRa packet"""
+        try:
+            if msg_type == 0x01:  # RFID Scan
+                uid = payload[:4].hex()
+                logger.info(f" RFID Scanned: {uid}")
+                self.handle_rfid_access(uid)
+                
+            elif msg_type == 0x06:  # Gate Status
+                status = 'ONLINE' if payload[0] == 1 else 'OFFLINE'
+                sequence = struct.unpack('<I', payload[1:5])[0] if len(payload) >= 5 else 0
+                logger.info(f"🚪 Gate Status: {status} (seq: {sequence})")
+                self.publish_gate_status(status, sequence)
+                
+        except Exception as e:
+            logger.error(f" Error processing packet: {e}")
+    
+    def handle_rfid_access(self, uid):
+        """Handle RFID access request"""
+        # Check access permission from local database
+        granted, deny_reason = self.db_manager.check_rfid_access(uid)
+        
+        # Send response back to RFID gate via LoRa
+        response = 0x01 if granted else 0x00
+        self.send_access_response(response)
+        
+        # Publish access log to VPS
+        access_log = {
+            'gateway_id': self.config['gateway_id'],
+            'device_id': 'rfid_gate_01',
+            'method': 'rfid',
+            'uid': uid,
+            'result': 'granted' if granted else 'denied',
+            'deny_reason': deny_reason,
+            'timestamp': datetime.now().isoformat()
+        }
+        
+        topic = self.config['topics']['vps_access'].format(device_id='rfid_gate_01')
+        self.mqtt_manager.publish_to_vps(topic, access_log)
+        
+        result_text = ' Access GRANTED' if granted else ' Access DENIED'
+        logger.info(f"{result_text}: {uid} {f'({deny_reason})' if deny_reason else ''}")
+    
+    def send_access_response(self, response):
+        """Send access response to RFID gate via LoRa"""
+        try:
+            # Packet format: AA 55 02 01 [response] [CRC32]
+            packet = bytearray([0xAA, 0x55, 0x02, 0x01, response])
+            crc = crc32(packet)
+            packet.extend(struct.pack('<I', crc))
+            
+            self.serial_port.write(packet)
+            logger.info(f" Sent LoRa response: {response}")
+        except Exception as e:
+            logger.error(f" Error sending LoRa response: {e}")
+    
+    def publish_gate_status(self, status, sequence):
+        """Publish RFID gate status to VPS"""
+        payload = {
+            'gateway_id': self.config['gateway_id'],
+            'device_id': 'rfid_gate_01',
+            'status': status,
+            'sequence': sequence,
+            'timestamp': datetime.now().isoformat()
+        }
+        
+        topic = self.config['topics']['vps_status'].format(device_id='rfid_gate_01')
+        self.mqtt_manager.publish_to_vps(topic, payload)
+    
+    def stop(self):
+        self.running = False
+        if self.serial_port:
+            self.serial_port.close()
+            logger.info(" LoRa Serial Closed")
+
+# ============= HEARTBEAT =============
+def heartbeat_loop(mqtt_manager, interval):
+    """Send periodic heartbeat to VPS"""
+    while True:
+        try:
+            mqtt_manager.publish_gateway_status('online')
+            logger.info(" Heartbeat sent")
+            time.sleep(interval)
+        except Exception as e:
+            logger.error(f" Heartbeat error: {e}")
+            time.sleep(interval)
+
+# ============= MAIN =============
+def main():
+    logger.info("=" * 60)
+    logger.info(" Starting Gateway 1 (User 1 - RFID Gate via LoRa)")
+    logger.info("=" * 60)
+    
+    # Initialize components
+    db_manager = DatabaseManager(CONFIG['db_path'], CONFIG['devices_db'])
+    mqtt_manager = VPSMQTTManager(CONFIG)
+    
+    # Connect to VPS broker only (RFID không dùng MQTT local)
+    logger.info(" Connecting to VPS Broker...")
+    mqtt_manager.setup_vps_broker()
+    time.sleep(2)
+    
+    # Start LoRa handler for RFID communication
+    logger.info(" Starting LoRa Handler...")
+    lora_handler = LoRaHandler(CONFIG, db_manager, mqtt_manager)
+    
+    if lora_handler.connect():
+        lora_handler.start()
+    else:
+        logger.error(" Failed to start LoRa handler. Exiting.")
+        return
+    
+    # Start heartbeat thread
+    heartbeat_thread = threading.Thread(
+        target=heartbeat_loop,
+        args=(mqtt_manager, CONFIG['heartbeat_interval'])
+    )
+    heartbeat_thread.daemon = True
+    heartbeat_thread.start()
+    
+    logger.info("=" * 60)
+    logger.info(" Gateway 1 Running Successfully")
+    logger.info(" LoRa: Listening for RFID scans on " + CONFIG['lora_port'])
+    logger.info("  VPS: Connected to " + CONFIG['vps_broker']['host'])
+    logger.info("=" * 60)
+    
+    try:
+        while True:
+            time.sleep(1)
+    except KeyboardInterrupt:
+        logger.info(" Shutting down Gateway 1...")
+        lora_handler.stop()
+        mqtt_manager.vps_client.loop_stop()
+        logger.info(" Gateway 1 stopped")
+
+if __name__ == '__main__':
+    main()

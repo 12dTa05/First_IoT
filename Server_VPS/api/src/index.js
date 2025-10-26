@@ -19,7 +19,7 @@ const authRouter = require('./routes/auth');
 const app = express();
 const PORT = process.env.API_PORT || 3000;
 
-app.set('trust proxy', 1);
+app.set('trust proxy', true);
 
 // Middleware
 app.use(helmet());

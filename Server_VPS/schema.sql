@@ -1,30 +1,63 @@
 -- ============================================================================
--- EXTENSION
+-- IOT MULTI-TENANT SYSTEM - DATABASE SCHEMA V2
 -- ============================================================================
 
 CREATE EXTENSION IF NOT EXISTS timescaledb;
 
 -- ============================================================================
--- GATEWAY TABLE
+-- USER MANAGEMENT
 -- ============================================================================
 
-CREATE TABLE IF NOT EXISTS gateways (
-    gateway_id TEXT PRIMARY KEY,
-    name TEXT,
-    installation_date TIMESTAMPTZ,
-    database_version TEXT,
-    status TEXT DEFAULT 'online',
+CREATE TABLE IF NOT EXISTS users (
+    user_id TEXT PRIMARY KEY,
+    username TEXT UNIQUE NOT NULL,
+    email TEXT UNIQUE NOT NULL,
+    password_hash TEXT NOT NULL,
+    full_name TEXT,
+    phone TEXT,
+    role TEXT DEFAULT 'owner', -- 'owner', 'admin', 'member'
+    active BOOLEAN DEFAULT TRUE,
     created_at TIMESTAMPTZ DEFAULT NOW(),
     updated_at TIMESTAMPTZ DEFAULT NOW()
 );
 
+CREATE INDEX IF NOT EXISTS idx_users_username ON users(username);
+CREATE INDEX IF NOT EXISTS idx_users_email ON users(email);
+CREATE INDEX IF NOT EXISTS idx_users_active ON users(active);
+
 -- ============================================================================
--- DEVICES TABLE
+-- GATEWAY TABLE (với user_id)
 -- ============================================================================
 
-CREATE TABLE IF NOT EXISTS devices (
+DROP TABLE IF EXISTS gateways CASCADE;
+
+CREATE TABLE gateways (
+    gateway_id TEXT PRIMARY KEY,
+    user_id TEXT NOT NULL REFERENCES users(user_id) ON DELETE CASCADE,
+    name TEXT,
+    location TEXT,
+    installation_date TIMESTAMPTZ,
+    database_version TEXT,
+    status TEXT DEFAULT 'offline', -- 'online', 'offline', 'maintenance'
+    last_heartbeat TIMESTAMPTZ,
+    ip_address INET,
+    created_at TIMESTAMPTZ DEFAULT NOW(),
+    updated_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+CREATE INDEX IF NOT EXISTS idx_gateways_user ON gateways(user_id);
+CREATE INDEX IF NOT EXISTS idx_gateways_status ON gateways(status);
+
+-- ============================================================================
+-- DEVICES TABLE (với user_id)
+-- ============================================================================
+
+DROP TABLE IF EXISTS devices CASCADE;
+
+CREATE TABLE devices (
     device_id TEXT PRIMARY KEY,
-    gateway_id TEXT REFERENCES gateways(gateway_id) ON DELETE CASCADE,
+    gateway_id TEXT NOT NULL REFERENCES gateways(gateway_id) ON DELETE CASCADE,
+    user_id TEXT NOT NULL REFERENCES users(user_id) ON DELETE CASCADE,
     device_type TEXT NOT NULL,
     location TEXT,
     communication TEXT, -- 'WiFi', 'LoRa', etc.
@@ -40,80 +73,95 @@ CREATE TABLE IF NOT EXISTS devices (
     telemetry_interval INTEGER,
     lora_channel INTEGER,
     lora_address INTEGER,
+    metadata JSONB,
     created_at TIMESTAMPTZ DEFAULT NOW(),
     updated_at TIMESTAMPTZ DEFAULT NOW()
 );
 
 CREATE INDEX IF NOT EXISTS idx_devices_gateway ON devices(gateway_id);
+CREATE INDEX IF NOT EXISTS idx_devices_user ON devices(user_id);
 CREATE INDEX IF NOT EXISTS idx_devices_type ON devices(device_type);
 CREATE INDEX IF NOT EXISTS idx_devices_status ON devices(status);
 
 -- ============================================================================
--- USERS / PASSWORDS TABLE
+-- PASSWORDS TABLE (với user_id thay vì owner)
 -- ============================================================================
 
-CREATE TABLE IF NOT EXISTS passwords (
+DROP TABLE IF EXISTS passwords CASCADE;
+
+CREATE TABLE passwords (
     password_id TEXT PRIMARY KEY,
+    user_id TEXT NOT NULL REFERENCES users(user_id) ON DELETE CASCADE,
     hash TEXT NOT NULL,
     active BOOLEAN DEFAULT TRUE,
-    owner TEXT NOT NULL,
     description TEXT,
-    created_at TIMESTAMPTZ,
+    created_at TIMESTAMPTZ DEFAULT NOW(),
     last_used TIMESTAMPTZ,
-    expires_at TIMESTAMPTZ
+    expires_at TIMESTAMPTZ,
+    updated_at TIMESTAMPTZ DEFAULT NOW()
 );
 
+CREATE INDEX IF NOT EXISTS idx_passwords_user ON passwords(user_id);
 CREATE INDEX IF NOT EXISTS idx_passwords_active ON passwords(active);
-CREATE INDEX IF NOT EXISTS idx_passwords_owner ON passwords(owner);
 
 -- ============================================================================
--- RFID CARDS TABLE
+-- RFID CARDS TABLE (với user_id thay vì owner)
 -- ============================================================================
 
-CREATE TABLE IF NOT EXISTS rfid_cards (
+DROP TABLE IF EXISTS rfid_cards CASCADE;
+
+CREATE TABLE rfid_cards (
     uid TEXT PRIMARY KEY,
+    user_id TEXT NOT NULL REFERENCES users(user_id) ON DELETE CASCADE,
     active BOOLEAN DEFAULT TRUE,
-    owner TEXT NOT NULL,
     card_type TEXT,
     description TEXT,
-    registered_at TIMESTAMPTZ,
+    registered_at TIMESTAMPTZ DEFAULT NOW(),
     last_used TIMESTAMPTZ,
     expires_at TIMESTAMPTZ,
     deactivated_at TIMESTAMPTZ,
-    deactivation_reason TEXT
+    deactivation_reason TEXT,
+    updated_at TIMESTAMPTZ DEFAULT NOW()
 );
 
+CREATE INDEX IF NOT EXISTS idx_rfid_user ON rfid_cards(user_id);
 CREATE INDEX IF NOT EXISTS idx_rfid_active ON rfid_cards(active);
-CREATE INDEX IF NOT EXISTS idx_rfid_owner ON rfid_cards(owner);
 
 -- ============================================================================
--- ACCESS RULES TABLE
+-- ACCESS RULES TABLE (với user_id)
 -- ============================================================================
 
-CREATE TABLE IF NOT EXISTS access_rules (
+DROP TABLE IF EXISTS access_rules CASCADE;
+
+CREATE TABLE access_rules (
     rule_id TEXT PRIMARY KEY,
+    user_id TEXT NOT NULL REFERENCES users(user_id) ON DELETE CASCADE,
     enabled BOOLEAN DEFAULT TRUE,
     start_time TIME,
     end_time TIME,
     days_of_week INTEGER[], -- Array of 0-6 (Sunday-Saturday)
     allowed_methods TEXT[], -- Array of 'rfid', 'passkey', etc.
-    restricted_users TEXT[], -- Array of password_ids
+    restricted_passwords TEXT[], -- Array of password_ids
     description TEXT,
     created_at TIMESTAMPTZ DEFAULT NOW(),
     updated_at TIMESTAMPTZ DEFAULT NOW()
 );
 
+CREATE INDEX IF NOT EXISTS idx_access_rules_user ON access_rules(user_id);
 CREATE INDEX IF NOT EXISTS idx_access_rules_enabled ON access_rules(enabled);
 
 -- ============================================================================
 -- HYPERTABLES - TIME SERIES DATA
 -- ============================================================================
 
--- Telemetry Table (Temperature, Humidity, etc.)
-CREATE TABLE IF NOT EXISTS telemetry (
+-- Telemetry Table
+DROP TABLE IF EXISTS telemetry CASCADE;
+
+CREATE TABLE telemetry (
     time TIMESTAMPTZ NOT NULL,
     device_id TEXT NOT NULL,
     gateway_id TEXT NOT NULL,
+    user_id TEXT NOT NULL, -- Thêm để query nhanh hơn
     temperature DOUBLE PRECISION,
     humidity DOUBLE PRECISION,
     data JSONB
@@ -121,14 +169,18 @@ CREATE TABLE IF NOT EXISTS telemetry (
 
 SELECT create_hypertable('telemetry', 'time', if_not_exists => TRUE);
 
+CREATE INDEX IF NOT EXISTS idx_telemetry_user_time ON telemetry(user_id, time DESC);
 CREATE INDEX IF NOT EXISTS idx_telemetry_device_time ON telemetry(device_id, time DESC);
 CREATE INDEX IF NOT EXISTS idx_telemetry_gateway_time ON telemetry(gateway_id, time DESC);
 
 -- Access Logs Table
-CREATE TABLE IF NOT EXISTS access_logs (
+DROP TABLE IF EXISTS access_logs CASCADE;
+
+CREATE TABLE access_logs (
     time TIMESTAMPTZ NOT NULL,
     device_id TEXT NOT NULL,
     gateway_id TEXT NOT NULL,
+    user_id TEXT NOT NULL, -- Thêm để query nhanh hơn
     method TEXT NOT NULL, -- 'passkey', 'rfid'
     result TEXT NOT NULL, -- 'granted', 'denied'
     password_id TEXT,
@@ -139,17 +191,19 @@ CREATE TABLE IF NOT EXISTS access_logs (
 
 SELECT create_hypertable('access_logs', 'time', if_not_exists => TRUE);
 
+CREATE INDEX IF NOT EXISTS idx_access_logs_user_time ON access_logs(user_id, time DESC);
 CREATE INDEX IF NOT EXISTS idx_access_logs_device_time ON access_logs(device_id, time DESC);
 CREATE INDEX IF NOT EXISTS idx_access_logs_method ON access_logs(method, time DESC);
 CREATE INDEX IF NOT EXISTS idx_access_logs_result ON access_logs(result, time DESC);
-CREATE INDEX IF NOT EXISTS idx_access_logs_password ON access_logs(password_id, time DESC);
-CREATE INDEX IF NOT EXISTS idx_access_logs_rfid ON access_logs(rfid_uid, time DESC);
 
 -- Device Status Table
-CREATE TABLE IF NOT EXISTS device_status (
+DROP TABLE IF EXISTS device_status CASCADE;
+
+CREATE TABLE device_status (
     time TIMESTAMPTZ NOT NULL,
     device_id TEXT NOT NULL,
     gateway_id TEXT NOT NULL,
+    user_id TEXT NOT NULL,
     status TEXT NOT NULL, -- 'ONLINE', 'OFFLINE', etc.
     sequence INTEGER,
     metadata JSONB
@@ -157,339 +211,116 @@ CREATE TABLE IF NOT EXISTS device_status (
 
 SELECT create_hypertable('device_status', 'time', if_not_exists => TRUE);
 
+CREATE INDEX IF NOT EXISTS idx_device_status_user_time ON device_status(user_id, time DESC);
 CREATE INDEX IF NOT EXISTS idx_device_status_device_time ON device_status(device_id, time DESC);
-CREATE INDEX IF NOT EXISTS idx_device_status_status ON device_status(status, time DESC);
 
 -- System Logs Table
-CREATE TABLE IF NOT EXISTS system_logs (
+DROP TABLE IF EXISTS system_logs CASCADE;
+
+CREATE TABLE system_logs (
     time TIMESTAMPTZ NOT NULL,
     gateway_id TEXT,
+    user_id TEXT,
     log_type TEXT NOT NULL, -- 'system_event', 'alert', etc.
     event TEXT NOT NULL,
-    log_level TEXT DEFAULT 'info',
+    severity TEXT, -- 'info', 'warning', 'error', 'critical'
     message TEXT,
     metadata JSONB
 );
 
 SELECT create_hypertable('system_logs', 'time', if_not_exists => TRUE);
 
+CREATE INDEX IF NOT EXISTS idx_system_logs_user_time ON system_logs(user_id, time DESC);
+CREATE INDEX IF NOT EXISTS idx_system_logs_gateway_time ON system_logs(gateway_id, time DESC);
 CREATE INDEX IF NOT EXISTS idx_system_logs_type ON system_logs(log_type, time DESC);
-CREATE INDEX IF NOT EXISTS idx_system_logs_event ON system_logs(event, time DESC);
-CREATE INDEX IF NOT EXISTS idx_system_logs_level ON system_logs(log_level, time DESC);
 
--- Alerts Table (Time-series)
-CREATE TABLE IF NOT EXISTS alerts (
+-- Alerts Table
+DROP TABLE IF EXISTS alerts CASCADE;
+
+CREATE TABLE alerts (
     time TIMESTAMPTZ NOT NULL,
-    device_id TEXT NOT NULL,
-    gateway_id TEXT NOT NULL,
-    alert_type TEXT NOT NULL, -- 'high_temperature', 'low_battery', etc.
-    severity TEXT DEFAULT 'warning',
+    alert_id TEXT,
+    device_id TEXT,
+    gateway_id TEXT,
+    user_id TEXT NOT NULL,
+    alert_type TEXT NOT NULL,
+    severity TEXT NOT NULL,
+    message TEXT,
     value DOUBLE PRECISION,
     threshold DOUBLE PRECISION,
-    message TEXT,
     acknowledged BOOLEAN DEFAULT FALSE,
     acknowledged_at TIMESTAMPTZ,
+    acknowledged_by TEXT,
     metadata JSONB
 );
 
 SELECT create_hypertable('alerts', 'time', if_not_exists => TRUE);
 
-CREATE INDEX IF NOT EXISTS idx_alerts_device_time ON alerts(device_id, time DESC);
-CREATE INDEX IF NOT EXISTS idx_alerts_type ON alerts(alert_type, time DESC);
+CREATE INDEX IF NOT EXISTS idx_alerts_user_time ON alerts(user_id, time DESC);
+CREATE INDEX IF NOT EXISTS idx_alerts_acknowledged ON alerts(acknowledged, time DESC);
 CREATE INDEX IF NOT EXISTS idx_alerts_severity ON alerts(severity, time DESC);
-CREATE INDEX IF NOT EXISTS idx_alerts_ack ON alerts(acknowledged, time DESC);
 
 -- ============================================================================
--- SETTINGS / CONFIGURATION TABLE
+-- SAMPLE DATA - 3 USERS & GATEWAYS
 -- ============================================================================
 
-CREATE TABLE IF NOT EXISTS settings (
-    key TEXT PRIMARY KEY,
-    value JSONB NOT NULL,
-    description TEXT,
-    updated_at TIMESTAMPTZ DEFAULT NOW()
-);
+-- Insert 3 users 
+INSERT INTO users (user_id, username, email, password_hash, full_name, role) VALUES
+('00001', 'Tu', 'atu@gmail.com', '$2b$10$rJ6/ERl/7ZK6jIXtakmdnufrGeIqwDXw3A.YQk4u7dziFMkHbhV.O', 'Thai Thi Minh Tu', 'owner'), --1510
+('00002', 'Thao', 'Thao@gmail.com', '$2b$10$tjUzLukyVWZKE0ofwlsDl.bo.uQ/moJuN5eSKdOUIhpt13O/DT4m2', 'Vuong Linh Thao', 'owner'), --2512
+('00003', 'Anh', 'anh@gmail.com', '$2b$10$.BercNlt4N4EF9dXFazrPecsN9eTtLs46d.rLiMrVUdifm.1ok/V2', 'Dam Vu Duc Anh', 'owner') --2003
+ON CONFLICT (user_id) DO NOTHING;
 
-CREATE INDEX IF NOT EXISTS idx_settings_updated ON settings(updated_at);
+-- Insert 3 gateways
+INSERT INTO gateways (gateway_id, user_id, name, location, status) VALUES
+('Gateway_00001', '00001', 'Gateway Tu', 'Ho Chi Minh', 'online'),
+('Gateway_00002', '00002', 'Gateway Thao', 'Ha Noi', 'online'),
+('Gateway_00003', '00003', 'Gateway Anh', 'Da Nang', 'online')
+ON CONFLICT (gateway_id) DO NOTHING;
 
--- ============================================================================
--- CONTINUOUS AGGREGATES
--- ============================================================================
+-- Insert 4 devices
+INSERT INTO devices (device_id, gateway_id, user_id, device_type, location, communication, status) VALUES
+('rfid_gate_01', 'Gateway_00001', '00001', 'rfid_gate', 'Main Gate', 'LoRa', 'online'),
+('passkey_01', 'Gateway_00002', '00002', 'passkey', 'Front Door', 'WiFi', 'online'),
+('temp_01', 'Gateway_00003', '00003', 'temp_DH11', 'Living Room', 'WiFi', 'online'),
+('fan_01', 'Gateway_00003', '00003', 'relay_fan', 'Bedroom', 'WiFi', 'online')
+ON CONFLICT (device_id) DO NOTHING;
 
-DROP MATERIALIZED VIEW IF EXISTS telemetry_hourly CASCADE;
-DROP MATERIALIZED VIEW IF EXISTS access_daily CASCADE;
-DROP MATERIALIZED VIEW IF EXISTS alerts_daily CASCADE;
+-- Insert sample passwords
+INSERT INTO passwords (password_id, user_id, hash, description) VALUES
+('passwd_00002', '00002', '$2b$10$tjUzLukyVWZKE0ofwlsDl.bo.uQ/moJuN5eSKdOUIhpt13O/DT4m2', 'Vuong Linh Thao') --2512
+ON CONFLICT (password_id) DO NOTHING;
 
--- Hourly Telemetry Aggregates
-CREATE MATERIALIZED VIEW telemetry_hourly
-WITH (timescaledb.continuous) AS
-SELECT
-    time_bucket('1 hour', time) AS bucket,
-    device_id,
-    gateway_id,
-    AVG(temperature) AS avg_temperature,
-    MIN(temperature) AS min_temperature,
-    MAX(temperature) AS max_temperature,
-    AVG(humidity) AS avg_humidity,
-    COUNT(*) AS sample_count
-FROM telemetry
-GROUP BY bucket, device_id, gateway_id
-WITH NO DATA;
-
--- Daily Access Aggregates
-CREATE MATERIALIZED VIEW access_daily
-WITH (timescaledb.continuous) AS
-SELECT
-    time_bucket('1 day', time) AS bucket,
-    device_id,
-    gateway_id,
-    method,
-    result,
-    COUNT(*) AS access_count
-FROM access_logs
-GROUP BY bucket, device_id, gateway_id, method, result
-WITH NO DATA;
-
--- Daily Alerts Aggregates
-CREATE MATERIALIZED VIEW alerts_daily
-WITH (timescaledb.continuous) AS
-SELECT
-    time_bucket('1 day', time) AS bucket,
-    device_id,
-    gateway_id,
-    alert_type,
-    COUNT(*) AS alert_count,
-    AVG(value) AS avg_value,
-    MAX(value) AS max_value
-FROM alerts
-GROUP BY bucket, device_id, gateway_id, alert_type
-WITH NO DATA;
-
--- ============================================================================
--- CONTINUOUS AGGREGATE POLICIES
--- ============================================================================
-
-SELECT add_continuous_aggregate_policy('telemetry_hourly',
-    start_offset => INTERVAL '3 hours',
-    end_offset => INTERVAL '1 hour',
-    schedule_interval => INTERVAL '1 hour',
-    if_not_exists => TRUE
-);
-
-SELECT add_continuous_aggregate_policy('access_daily',
-    start_offset => INTERVAL '3 days',
-    end_offset => INTERVAL '1 day',
-    schedule_interval => INTERVAL '1 day',
-    if_not_exists => TRUE
-);
-
-SELECT add_continuous_aggregate_policy('alerts_daily',
-    start_offset => INTERVAL '3 days',
-    end_offset => INTERVAL '1 day',
-    schedule_interval => INTERVAL '1 day',
-    if_not_exists => TRUE
-);
-
--- ============================================================================
--- DATA RETENTION POLICIES
--- ============================================================================
-
--- Add this at the end of the schema.sql file, after the CREATE MATERIALIZED VIEW statements
-
--- ============================================================================
--- CONTINUOUS AGGREGATE REFRESH POLICIES
--- ============================================================================
-
--- Refresh telemetry_hourly every hour
-DO $$
-BEGIN
-    PERFORM remove_continuous_aggregate_policy('telemetry_hourly', if_exists => true);
-EXCEPTION
-    WHEN OTHERS THEN
-        RAISE NOTICE 'Could not remove existing policy for telemetry_hourly';
-END $$;
-
-SELECT add_continuous_aggregate_policy('telemetry_hourly',
-  start_offset => INTERVAL '3 hours',
-  end_offset => INTERVAL '1 hour',
-  schedule_interval => INTERVAL '1 hour',
-  if_not_exists => TRUE);
-
--- Refresh access_daily every day
-DO $$
-BEGIN
-    PERFORM remove_continuous_aggregate_policy('access_daily', if_exists => true);
-EXCEPTION
-    WHEN OTHERS THEN
-        RAISE NOTICE 'Could not remove existing policy for access_daily';
-END $$;
-
-SELECT add_continuous_aggregate_policy('access_daily',
-  start_offset => INTERVAL '3 days',
-  end_offset => INTERVAL '1 day',
-  schedule_interval => INTERVAL '1 day',
-  if_not_exists => TRUE);
-
--- Refresh alerts_daily every day
-DO $$
-BEGIN
-    PERFORM remove_continuous_aggregate_policy('alerts_daily', if_exists => true);
-EXCEPTION
-    WHEN OTHERS THEN
-        RAISE NOTICE 'Could not remove existing policy for alerts_daily';
-END $$;
-
-SELECT add_continuous_aggregate_policy('alerts_daily',
-  start_offset => INTERVAL '3 days',
-  end_offset => INTERVAL '1 day',
-  schedule_interval => INTERVAL '1 day',
-  if_not_exists => TRUE);
-
--- ============================================================================
--- INITIAL DATA REFRESH
--- ============================================================================
-
--- Refresh all continuous aggregates with existing data
-CALL refresh_continuous_aggregate('telemetry_hourly', NULL, NULL);
-CALL refresh_continuous_aggregate('access_daily', NULL, NULL);
-CALL refresh_continuous_aggregate('alerts_daily', NULL, NULL);
-
-COMMIT;
-
--- ============================================================================
--- FUNCTIONS
--- ============================================================================
-
-CREATE OR REPLACE FUNCTION update_updated_at_column()
-RETURNS TRIGGER AS $$
-BEGIN
-    NEW.updated_at = NOW();
-    RETURN NEW;
-END;
-$$ LANGUAGE plpgsql;
-
--- Function to update last_used timestamp for passwords
-CREATE OR REPLACE FUNCTION update_password_last_used()
-RETURNS TRIGGER AS $$
-BEGIN
-    IF NEW.password_id IS NOT NULL THEN
-        UPDATE passwords 
-        SET last_used = NEW.time 
-        WHERE password_id = NEW.password_id;
-    END IF;
-    RETURN NEW;
-END;
-$$ LANGUAGE plpgsql;
-
--- Function to update last_used timestamp for RFID cards
-CREATE OR REPLACE FUNCTION update_rfid_last_used()
-RETURNS TRIGGER AS $$
-BEGIN
-    IF NEW.rfid_uid IS NOT NULL THEN
-        UPDATE rfid_cards 
-        SET last_used = NEW.time 
-        WHERE uid = NEW.rfid_uid;
-    END IF;
-    RETURN NEW;
-END;
-$$ LANGUAGE plpgsql;
-
--- ============================================================================
--- TRIGGERS
--- ============================================================================
-
-DROP TRIGGER IF EXISTS update_gateways_updated_at ON gateways;
-CREATE TRIGGER update_gateways_updated_at
-    BEFORE UPDATE ON gateways
-    FOR EACH ROW
-    EXECUTE FUNCTION update_updated_at_column();
-
-DROP TRIGGER IF EXISTS update_devices_updated_at ON devices;
-CREATE TRIGGER update_devices_updated_at
-    BEFORE UPDATE ON devices
-    FOR EACH ROW
-    EXECUTE FUNCTION update_updated_at_column();
-
-DROP TRIGGER IF EXISTS update_access_rules_updated_at ON access_rules;
-CREATE TRIGGER update_access_rules_updated_at
-    BEFORE UPDATE ON access_rules
-    FOR EACH ROW
-    EXECUTE FUNCTION update_updated_at_column();
-
--- Trigger to update password last_used
-DROP TRIGGER IF EXISTS update_password_last_used_trigger ON access_logs;
-CREATE TRIGGER update_password_last_used_trigger
-    AFTER INSERT ON access_logs
-    FOR EACH ROW
-    EXECUTE FUNCTION update_password_last_used();
-
--- Trigger to update RFID last_used
-DROP TRIGGER IF EXISTS update_rfid_last_used_trigger ON access_logs;
-CREATE TRIGGER update_rfid_last_used_trigger
-    AFTER INSERT ON access_logs
-    FOR EACH ROW
-    EXECUTE FUNCTION update_rfid_last_used();
+-- Insert sample RFID cards
+INSERT INTO rfid_cards (uid, user_id, card_type, description) VALUES
+('8675f205', '00001', 'MIFARE Classic', 'Thai Thi Minh Tu')
+ON CONFLICT (uid) DO NOTHING;
 
 -- ============================================================================
 -- VIEWS
 -- ============================================================================
 
--- Active Devices View
-CREATE OR REPLACE VIEW active_devices AS
+CREATE OR REPLACE VIEW user_devices_view AS
 SELECT 
     d.device_id,
+    d.user_id,
     d.gateway_id,
     d.device_type,
     d.location,
     d.status,
     d.last_seen,
-    d.firmware_version,
+    u.username,
+    u.full_name,
     g.name AS gateway_name
 FROM devices d
-LEFT JOIN gateways g ON d.gateway_id = g.gateway_id
-WHERE d.status IN ('online', 'active');
+JOIN users u ON d.user_id = u.user_id
+JOIN gateways g ON d.gateway_id = g.gateway_id
+WHERE u.active = TRUE;
 
--- Active Access Credentials View
-CREATE OR REPLACE VIEW active_credentials AS
-SELECT 
-    'password' AS credential_type,
-    password_id AS credential_id,
-    owner,
-    active,
-    created_at,
-    last_used,
-    expires_at
-FROM passwords
-WHERE active = TRUE AND (expires_at IS NULL OR expires_at > NOW())
-UNION ALL
-SELECT 
-    'rfid' AS credential_type,
-    uid AS credential_id,
-    owner,
-    active,
-    registered_at AS created_at,
-    last_used,
-    expires_at
-FROM rfid_cards
-WHERE active = TRUE AND (expires_at IS NULL OR expires_at > NOW());
-
--- Recent Access Summary
-CREATE OR REPLACE VIEW recent_access_summary AS
-SELECT 
-    device_id,
-    method,
-    result,
-    COUNT(*) AS count,
-    MAX(time) AS last_access
-FROM access_logs
-WHERE time > NOW() - INTERVAL '24 hours'
-GROUP BY device_id, method, result
-ORDER BY last_access DESC;
-
--- Device Health View
-CREATE OR REPLACE VIEW device_health AS
+CREATE OR REPLACE VIEW device_health_view AS
 SELECT 
     d.device_id,
+    d.user_id,
     d.device_type,
     d.location,
     d.status,
@@ -503,23 +334,6 @@ SELECT
     END AS health_status
 FROM devices d;
 
--- Recent Alerts View
-CREATE OR REPLACE VIEW recent_alerts AS
-SELECT 
-    a.time,
-    a.device_id,
-    a.alert_type,
-    a.severity,
-    a.value,
-    a.threshold,
-    a.acknowledged,
-    d.device_type,
-    d.location
-FROM alerts a
-LEFT JOIN devices d ON a.device_id = d.device_id
-WHERE a.time > NOW() - INTERVAL '24 hours'
-ORDER BY a.time DESC;
-
 -- ============================================================================
 -- PERMISSIONS
 -- ============================================================================
@@ -529,12 +343,6 @@ GRANT ALL PRIVILEGES ON ALL SEQUENCES IN SCHEMA public TO iot;
 GRANT EXECUTE ON ALL FUNCTIONS IN SCHEMA public TO iot;
 
 -- ============================================================================
--- VERIFICATION
+-- DONE
 -- ============================================================================
-
-SELECT 
-    'Schema creation complete!' AS status,
-    COUNT(*) AS varchar_columns_remaining
-FROM information_schema.columns
-WHERE table_schema = 'public'
-    AND data_type = 'character varying';
+SELECT 'Schema V2 migration complete!' AS status;

@@ -1,0 +1,177 @@
+{
+  "passwords": {
+    "user_001": {
+      "hash": "064b1b97b8762e109f8280fd47bb5c5ab33adca5a7f7231aef22b23ce31fbfa4",
+      "active": true,
+      "owner": "Admin User",
+      "description": "Primary admin password",
+      "created_at": "2025-10-01T10:00:00Z",
+      "last_used": null,
+      "expires_at": null
+    },
+    "user_002": {
+      "hash": "5994471abb01112afcc18159f6cc74b4f511b99806da59b3caf5a9c173cacfc5",
+      "active": true,
+      "owner": "Family Member",
+      "description": "Secondary user",
+      "created_at": "2025-10-01T10:00:00Z",
+      "last_used": null,
+      "expires_at": null
+    },
+    "guest_001": {
+      "hash": "03ac674216f3e15c761ee1a5e255f067953623c8b388b4459e13f978d7c846f4",
+      "active": false,
+      "owner": "Guest User",
+      "description": "Temporary guest access",
+      "created_at": "2025-10-01T10:00:00Z",
+      "expires_at": "2025-10-31T23:59:59Z",
+      "last_used": null
+    }
+  },
+  "rfid_cards": {
+    "8675f205": {
+      "active": true,
+      "owner": "John Doe",
+      "card_type": "MIFARE Classic",
+      "description": "Primary access card",
+      "registered_at": "2025-10-01T10:00:00Z",
+      "last_used": "2025-10-26T00:39:40.061614",
+      "expires_at": null
+    },
+    "05d4e5f6": {
+      "active": true,
+      "owner": "Jane Smith",
+      "card_type": "MIFARE Classic",
+      "description": "Secondary access card",
+      "registered_at": "2025-10-01T10:00:00Z",
+      "last_used": null,
+      "expires_at": null
+    },
+    "06a7b8c9": {
+      "active": false,
+      "owner": "Former Employee",
+      "card_type": "MIFARE Classic",
+      "description": "Deactivated card",
+      "registered_at": "2025-09-01T10:00:00Z",
+      "deactivated_at": "2025-09-30T18:00:00Z",
+      "last_used": "2025-09-30T17:45:00Z",
+      "deactivation_reason": "Employee left company"
+    }
+  },
+  "devices": {
+    "passkey_01": {
+      "device_type": "passkey",
+      "location": "Front Door",
+      "ip_address": "192.168.0.184",
+      "mac_address": "A4:CF:12:34:56:78",
+      "registered_at": "2025-10-01T10:00:00Z",
+      "last_seen": null,
+      "firmware_version": "2.0.0",
+      "status": "online",
+      "health_check_interval": 300,
+      "expected_heartbeat_interval": 600
+    },
+    "rfid_gate_01": {
+      "device_type": "rfid_gate",
+      "location": "Main Gate",
+      "communication": "LoRa",
+      "registered_at": "2025-10-01T10:00:00Z",
+      "last_seen": null,
+      "firmware_version": "1.5.0",
+      "status": "online",
+      "lora_channel": 23,
+      "lora_address": 1
+    },
+    "temp_01": {
+      "device_type": "temp_DH11",
+      "location": "Living Room",
+      "communication": "WiFi",
+      "ip_address": "192.168.0.185",
+      "mac_address": "B8:27:EB:12:34:56",
+      "registered_at": "2025-10-01T10:00:00Z",
+      "last_seen": null,
+      "firmware_version": "2.0.0",
+      "status": "online",
+      "telemetry_interval": 30,
+      "expected_heartbeat_interval": 300
+    },
+    "fan_01": {
+      "device_type": "relay_fan",
+      "location": "Bedroom",
+      "communication": "WiFi",
+      "ip_address": "192.168.0.186",
+      "mac_address": "C4:4F:33:12:34:56",
+      "registered_at": "2025-10-01T10:00:00Z",
+      "last_seen": null,
+      "firmware_version": "2.0.0",
+      "status": "online",
+      "expected_heartbeat_interval": 300
+    }
+  },
+  "access_rules": {
+    "working_hours": {
+      "enabled": true,
+      "start_time": "06:00",
+      "end_time": "22:00",
+      "days_of_week": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "allowed_methods": [
+        "rfid",
+        "passkey"
+      ],
+      "restricted_users": [],
+      "description": "Normal access during working hours on weekdays"
+    },
+    "night_mode": {
+      "enabled": true,
+      "start_time": "22:00",
+      "end_time": "06:00",
+      "days_of_week": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6
+      ],
+      "allowed_methods": [
+        "passkey"
+      ],
+      "restricted_users": [
+        "guest_001"
+      ],
+      "description": "Restricted access at night - guests cannot enter"
+    },
+    "weekend_access": {
+      "enabled": true,
+      "start_time": "00:00",
+      "end_time": "23:59",
+      "days_of_week": [
+        0,
+        6
+      ],
+      "allowed_methods": [
+        "rfid",
+        "passkey"
+      ],
+      "restricted_users": [],
+      "description": "Full access on weekends"
+    }
+  },
+  "system_info": {
+    "gateway_id": "Gateway1",
+    "installation_date": "2025-10-01T10:00:00Z",
+    "last_backup": null,
+    "database_version": "2.0",
+    "total_access_attempts": 0,
+    "successful_access": 0,
+    "failed_access": 0,
+    "security_alerts": 0
+  }
+}

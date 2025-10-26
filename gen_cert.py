@@ -23,7 +23,7 @@ DEFAULTS = {
     "gateway_common_name": "gateway.local",
     "server_common_name": "VPS.server",
     "broker_sans": ["broker.local", "192.168.1.205"],
-    "gateway_sans": ["gateway.local", "192.168.1.205"],
+    "gateway_sans": ["gateway2.local", "192.168.1.205"],
     "server_sans": ["VPS.server", "159.223.63.61"],
     "key_size": 2048,
     "ca_valid_days": 3650,      # 10 years

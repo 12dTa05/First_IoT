@@ -39,36 +39,34 @@ services:
       - "8883:8883"
     networks:
       - iot-network
-    healthcheck:
-      test: ["CMD-SHELL", "chmod 0700 /mosquitto/acl/acl.conf"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
 
   api:
-    build: ./api
-    container_name: iot-api
+    build:
+      context: ./api
+      dockerfile: Dockerfile
+    container_name: iot_api
     restart: unless-stopped
     environment:
       NODE_ENV: production
-      DB_HOST: postgres
+      API_PORT: 3000
+      DB_HOST: timescaledb
       DB_PORT: 5432
       DB_NAME: iot_db
       DB_USER: iot
       DB_PASSWORD: ${DB_PASSWORD}
       MQTT_HOST: mosquitto
-      MQTT_PORT: 1883
-      MQTT_USERNAME: ${MQTT_USERNAME}
-      MQTT_PASSWORD: ${MQTT_PASSWORD}
+      MQTT_PORT: 8883
       JWT_SECRET: ${JWT_SECRET}
-      API_PORT: 3000
+    volumes:
+      - ./api:/app
+      - ./mosquitto/certs:/app/certs
     ports:
       - "3000:3000"
     depends_on:
-      postgres:
+      timescaledb:
         condition: service_healthy
       mosquitto:
-        condition: service_healthy
+        condition: service_started
     networks:
       - iot-network
     # healthcheck:
@@ -77,25 +75,25 @@ services:
     #   timeout: 10s
     #   retries: 3
 
-  nginx:
-    image: nginx:alpine
-    container_name: iot-nginx
+  adminer:
+    image: adminer:latest
+    container_name: iot_adminer
     restart: unless-stopped
     ports:
-      - "80:80"
-      - "443:443"
-    volumes:
-      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
-      - ./nginx/ssl:/etc/nginx/ssl:ro
+      - "8080:8080"
+    environment:
+      ADMINER_DEFAULT_SERVER: timescaledb
     depends_on:
-      - api
-    networks:
-      - iot-network
+      - timescaledb
 
 networks:
   iot-network:
     driver: bridge
 
 volumes:
-  postgres_data:
-    driver: local
+  timescaledb_data:
+    name: iot_timescaledb_data
+  mosquitto_data:
+    name: iot_mosquitto_data
+  mosquitto_log:
+    name: iot_mosquitto_log
