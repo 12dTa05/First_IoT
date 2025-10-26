@@ -1,0 +1,52 @@
+2025-10-26 23:13:11,186 - gateway1 - INFO - ============================================================
+2025-10-26 23:13:11,187 - gateway1 - INFO -  Starting Gateway 1 (User 1 - RFID Gate via LoRa)
+2025-10-26 23:13:11,187 - gateway1 - INFO - ============================================================
+2025-10-26 23:13:11,196 - gateway1 - INFO -  Connecting to VPS Broker...
+2025-10-26 23:13:14,952 - gateway1 - INFO -  Connected to VPS Broker
+2025-10-26 23:13:15,032 - gateway1 - INFO -  VPS Broker Connected
+2025-10-26 23:13:15,033 - gateway1 - INFO -  Subscribed to: gateway/Gateway1/command/#
+2025-10-26 23:13:15,034 - gateway1 - INFO -  Published to VPS: gateway/Gateway1/status/gateway
+2025-10-26 23:13:16,955 - gateway1 - INFO -  Starting LoRa Handler...
+2025-10-26 23:13:16,955 - gateway1 - ERROR -  LoRa Serial Connection Failed: could not open port 'COM5': FileNotFoundError(2, 'The system cannot find the file specified.', None, 2)
+2025-10-26 23:13:16,956 - gateway1 - ERROR -  Failed to start LoRa handler. Exiting.
+2025-10-26 23:13:33,798 - gateway1 - INFO - ============================================================
+2025-10-26 23:13:33,798 - gateway1 - INFO -  Starting Gateway 1 (User 1 - RFID Gate via LoRa)
+2025-10-26 23:13:33,798 - gateway1 - INFO - ============================================================
+2025-10-26 23:13:33,799 - gateway1 - INFO -  Connecting to VPS Broker...
+2025-10-26 23:13:34,285 - gateway1 - INFO -  Connected to VPS Broker
+2025-10-26 23:13:34,375 - gateway1 - INFO -  VPS Broker Connected
+2025-10-26 23:13:34,375 - gateway1 - INFO -  Subscribed to: gateway/Gateway1/command/#
+2025-10-26 23:13:34,376 - gateway1 - INFO -  Published to VPS: gateway/Gateway1/status/gateway
+2025-10-26 23:13:36,299 - gateway1 - INFO -  Starting LoRa Handler...
+2025-10-26 23:13:36,368 - gateway1 - INFO -  LoRa Serial Connected: COM7
+2025-10-26 23:13:36,368 - gateway1 - INFO -  LoRa Handler Started
+2025-10-26 23:13:36,369 - gateway1 - INFO - ============================================================
+2025-10-26 23:13:36,369 - gateway1 - INFO -  Published to VPS: gateway/Gateway1/status/gateway
+2025-10-26 23:13:36,370 - gateway1 - INFO -  Gateway 1 Running Successfully
+2025-10-26 23:13:36,370 - gateway1 - INFO -  Heartbeat sent
+2025-10-26 23:13:36,370 - gateway1 - INFO -  LoRa: Listening for RFID scans on COM7
+2025-10-26 23:13:36,371 - gateway1 - INFO -   VPS: Connected to 159.223.63.61
+2025-10-26 23:13:36,371 - gateway1 - INFO - ============================================================
+2025-10-26 23:14:36,375 - gateway1 - INFO -  Published to VPS: gateway/Gateway1/status/gateway
+2025-10-26 23:14:36,376 - gateway1 - INFO -  Heartbeat sent
+2025-10-26 23:15:36,389 - gateway1 - INFO -  Published to VPS: gateway/Gateway1/status/gateway
+2025-10-26 23:15:36,390 - gateway1 - INFO -  Heartbeat sent
+2025-10-26 23:16:36,406 - gateway1 - INFO -  Published to VPS: gateway/Gateway1/status/gateway
+2025-10-26 23:16:36,407 - gateway1 - INFO -  Heartbeat sent
+2025-10-26 23:17:36,415 - gateway1 - INFO -  Published to VPS: gateway/Gateway1/status/gateway
+2025-10-26 23:17:36,416 - gateway1 - INFO -  Heartbeat sent
+2025-10-26 23:18:36,431 - gateway1 - INFO -  Published to VPS: gateway/Gateway1/status/gateway
+2025-10-26 23:18:36,432 - gateway1 - INFO -  Heartbeat sent
+2025-10-26 23:19:36,449 - gateway1 - INFO -  Published to VPS: gateway/Gateway1/status/gateway
+2025-10-26 23:19:36,449 - gateway1 - INFO -  Heartbeat sent
+2025-10-26 23:19:45,695 - gateway1 - WARNING -  VPS Broker Disconnected
+2025-10-26 23:19:47,550 - gateway1 - INFO -  VPS Broker Connected
+2025-10-26 23:19:47,551 - gateway1 - INFO -  Subscribed to: gateway/Gateway1/command/#
+2025-10-26 23:19:47,552 - gateway1 - INFO -  Published to VPS: gateway/Gateway1/status/gateway
+2025-10-26 23:20:36,457 - gateway1 - INFO -  Published to VPS: gateway/Gateway1/status/gateway
+2025-10-26 23:20:36,458 - gateway1 - INFO -  Heartbeat sent
+2025-10-26 23:21:36,474 - gateway1 - INFO -  Published to VPS: gateway/Gateway1/status/gateway
+2025-10-26 23:21:36,475 - gateway1 - INFO -  Heartbeat sent
+2025-10-26 23:21:43,788 - gateway1 - INFO -  Shutting down Gateway 1...
+2025-10-26 23:21:43,790 - gateway1 - INFO -  LoRa Serial Closed
+2025-10-26 23:21:44,756 - gateway1 - INFO -  Gateway 1 stopped

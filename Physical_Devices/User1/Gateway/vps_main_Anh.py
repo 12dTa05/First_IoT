@@ -48,7 +48,7 @@ CONFIG = {
     'user_id': 'user1',
     
     # LoRa configuration cho RFID Gate
-    'lora_port': 'COM5',  # Thay đổi theo port của bạn
+    'lora_port': 'COM7',  # Thay đổi theo port của bạn
     'lora_baudrate': 9600,
     
     # VPS broker

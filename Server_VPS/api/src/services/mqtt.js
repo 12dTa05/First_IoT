@@ -21,7 +21,7 @@ async function connect() {
   };
 
   const host = process.env.MQTT_HOST || 'localhost';
-  const port = process.env.MQTT_PORT || 8883;
+  const port = process.env.MQTT_PORT || 1883;
 
   client = mqtt.connect(`mqtts://${host}:${port}`, options);
 
