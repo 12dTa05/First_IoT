@@ -333,3 +333,6 @@
 2025-10-27 15:14:48,076 - gateway2 - INFO -  Published to VPS: gateway/Gateway2/status/gateway
 2025-10-27 15:14:48,077 - gateway2 - INFO -  Heartbeat sent
 2025-10-27 15:15:48,085 - gateway2 - INFO -  Published to VPS: gateway/Gateway2/status/gateway
+2025-10-27 15:15:48,086 - gateway2 - INFO -  Heartbeat sent
+2025-10-27 15:16:21,996 - gateway2 - INFO -  Shutting down Gateway 2...
+2025-10-27 15:16:22,592 - gateway2 - INFO -  Gateway 2 stopped
