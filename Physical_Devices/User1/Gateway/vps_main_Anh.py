@@ -283,7 +283,7 @@ class LoRaHandler:
         """Process received LoRa packet"""
         try:
             if msg_type == 0x01:  # RFID Scan
-                uid = payload[:4].hex()
+                uid = payload.hex()
                 logger.info(f" RFID Scanned: {uid}")
                 self.handle_rfid_access(uid)
                 
@@ -297,43 +297,86 @@ class LoRaHandler:
             logger.error(f" Error processing packet: {e}")
     
     def handle_rfid_access(self, uid):
-        """Handle RFID access request"""
-        # Check access permission from local database
-        granted, deny_reason = self.db_manager.check_rfid_access(uid)
-        
-        # Send response back to RFID gate via LoRa
-        response = 0x01 if granted else 0x00
-        self.send_access_response(response)
-        
-        # Publish access log to VPS
-        access_log = {
+        """Handle RFID access request with improved logic (same as new gateway code)"""
+
+        logger.info(f"[RFID] Scanned UID: {uid}")
+
+        # Check if card exists and active
+        is_valid = uid in self.db_manager.devices_data.get('rfid_cards', {}) \
+                and self.db_manager.devices_data['rfid_cards'][uid].get('active', False)
+
+        access_allowed = False
+        deny_reason = 'invalid_card'
+
+        if is_valid:
+            # ---- NEW: Check access rules like time/day ----
+            card = self.db_manager.devices_data['rfid_cards'][uid]
+
+            # Time restriction
+            rules = self.db_manager.devices_data.get('access_rules', {})
+            now = datetime.now()
+            allow = True
+
+            if rules.get('enabled', True):
+                # Day restriction
+                allowed_days = rules.get('allowed_days', [0,1,2,3,4,5,6])
+                if now.weekday() not in allowed_days:
+                    allow = False
+                    deny_reason = 'outside_allowed_days'
+
+                # Time window
+                if 'start_hour' in rules and 'end_hour' in rules:
+                    h = now.hour
+                    if not (rules['start_hour'] <= h < rules['end_hour']):
+                        allow = False
+                        deny_reason = 'outside_allowed_hours'
+
+            if allow:
+                access_allowed = True
+            else:
+                access_allowed = False
+
+        # Log entry (same format as new code)
+        log_entry = {
+            'method': 'rfid',
             'gateway_id': self.config['gateway_id'],
             'device_id': 'rfid_gate_01',
-            'method': 'rfid',
-            'uid': uid,
-            'result': 'granted' if granted else 'denied',
-            'deny_reason': deny_reason,
+            'rfid_uid': uid,
+            'result': 'granted' if (is_valid and access_allowed) else 'denied',
+            'deny_reason': None if access_allowed else deny_reason,
             'timestamp': datetime.now().isoformat()
         }
-        
-        topic = self.config['topics']['vps_access'].format(device_id='rfid_gate_01')
-        self.mqtt_manager.publish_to_vps(topic, access_log)
-        
-        result_text = ' Access GRANTED' if granted else ' Access DENIED'
-        logger.info(f"{result_text}: {uid} {f'({deny_reason})' if deny_reason else ''}")
+
+        # ---- NEW: Save last_used ----
+        if is_valid and access_allowed:
+            self.db_manager.devices_data['rfid_cards'][uid]['last_used'] = datetime.now().isoformat()
+            self.db_manager.save_devices()
+
+        # ---- NEW: Send LoRa response matching new firmware ----
+        response_status = "GRANT" if (is_valid and access_allowed) else "DENY5"
+        self.send_access_response(response_status)
+
+        # ---- NEW: Publish log to VPS using new topic ----
+        topic = f"iot/{self.config['gateway_id']}/access"
+        self.mqtt_manager.publish_to_vps(topic, log_entry)
+
+        if access_allowed:
+            logger.info(f"[RFID] {uid}: ✅ ACCESS GRANTED")
+        else:
+            logger.warning(f"[RFID] {uid}: ❌ ACCESS DENIED ({deny_reason})")
+
     
-    def send_access_response(self, response):
-        """Send access response to RFID gate via LoRa"""
+    def send_access_response(self, status):
+        """Send access response to LoRa gate in new protocol format"""
         try:
-            # Packet format: AA 55 02 01 [response] [CRC32]
-            packet = bytearray([0xAA, 0x55, 0x02, 0x01, response])
-            crc = crc32(packet)
-            packet.extend(struct.pack('<I', crc))
-            
+            response_bytes = status.encode('utf-8')
+            packet = bytearray([0xC0, 0x00, 0x00, 0x00, 0x00, 0x17, len(response_bytes)])
+            packet.extend(response_bytes)
             self.serial_port.write(packet)
-            logger.info(f" Sent LoRa response: {response}")
+            logger.info(f"[LoRa] Sent response: {status}")
         except Exception as e:
-            logger.error(f" Error sending LoRa response: {e}")
+            logger.error(f"[LoRa] Error sending response: {e}")
+
     
     def publish_gate_status(self, status, sequence):
         """Publish RFID gate status to VPS"""
