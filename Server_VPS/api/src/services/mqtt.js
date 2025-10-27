@@ -8,25 +8,41 @@ function connect() {
   return new Promise((resolve, reject) => {
     const host = process.env.MQTT_HOST || 'mosquitto';
     const port = process.env.MQTT_PORT || 1883;
+    const username = process.env.MQTT_USERNAME || 'vps_api_server';
+    const password = process.env.MQTT_PASSWORD || '2003';
 
     const url = `mqtt://${host}:${port}`;
-    client = mqtt.connect(url);
+    const options = {
+      clientId: 'iot-api-server',
+      username: username,
+      password: password
+    };
+    
+    client = mqtt.connect(url, options);
 
     client.on('connect', () => {
       console.log('MQTT connected');
-      client.subscribe('gateway/+/+/+');
+      
+      client.subscribe('gateway/+/+/+', (err) => {
+        if (err) {
+          console.error('Subscribe failed:', err);
+        } else {
+          console.log('✅ Subscribed to: gateway/+/+/+');
+        }
+      });
+      
       resolve();
     });
 
-    client.on('message', (topic, message) => {
+    client.on('message', async (topic, message) => {
       console.log(`📨 MQTT Received → ${topic}: ${message.toString()}`);
-      handleMessage(topic, message);
+      await handleMessage(topic, message);
     });
 
-
-    client.on('message', handleMessage);
-
-    client.on('error', reject);
+    client.on('error', (err) => {
+      console.error('MQTT Error:', err);
+      reject(err);
+    });
   });
 }
 
@@ -47,8 +63,13 @@ async function handleMessage(topic, message) {
       `SELECT user_id FROM gateways WHERE gateway_id = $1 LIMIT 1`,
       [gatewayId]
     );
-    if (userQuery.rowCount === 0) return;
+    if (userQuery.rowCount === 0) {
+      console.error(`❌ Gateway not found in DB: ${gatewayId}`); 
+      return;
+    }
+
     const userId = userQuery.rows[0].user_id;
+    console.log(`✅ Processing for user: ${userId}, gateway: ${gatewayId}`);
 
     // → Nếu là heartbeat của gateway:
     //    gateway/GatewayX/status/gateway
