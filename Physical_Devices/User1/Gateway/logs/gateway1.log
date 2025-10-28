@@ -182,3 +182,11 @@
 2025-10-26 23:54:40,847 - gateway1 - INFO -  Heartbeat sent
 2025-10-26 23:55:40,856 - gateway1 - INFO -  Published to VPS: gateway/Gateway1/status/gateway
 2025-10-26 23:55:40,856 - gateway1 - INFO -  Heartbeat sent
+2025-10-28 14:01:25,397 - gateway1 - INFO - ============================================================
+2025-10-28 14:01:25,397 - gateway1 - INFO -  Starting Gateway 1 (User 1 - RFID Gate via LoRa)
+2025-10-28 14:01:25,397 - gateway1 - INFO - ============================================================
+2025-10-28 14:01:25,408 - gateway1 - INFO -  Connecting to VPS Broker...
+2025-10-28 14:01:30,518 - gateway1 - ERROR -  Failed to connect to VPS Broker: timed out
+2025-10-28 14:01:32,520 - gateway1 - INFO -  Starting LoRa Handler...
+2025-10-28 14:01:32,521 - gateway1 - ERROR -  LoRa Serial Connection Failed: could not open port 'COM7': FileNotFoundError(2, 'The system cannot find the file specified.', None, 2)
+2025-10-28 14:01:32,522 - gateway1 - ERROR -  Failed to start LoRa handler. Exiting.

@@ -44,7 +44,7 @@ services:
     build:
       context: ./api
       dockerfile: Dockerfile
-    container_name: iot_api
+    container_name: iot-api
     restart: unless-stopped
     environment:
       NODE_ENV: production
@@ -74,7 +74,7 @@ services:
 
   adminer:
     image: adminer:latest
-    container_name: iot_adminer
+    container_name: iot-adminer
     restart: unless-stopped
     ports:
       - "127.0.0.1:8080:8080"

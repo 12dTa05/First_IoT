@@ -1,6 +1,6 @@
 const mqtt = require('mqtt');
 const db = require('./database');
-const { verifyGatewayOwnership, verifyDeviceOwnership } = require('../utils/ownership');
+// const { verifyGatewayOwnership, verifyDeviceOwnership } = require('../utils/ownership');
 
 let client = null;
 
@@ -8,40 +8,47 @@ function connect() {
   return new Promise((resolve, reject) => {
     const host = process.env.MQTT_HOST || 'mosquitto';
     const port = process.env.MQTT_PORT || 1883;
-    const username = process.env.MQTT_USERNAME || 'vps_api_server';
-    const password = process.env.MQTT_PASSWORD || '2003';
 
     const url = `mqtt://${host}:${port}`;
+    
+    // Kết nối MQTT không bảo mật - không username, password, không TLS
     const options = {
+      clean: false,
       clientId: 'iot-api-server',
-      username: username,
-      password: password
+      reconnectPeriod: 5000,
+      connectTimeout: 30000
     };
     
     client = mqtt.connect(url, options);
 
     client.on('connect', () => {
-      console.log('MQTT connected');
-      
-      client.subscribe('gateway/+/+/+', (err) => {
+      console.log('MQTT connected to', url);
+      client.subscribe('gateway/#', (err) => {
         if (err) {
-          console.error('Subscribe failed:', err);
+          console.error('Subscribe error:', err);
         } else {
-          console.log('✅ Subscribed to: gateway/+/+/+');
+          console.log('Subscribed to gateway/#');
         }
       });
-      
       resolve();
     });
 
-    client.on('message', async (topic, message) => {
+    client.on('message', (topic, message) => {
       console.log(`📨 MQTT Received → ${topic}: ${message.toString()}`);
-      await handleMessage(topic, message);
+      handleMessage(topic, message);
     });
 
     client.on('error', (err) => {
       console.error('MQTT Error:', err);
       reject(err);
+    });
+
+    client.on('close', () => {
+      console.log('MQTT connection closed');
+    });
+
+    client.on('reconnect', () => {
+      console.log('MQTT reconnecting...');
     });
   });
 }
@@ -63,13 +70,8 @@ async function handleMessage(topic, message) {
       `SELECT user_id FROM gateways WHERE gateway_id = $1 LIMIT 1`,
       [gatewayId]
     );
-    if (userQuery.rowCount === 0) {
-      console.error(`❌ Gateway not found in DB: ${gatewayId}`); 
-      return;
-    }
-
+    if (userQuery.rowCount === 0) return;
     const userId = userQuery.rows[0].user_id;
-    console.log(`✅ Processing for user: ${userId}, gateway: ${gatewayId}`);
 
     // → Nếu là heartbeat của gateway:
     //    gateway/GatewayX/status/gateway
@@ -78,10 +80,10 @@ async function handleMessage(topic, message) {
     }
 
     // Nếu có deviceId thì kiểm tra quyền sở hữu thiết bị
-    if (deviceId) {
-      const isOwner = await verifyDeviceOwnership(deviceId, userId);
-      if (!isOwner) return; // không lưu nếu không phải thiết bị của user này
-    }
+    // if (deviceId) {
+    //   const isOwner = await verifyDeviceOwnership(deviceId, userId);
+    //   if (!isOwner) return; // không lưu nếu không phải thiết bị của user này
+    // }
 
     switch (messageType) {
       case 'telemetry':
@@ -163,4 +165,21 @@ async function saveAlert(gatewayId, userId, deviceId, data) {
   );
 }
 
-module.exports = { connect };
+function publish(topic, message) {
+  if (!client || !client.connected) {
+    console.error('MQTT client not connected');
+    return false;
+  }
+  
+  const payload = typeof message === 'string' ? message : JSON.stringify(message);
+  client.publish(topic, payload, { qos: 0 }, (err) => {
+    if (err) {
+      console.error('Publish error:', err);
+    } else {
+      console.log(`📤 MQTT Published → ${topic}: ${payload}`);
+    }
+  });
+  return true;
+}
+
+module.exports = { connect, publish };
