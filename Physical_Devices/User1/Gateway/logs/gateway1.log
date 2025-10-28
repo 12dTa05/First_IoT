@@ -201,3 +201,279 @@
 2025-10-28 14:04:58,518 - gateway1 - INFO -  Starting LoRa Handler...
 2025-10-28 14:04:58,518 - gateway1 - ERROR -  LoRa Serial Connection Failed: could not open port 'COM7': FileNotFoundError(2, 'The system cannot find the file specified.', None, 2)
 2025-10-28 14:04:58,519 - gateway1 - ERROR -  Failed to start LoRa handler. Exiting.
+2025-10-28 15:02:33,355 - gateway1 - INFO - ============================================================
+2025-10-28 15:02:33,356 - gateway1 - INFO -  Starting Gateway 1 (User 1 - RFID Gate via LoRa)
+2025-10-28 15:02:33,356 - gateway1 - INFO - ============================================================
+2025-10-28 15:02:33,364 - gateway1 - INFO -  Connecting to VPS Broker...
+2025-10-28 15:02:33,687 - gateway1 - INFO -  Connected to VPS Broker
+2025-10-28 15:02:33,774 - gateway1 - INFO -  VPS Broker Connected
+2025-10-28 15:02:33,775 - gateway1 - INFO -  Subscribed to: gateway/Gateway1/command/#
+2025-10-28 15:02:33,775 - gateway1 - INFO -  Published to VPS: gateway/Gateway1/status/gateway
+2025-10-28 15:02:35,718 - gateway1 - INFO -  Starting LoRa Handler...
+2025-10-28 15:02:35,781 - gateway1 - INFO -  LoRa Serial Connected: COM7
+2025-10-28 15:02:35,789 - gateway1 - INFO -  LoRa Handler Started
+2025-10-28 15:02:35,789 - gateway1 - INFO - ============================================================
+2025-10-28 15:02:35,789 - gateway1 - INFO -  Published to VPS: gateway/Gateway1/status/gateway
+2025-10-28 15:02:35,789 - gateway1 - INFO -  Gateway 1 Running Successfully
+2025-10-28 15:02:35,789 - gateway1 - INFO -  Heartbeat sent
+2025-10-28 15:02:35,789 - gateway1 - INFO -  LoRa: Listening for RFID scans on COM7
+2025-10-28 15:02:35,789 - gateway1 - INFO -   VPS: Connected to 159.223.63.61
+2025-10-28 15:02:35,789 - gateway1 - INFO - ============================================================
+2025-10-28 15:03:06,932 - gateway1 - WARNING -  VPS Broker Disconnected
+2025-10-28 15:03:35,805 - gateway1 - WARNING -  VPS not connected, message not sent
+2025-10-28 15:03:35,805 - gateway1 - INFO -  Heartbeat sent
+2025-10-28 15:04:22,679 - gateway1 - INFO -  VPS Broker Connected
+2025-10-28 15:04:22,679 - gateway1 - INFO -  Subscribed to: gateway/Gateway1/command/#
+2025-10-28 15:04:22,679 - gateway1 - INFO -  Published to VPS: gateway/Gateway1/status/gateway
+2025-10-28 15:04:35,817 - gateway1 - INFO -  Published to VPS: gateway/Gateway1/status/gateway
+2025-10-28 15:04:35,817 - gateway1 - INFO -  Heartbeat sent
+2025-10-28 15:05:35,826 - gateway1 - INFO -  Published to VPS: gateway/Gateway1/status/gateway
+2025-10-28 15:05:35,826 - gateway1 - INFO -  Heartbeat sent
+2025-10-28 15:06:35,830 - gateway1 - INFO -  Published to VPS: gateway/Gateway1/status/gateway
+2025-10-28 15:06:35,830 - gateway1 - INFO -  Heartbeat sent
+2025-10-28 15:07:35,842 - gateway1 - INFO -  Published to VPS: gateway/Gateway1/status/gateway
+2025-10-28 15:07:35,843 - gateway1 - INFO -  Heartbeat sent
+2025-10-28 15:08:35,844 - gateway1 - INFO -  Published to VPS: gateway/Gateway1/status/gateway
+2025-10-28 15:08:35,846 - gateway1 - INFO -  Heartbeat sent
+2025-10-28 15:09:01,912 - gateway1 - WARNING -  VPS Broker Disconnected
+2025-10-28 15:09:35,851 - gateway1 - WARNING -  VPS not connected, message not sent
+2025-10-28 15:09:35,851 - gateway1 - INFO -  Heartbeat sent
+2025-10-28 15:09:43,079 - gateway1 - INFO -  VPS Broker Connected
+2025-10-28 15:09:43,079 - gateway1 - INFO -  Subscribed to: gateway/Gateway1/command/#
+2025-10-28 15:09:43,079 - gateway1 - INFO -  Published to VPS: gateway/Gateway1/status/gateway
+2025-10-28 15:10:35,864 - gateway1 - INFO -  Published to VPS: gateway/Gateway1/status/gateway
+2025-10-28 15:10:35,864 - gateway1 - INFO -  Heartbeat sent
+2025-10-28 15:11:35,866 - gateway1 - INFO -  Published to VPS: gateway/Gateway1/status/gateway
+2025-10-28 15:11:35,866 - gateway1 - INFO -  Heartbeat sent
+2025-10-28 15:11:43,498 - gateway1 - WARNING -  VPS Broker Disconnected
+2025-10-28 15:12:35,882 - gateway1 - WARNING -  VPS not connected, message not sent
+2025-10-28 15:12:35,882 - gateway1 - INFO -  Heartbeat sent
+2025-10-28 15:13:35,895 - gateway1 - WARNING -  VPS not connected, message not sent
+2025-10-28 15:13:35,895 - gateway1 - INFO -  Heartbeat sent
+2025-10-28 15:14:35,910 - gateway1 - WARNING -  VPS not connected, message not sent
+2025-10-28 15:14:35,910 - gateway1 - INFO -  Heartbeat sent
+2025-10-28 15:15:35,920 - gateway1 - WARNING -  VPS not connected, message not sent
+2025-10-28 15:15:35,920 - gateway1 - INFO -  Heartbeat sent
+2025-10-28 15:16:07,970 - gateway1 - INFO -  VPS Broker Connected
+2025-10-28 15:16:07,970 - gateway1 - INFO -  Subscribed to: gateway/Gateway1/command/#
+2025-10-28 15:16:07,970 - gateway1 - INFO -  Published to VPS: gateway/Gateway1/status/gateway
+2025-10-28 15:16:35,923 - gateway1 - INFO -  Published to VPS: gateway/Gateway1/status/gateway
+2025-10-28 15:16:35,925 - gateway1 - INFO -  Heartbeat sent
+2025-10-28 15:17:35,930 - gateway1 - INFO -  Published to VPS: gateway/Gateway1/status/gateway
+2025-10-28 15:17:35,931 - gateway1 - INFO -  Heartbeat sent
+2025-10-28 15:17:40,868 - gateway1 - INFO -  Shutting down Gateway 1...
+2025-10-28 15:17:40,869 - gateway1 - INFO -  LoRa Serial Closed
+2025-10-28 15:17:41,037 - gateway1 - INFO -  Gateway 1 stopped
+2025-10-28 15:32:22,884 - gateway1 - INFO - ============================================================
+2025-10-28 15:32:22,885 - gateway1 - INFO -  Starting Gateway 1 (User 1 - RFID Gate via LoRa)
+2025-10-28 15:32:22,885 - gateway1 - INFO - ============================================================
+2025-10-28 15:32:22,886 - gateway1 - INFO -  Connecting to VPS Broker...
+2025-10-28 15:32:23,192 - gateway1 - INFO -  Connected to VPS Broker
+2025-10-28 15:32:23,273 - gateway1 - INFO -  VPS Broker Connected
+2025-10-28 15:32:23,274 - gateway1 - INFO -  Subscribed to: gateway/Gateway1/command/#
+2025-10-28 15:32:23,274 - gateway1 - INFO -  Published to VPS: gateway/Gateway1/status/gateway
+2025-10-28 15:32:25,195 - gateway1 - INFO -  Starting LoRa Handler...
+2025-10-28 15:32:25,262 - gateway1 - INFO -  LoRa Serial Connected: COM7
+2025-10-28 15:32:25,264 - gateway1 - INFO -  LoRa Handler Started
+2025-10-28 15:32:25,265 - gateway1 - INFO - ============================================================
+2025-10-28 15:32:25,265 - gateway1 - INFO -  Published to VPS: gateway/Gateway1/status/gateway
+2025-10-28 15:32:25,266 - gateway1 - INFO -  Gateway 1 Running Successfully
+2025-10-28 15:32:25,266 - gateway1 - INFO -  Heartbeat sent
+2025-10-28 15:32:25,266 - gateway1 - INFO -  LoRa: Listening for RFID scans on COM7
+2025-10-28 15:32:25,267 - gateway1 - INFO -   VPS: Connected to 159.223.63.61
+2025-10-28 15:32:25,267 - gateway1 - INFO - ============================================================
+2025-10-28 15:33:25,268 - gateway1 - INFO -  Published to VPS: gateway/Gateway1/status/gateway
+2025-10-28 15:33:25,269 - gateway1 - INFO -  Heartbeat sent
+2025-10-28 15:33:44,229 - gateway1 - WARNING -  VPS Broker Disconnected
+2025-10-28 15:34:25,280 - gateway1 - WARNING -  VPS not connected, message not sent
+2025-10-28 15:34:25,280 - gateway1 - INFO -  Heartbeat sent
+2025-10-28 15:35:25,296 - gateway1 - WARNING -  VPS not connected, message not sent
+2025-10-28 15:35:25,297 - gateway1 - INFO -  Heartbeat sent
+2025-10-28 15:36:25,306 - gateway1 - WARNING -  VPS not connected, message not sent
+2025-10-28 15:36:25,306 - gateway1 - INFO -  Heartbeat sent
+2025-10-28 15:37:25,321 - gateway1 - WARNING -  VPS not connected, message not sent
+2025-10-28 15:37:25,321 - gateway1 - INFO -  Heartbeat sent
+2025-10-28 15:38:25,327 - gateway1 - WARNING -  VPS not connected, message not sent
+2025-10-28 15:38:25,327 - gateway1 - INFO -  Heartbeat sent
+2025-10-28 15:39:25,330 - gateway1 - WARNING -  VPS not connected, message not sent
+2025-10-28 15:39:25,331 - gateway1 - INFO -  Heartbeat sent
+2025-10-28 15:40:11,344 - gateway1 - INFO -  VPS Broker Connected
+2025-10-28 15:40:11,344 - gateway1 - INFO -  Subscribed to: gateway/Gateway1/command/#
+2025-10-28 15:40:11,345 - gateway1 - INFO -  Published to VPS: gateway/Gateway1/status/gateway
+2025-10-28 15:40:25,332 - gateway1 - INFO -  Published to VPS: gateway/Gateway1/status/gateway
+2025-10-28 15:40:25,333 - gateway1 - INFO -  Heartbeat sent
+2025-10-28 15:41:25,342 - gateway1 - INFO -  Published to VPS: gateway/Gateway1/status/gateway
+2025-10-28 15:41:25,344 - gateway1 - INFO -  Heartbeat sent
+2025-10-28 15:42:25,350 - gateway1 - INFO -  Published to VPS: gateway/Gateway1/status/gateway
+2025-10-28 15:42:25,351 - gateway1 - INFO -  Heartbeat sent
+2025-10-28 15:43:25,364 - gateway1 - INFO -  Published to VPS: gateway/Gateway1/status/gateway
+2025-10-28 15:43:25,364 - gateway1 - INFO -  Heartbeat sent
+2025-10-28 15:44:25,367 - gateway1 - INFO -  Published to VPS: gateway/Gateway1/status/gateway
+2025-10-28 15:44:25,368 - gateway1 - INFO -  Heartbeat sent
+2025-10-28 15:45:25,376 - gateway1 - INFO -  Published to VPS: gateway/Gateway1/status/gateway
+2025-10-28 15:45:25,376 - gateway1 - INFO -  Heartbeat sent
+2025-10-28 15:46:25,382 - gateway1 - INFO -  Published to VPS: gateway/Gateway1/status/gateway
+2025-10-28 15:46:25,382 - gateway1 - INFO -  Heartbeat sent
+2025-10-28 15:47:25,398 - gateway1 - INFO -  Published to VPS: gateway/Gateway1/status/gateway
+2025-10-28 15:47:25,399 - gateway1 - INFO -  Heartbeat sent
+2025-10-28 15:48:25,403 - gateway1 - INFO -  Published to VPS: gateway/Gateway1/status/gateway
+2025-10-28 15:48:25,404 - gateway1 - INFO -  Heartbeat sent
+2025-10-28 15:49:25,420 - gateway1 - INFO -  Published to VPS: gateway/Gateway1/status/gateway
+2025-10-28 15:49:25,420 - gateway1 - INFO -  Heartbeat sent
+2025-10-28 15:50:25,428 - gateway1 - INFO -  Published to VPS: gateway/Gateway1/status/gateway
+2025-10-28 15:50:25,429 - gateway1 - INFO -  Heartbeat sent
+2025-10-28 15:51:25,438 - gateway1 - INFO -  Published to VPS: gateway/Gateway1/status/gateway
+2025-10-28 15:51:25,439 - gateway1 - INFO -  Heartbeat sent
+2025-10-28 15:52:25,446 - gateway1 - INFO -  Published to VPS: gateway/Gateway1/status/gateway
+2025-10-28 15:52:25,446 - gateway1 - INFO -  Heartbeat sent
+2025-10-28 15:53:25,462 - gateway1 - INFO -  Published to VPS: gateway/Gateway1/status/gateway
+2025-10-28 15:53:25,463 - gateway1 - INFO -  Heartbeat sent
+2025-10-28 15:54:25,471 - gateway1 - INFO -  Published to VPS: gateway/Gateway1/status/gateway
+2025-10-28 15:54:25,472 - gateway1 - INFO -  Heartbeat sent
+2025-10-28 15:55:25,481 - gateway1 - INFO -  Published to VPS: gateway/Gateway1/status/gateway
+2025-10-28 15:55:25,481 - gateway1 - INFO -  Heartbeat sent
+2025-10-28 15:56:25,492 - gateway1 - INFO -  Published to VPS: gateway/Gateway1/status/gateway
+2025-10-28 15:56:25,493 - gateway1 - INFO -  Heartbeat sent
+2025-10-28 15:57:25,505 - gateway1 - INFO -  Published to VPS: gateway/Gateway1/status/gateway
+2025-10-28 15:57:25,506 - gateway1 - INFO -  Heartbeat sent
+2025-10-28 15:58:25,510 - gateway1 - INFO -  Published to VPS: gateway/Gateway1/status/gateway
+2025-10-28 15:58:25,510 - gateway1 - INFO -  Heartbeat sent
+2025-10-28 15:59:25,513 - gateway1 - INFO -  Published to VPS: gateway/Gateway1/status/gateway
+2025-10-28 15:59:25,513 - gateway1 - INFO -  Heartbeat sent
+2025-10-28 16:00:25,517 - gateway1 - INFO -  Published to VPS: gateway/Gateway1/status/gateway
+2025-10-28 16:00:25,517 - gateway1 - INFO -  Heartbeat sent
+2025-10-28 16:01:25,529 - gateway1 - INFO -  Published to VPS: gateway/Gateway1/status/gateway
+2025-10-28 16:01:25,530 - gateway1 - INFO -  Heartbeat sent
+2025-10-28 16:02:25,533 - gateway1 - INFO -  Published to VPS: gateway/Gateway1/status/gateway
+2025-10-28 16:02:25,533 - gateway1 - INFO -  Heartbeat sent
+2025-10-28 16:03:25,537 - gateway1 - INFO -  Published to VPS: gateway/Gateway1/status/gateway
+2025-10-28 16:03:25,538 - gateway1 - INFO -  Heartbeat sent
+2025-10-28 16:04:25,549 - gateway1 - INFO -  Published to VPS: gateway/Gateway1/status/gateway
+2025-10-28 16:04:25,550 - gateway1 - INFO -  Heartbeat sent
+2025-10-28 16:05:25,555 - gateway1 - INFO -  Published to VPS: gateway/Gateway1/status/gateway
+2025-10-28 16:05:25,555 - gateway1 - INFO -  Heartbeat sent
+2025-10-28 16:06:25,560 - gateway1 - INFO -  Published to VPS: gateway/Gateway1/status/gateway
+2025-10-28 16:06:25,560 - gateway1 - INFO -  Heartbeat sent
+2025-10-28 16:07:25,567 - gateway1 - INFO -  Published to VPS: gateway/Gateway1/status/gateway
+2025-10-28 16:07:25,567 - gateway1 - INFO -  Heartbeat sent
+2025-10-28 16:08:25,570 - gateway1 - INFO -  Published to VPS: gateway/Gateway1/status/gateway
+2025-10-28 16:08:25,572 - gateway1 - INFO -  Heartbeat sent
+2025-10-28 16:09:25,590 - gateway1 - INFO -  Published to VPS: gateway/Gateway1/status/gateway
+2025-10-28 16:09:25,590 - gateway1 - INFO -  Heartbeat sent
+2025-10-28 16:10:25,600 - gateway1 - INFO -  Published to VPS: gateway/Gateway1/status/gateway
+2025-10-28 16:10:25,600 - gateway1 - INFO -  Heartbeat sent
+2025-10-28 16:11:25,613 - gateway1 - INFO -  Published to VPS: gateway/Gateway1/status/gateway
+2025-10-28 16:11:25,614 - gateway1 - INFO -  Heartbeat sent
+2025-10-28 16:12:25,623 - gateway1 - INFO -  Published to VPS: gateway/Gateway1/status/gateway
+2025-10-28 16:12:25,623 - gateway1 - INFO -  Heartbeat sent
+2025-10-28 16:13:25,631 - gateway1 - INFO -  Published to VPS: gateway/Gateway1/status/gateway
+2025-10-28 16:13:25,633 - gateway1 - INFO -  Heartbeat sent
+2025-10-28 16:14:25,635 - gateway1 - INFO -  Published to VPS: gateway/Gateway1/status/gateway
+2025-10-28 16:14:25,635 - gateway1 - INFO -  Heartbeat sent
+2025-10-28 16:15:25,639 - gateway1 - INFO -  Published to VPS: gateway/Gateway1/status/gateway
+2025-10-28 16:15:25,640 - gateway1 - INFO -  Heartbeat sent
+2025-10-28 16:16:25,650 - gateway1 - INFO -  Published to VPS: gateway/Gateway1/status/gateway
+2025-10-28 16:16:25,650 - gateway1 - INFO -  Heartbeat sent
+2025-10-28 16:17:25,661 - gateway1 - INFO -  Published to VPS: gateway/Gateway1/status/gateway
+2025-10-28 16:17:25,662 - gateway1 - INFO -  Heartbeat sent
+2025-10-28 16:17:28,413 - gateway1 - INFO -  Shutting down Gateway 1...
+2025-10-28 16:17:28,414 - gateway1 - INFO -  LoRa Serial Closed
+2025-10-28 16:17:28,899 - gateway1 - INFO -  Gateway 1 stopped
+2025-10-28 19:57:34,088 - gateway1 - INFO - ============================================================
+2025-10-28 19:57:34,088 - gateway1 - INFO -  Starting Gateway 1 (User 1 - RFID Gate via LoRa)
+2025-10-28 19:57:34,089 - gateway1 - INFO - ============================================================
+2025-10-28 19:57:34,097 - gateway1 - INFO -  Connecting to VPS Broker...
+2025-10-28 19:57:34,607 - gateway1 - INFO -  Connected to VPS Broker
+2025-10-28 19:57:34,694 - gateway1 - INFO -  VPS Broker Connected
+2025-10-28 19:57:34,695 - gateway1 - INFO -  Subscribed to: gateway/Gateway1/command/#
+2025-10-28 19:57:34,695 - gateway1 - INFO -  Published to VPS: gateway/Gateway1/status/gateway
+2025-10-28 19:57:36,611 - gateway1 - INFO -  Starting LoRa Handler...
+2025-10-28 19:57:36,611 - gateway1 - ERROR -  LoRa Serial Connection Failed: could not open port 'COM7': FileNotFoundError(2, 'The system cannot find the file specified.', None, 2)
+2025-10-28 19:57:36,612 - gateway1 - ERROR -  Failed to start LoRa handler. Exiting.
+2025-10-28 19:57:43,135 - gateway1 - INFO - ============================================================
+2025-10-28 19:57:43,135 - gateway1 - INFO -  Starting Gateway 1 (User 1 - RFID Gate via LoRa)
+2025-10-28 19:57:43,135 - gateway1 - INFO - ============================================================
+2025-10-28 19:57:43,137 - gateway1 - INFO -  Connecting to VPS Broker...
+2025-10-28 19:57:44,890 - gateway1 - INFO -  Connected to VPS Broker
+2025-10-28 19:57:45,071 - gateway1 - INFO -  VPS Broker Connected
+2025-10-28 19:57:45,071 - gateway1 - INFO -  Subscribed to: gateway/Gateway1/command/#
+2025-10-28 19:57:45,071 - gateway1 - INFO -  Published to VPS: gateway/Gateway1/status/gateway
+2025-10-28 19:57:46,905 - gateway1 - INFO -  Starting LoRa Handler...
+2025-10-28 19:57:46,911 - gateway1 - INFO -  LoRa Serial Connected: COM7
+2025-10-28 19:57:46,913 - gateway1 - INFO -  LoRa Handler Started
+2025-10-28 19:57:46,913 - gateway1 - INFO - ============================================================
+2025-10-28 19:57:46,913 - gateway1 - INFO -  Published to VPS: gateway/Gateway1/status/gateway
+2025-10-28 19:57:46,914 - gateway1 - INFO -  Gateway 1 Running Successfully
+2025-10-28 19:57:46,914 - gateway1 - INFO -  Heartbeat sent
+2025-10-28 19:57:46,914 - gateway1 - INFO -  LoRa: Listening for RFID scans on COM7
+2025-10-28 19:57:46,915 - gateway1 - INFO -   VPS: Connected to 159.223.63.61
+2025-10-28 19:57:46,915 - gateway1 - INFO - ============================================================
+2025-10-28 19:58:46,930 - gateway1 - INFO -  Published to VPS: gateway/Gateway1/status/gateway
+2025-10-28 19:58:46,930 - gateway1 - INFO -  Heartbeat sent
+2025-10-28 19:59:46,944 - gateway1 - INFO -  Published to VPS: gateway/Gateway1/status/gateway
+2025-10-28 19:59:46,944 - gateway1 - INFO -  Heartbeat sent
+2025-10-28 20:00:43,752 - gateway1 - WARNING -  VPS Broker Disconnected
+2025-10-28 20:00:46,948 - gateway1 - WARNING -  VPS not connected, message not sent
+2025-10-28 20:00:46,949 - gateway1 - INFO -  Heartbeat sent
+2025-10-28 20:01:46,955 - gateway1 - WARNING -  VPS not connected, message not sent
+2025-10-28 20:01:46,956 - gateway1 - INFO -  Heartbeat sent
+2025-10-28 20:02:46,964 - gateway1 - WARNING -  VPS not connected, message not sent
+2025-10-28 20:02:46,964 - gateway1 - INFO -  Heartbeat sent
+2025-10-28 20:03:46,980 - gateway1 - WARNING -  VPS not connected, message not sent
+2025-10-28 20:03:46,980 - gateway1 - INFO -  Heartbeat sent
+2025-10-28 20:04:46,986 - gateway1 - WARNING -  VPS not connected, message not sent
+2025-10-28 20:04:46,986 - gateway1 - INFO -  Heartbeat sent
+2025-10-28 20:05:46,997 - gateway1 - WARNING -  VPS not connected, message not sent
+2025-10-28 20:05:46,997 - gateway1 - INFO -  Heartbeat sent
+2025-10-28 20:06:47,012 - gateway1 - WARNING -  VPS not connected, message not sent
+2025-10-28 20:06:47,012 - gateway1 - INFO -  Heartbeat sent
+2025-10-28 20:07:47,028 - gateway1 - WARNING -  VPS not connected, message not sent
+2025-10-28 20:07:47,028 - gateway1 - INFO -  Heartbeat sent
+2025-10-28 20:08:46,833 - gateway1 - INFO -  Shutting down Gateway 1...
+2025-10-28 20:08:46,835 - gateway1 - INFO -  LoRa Serial Closed
+2025-10-28 20:08:47,036 - gateway1 - WARNING -  VPS not connected, message not sent
+2025-10-28 20:08:47,037 - gateway1 - INFO -  Heartbeat sent
+2025-10-28 20:08:47,458 - gateway1 - INFO -  Gateway 1 stopped
+2025-10-28 20:08:49,447 - gateway1 - INFO - ============================================================
+2025-10-28 20:08:49,447 - gateway1 - INFO -  Starting Gateway 1 (User 1 - RFID Gate via LoRa)
+2025-10-28 20:08:49,447 - gateway1 - INFO - ============================================================
+2025-10-28 20:08:49,456 - gateway1 - INFO -  Connecting to VPS Broker...
+2025-10-28 20:08:50,376 - gateway1 - INFO -  Connected to VPS Broker
+2025-10-28 20:08:50,459 - gateway1 - INFO -  VPS Broker Connected
+2025-10-28 20:08:50,460 - gateway1 - INFO -  Subscribed to: gateway/Gateway1/command/#
+2025-10-28 20:08:50,461 - gateway1 - INFO -  Published to VPS: gateway/Gateway1/status/gateway
+2025-10-28 20:08:52,377 - gateway1 - INFO -  Starting LoRa Handler...
+2025-10-28 20:08:52,385 - gateway1 - INFO -  LoRa Serial Connected: COM7
+2025-10-28 20:08:52,386 - gateway1 - INFO -  LoRa Handler Started
+2025-10-28 20:08:52,387 - gateway1 - INFO - ============================================================
+2025-10-28 20:08:52,387 - gateway1 - INFO -  Published to VPS: gateway/Gateway1/status/gateway
+2025-10-28 20:08:52,387 - gateway1 - INFO -  Gateway 1 Running Successfully
+2025-10-28 20:08:52,388 - gateway1 - INFO -  Heartbeat sent
+2025-10-28 20:08:52,388 - gateway1 - INFO -  LoRa: Listening for RFID scans on COM7
+2025-10-28 20:08:52,388 - gateway1 - INFO -   VPS: Connected to 159.223.63.61
+2025-10-28 20:08:52,389 - gateway1 - INFO - ============================================================
+2025-10-28 20:09:52,404 - gateway1 - INFO -  Published to VPS: gateway/Gateway1/status/gateway
+2025-10-28 20:09:52,405 - gateway1 - INFO -  Heartbeat sent
+2025-10-28 20:10:52,408 - gateway1 - INFO -  Published to VPS: gateway/Gateway1/status/gateway
+2025-10-28 20:10:52,408 - gateway1 - INFO -  Heartbeat sent
+2025-10-28 20:11:50,691 - gateway1 - WARNING -  VPS Broker Disconnected
+2025-10-28 20:11:52,416 - gateway1 - WARNING -  VPS not connected, message not sent
+2025-10-28 20:11:52,416 - gateway1 - INFO -  Heartbeat sent
+2025-10-28 20:12:52,422 - gateway1 - WARNING -  VPS not connected, message not sent
+2025-10-28 20:12:52,422 - gateway1 - INFO -  Heartbeat sent
+2025-10-28 20:13:52,433 - gateway1 - WARNING -  VPS not connected, message not sent
+2025-10-28 20:13:52,434 - gateway1 - INFO -  Heartbeat sent
+2025-10-28 20:14:22,447 - gateway1 - INFO -  VPS Broker Connected
+2025-10-28 20:14:22,448 - gateway1 - INFO -  Subscribed to: gateway/Gateway1/command/#
+2025-10-28 20:14:22,448 - gateway1 - INFO -  Published to VPS: gateway/Gateway1/status/gateway
+2025-10-28 20:14:52,449 - gateway1 - INFO -  Published to VPS: gateway/Gateway1/status/gateway
+2025-10-28 20:14:52,449 - gateway1 - INFO -  Heartbeat sent
+2025-10-28 20:15:52,460 - gateway1 - INFO -  Published to VPS: gateway/Gateway1/status/gateway
+2025-10-28 20:15:52,460 - gateway1 - INFO -  Heartbeat sent
+2025-10-28 20:16:52,463 - gateway1 - INFO -  Published to VPS: gateway/Gateway1/status/gateway
+2025-10-28 20:16:52,463 - gateway1 - INFO -  Heartbeat sent
+2025-10-28 20:17:52,472 - gateway1 - INFO -  Published to VPS: gateway/Gateway1/status/gateway
+2025-10-28 20:17:52,472 - gateway1 - INFO -  Heartbeat sent
+2025-10-28 20:18:23,467 - gateway1 - INFO -  Shutting down Gateway 1...
+2025-10-28 20:18:23,467 - gateway1 - INFO -  LoRa Serial Closed
+2025-10-28 20:18:24,023 - gateway1 - INFO -  Gateway 1 stopped
