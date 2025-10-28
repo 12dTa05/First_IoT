@@ -190,3 +190,14 @@
 2025-10-28 14:01:32,520 - gateway1 - INFO -  Starting LoRa Handler...
 2025-10-28 14:01:32,521 - gateway1 - ERROR -  LoRa Serial Connection Failed: could not open port 'COM7': FileNotFoundError(2, 'The system cannot find the file specified.', None, 2)
 2025-10-28 14:01:32,522 - gateway1 - ERROR -  Failed to start LoRa handler. Exiting.
+2025-10-28 14:04:47,045 - gateway1 - INFO - ============================================================
+2025-10-28 14:04:47,045 - gateway1 - INFO -  Starting Gateway 1 (User 1 - RFID Gate via LoRa)
+2025-10-28 14:04:47,045 - gateway1 - INFO - ============================================================
+2025-10-28 14:04:47,045 - gateway1 - INFO -  Connecting to VPS Broker...
+2025-10-28 14:04:56,516 - gateway1 - INFO -  Connected to VPS Broker
+2025-10-28 14:04:56,854 - gateway1 - INFO -  VPS Broker Connected
+2025-10-28 14:04:56,854 - gateway1 - INFO -  Subscribed to: gateway/Gateway1/command/#
+2025-10-28 14:04:56,855 - gateway1 - INFO -  Published to VPS: gateway/Gateway1/status/gateway
+2025-10-28 14:04:58,518 - gateway1 - INFO -  Starting LoRa Handler...
+2025-10-28 14:04:58,518 - gateway1 - ERROR -  LoRa Serial Connection Failed: could not open port 'COM7': FileNotFoundError(2, 'The system cannot find the file specified.', None, 2)
+2025-10-28 14:04:58,519 - gateway1 - ERROR -  Failed to start LoRa handler. Exiting.
