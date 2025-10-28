@@ -71,7 +71,7 @@ CONFIG = {
     
     'db_path': './data',
     'devices_db': 'devices.json',
-    'heartbeat_interval': 60,
+    'heartbeat_interval': 300,
 }
 
 MESSAGE_TYPES = {
@@ -239,7 +239,7 @@ class LoRaHandler:
         logger.info(" LoRa Handler Started")
     
     def read_loop(self):
-        """Continuously read from LoRa serial port"""
+        """Liên tục đọc từ cổng serial LoRa"""
         buffer = bytearray()
         
         while self.running:
@@ -247,54 +247,78 @@ class LoRaHandler:
                 if self.serial_port and self.serial_port.in_waiting > 0:
                     buffer.extend(self.serial_port.read(self.serial_port.in_waiting))
                     
-                    # Parse packets from buffer
-                    while len(buffer) >= 10:  # Minimum packet size
-                        # Look for packet header: AA 55
-                        if buffer[0] == 0xAA and buffer[1] == 0x55:
-                            msg_type = buffer[2]
-                            length = buffer[3]
-                            total_length = 4 + length + 4  # header + payload + CRC
+                    # Phân tích các gói tin từ buffer
+                    while len(buffer) >= 12:  # Kích thước tối thiểu: 3 (tiêu đề) + 5 (tiêu đề + độ dài) + 4 (CRC)
+                        # Kiểm tra tiêu đề: 0x00 0x02 0x17
+                        if buffer[0] == 0x00 and buffer[1] == 0x02 and buffer[2] == 0x17:
+                            # Lấy msg_type và version từ byte tiêu đề 0
+                            header0 = buffer[3]
+                            msg_type = (header0 >> 4) & 0x0F
+                            version = header0 & 0x0F
+                            
+                            # Lấy flags và device_type từ byte tiêu đề 1
+                            header1 = buffer[4]
+                            flags = (header1 >> 4) & 0x0F
+                            device_type = header1 & 0x0F
+                            
+                            # Lấy số thứ tự (2 byte, little-endian)
+                            sequence = struct.unpack('<H', buffer[5:7])[0]
+                            
+                            # Lấy dấu thời gian (4 byte, little-endian)
+                            timestamp = struct.unpack('<I', buffer[7:11])[0]
+                            
+                            # Lấy độ dài tải trọng
+                            payload_length = buffer[11]
+                            
+                            # Tính kích thước gói tin đầy đủ
+                            total_length = 12 + payload_length + 4  # 12 byte tiêu đề + tải trọng + 4 byte CRC
                             
                             if len(buffer) >= total_length:
                                 packet = buffer[:total_length]
                                 buffer = buffer[total_length:]
                                 
-                                # Verify CRC
+                                # Tách tải trọng
+                                payload = packet[12:12 + payload_length]
+                                
+                                # Kiểm tra CRC (tính từ byte thứ 3)
                                 received_crc = struct.unpack('<I', packet[-4:])[0]
-                                calculated_crc = crc32(packet[:-4])
+                                calculated_crc = crc32(packet[3:12 + payload_length])  # Tính CRC từ byte thứ 3
                                 
                                 if received_crc == calculated_crc:
-                                    payload = packet[4:-4]
-                                    self.process_packet(msg_type, payload)
+                                    logger.info(f"Gói tin hợp lệ: msg_type={msg_type:02x}, sequence={sequence}, timestamp={timestamp}")
+                                    self.process_packet(msg_type, payload, sequence, timestamp, device_type)
                                 else:
-                                    logger.warning(" CRC mismatch, packet dropped")
+                                    logger.warning(f"CRC không khớp: received={received_crc:08x}, calculated={calculated_crc:08x}")
                             else:
-                                break
+                                break  # Chờ thêm dữ liệu
                         else:
-                            # Invalid header, remove first byte
+                            # Bỏ byte đầu tiên nếu tiêu đề không hợp lệ
+                            logger.warning(f"Tiêu đề không hợp lệ: {buffer[0:3].hex()}")
                             buffer.pop(0)
-                
-                time.sleep(0.01)
+                    
+                    time.sleep(0.01)
             except Exception as e:
-                logger.error(f" LoRa read error: {e}")
+                logger.error(f"Lỗi đọc LoRa: {e}")
                 time.sleep(1)
     
-    def process_packet(self, msg_type, payload):
-        """Process received LoRa packet"""
+    def process_packet(self, msg_type, payload, sequence, timestamp, device_type):
+        """Xử lý gói tin LoRa nhận được"""
         try:
             if msg_type == 0x01:  # RFID Scan
                 uid = payload.hex()
-                logger.info(f" RFID Scanned: {uid}")
+                logger.info(f"RFID Scanned: {uid} (seq: {sequence}, device_type: {device_type:02x})")
                 self.handle_rfid_access(uid)
                 
             elif msg_type == 0x06:  # Gate Status
-                status = 'ONLINE' if payload[0] == 1 else 'OFFLINE'
-                sequence = struct.unpack('<I', payload[1:5])[0] if len(payload) >= 5 else 0
-                logger.info(f"🚪 Gate Status: {status} (seq: {sequence})")
+                status = payload.decode('utf-8', errors='ignore')
+                logger.info(f" Gate Status: {status} (seq: {sequence}, device_type: {device_type:02x})")
                 self.publish_gate_status(status, sequence)
                 
+            else:
+                logger.warning(f"Loại thông điệp không xác định: {msg_type:02x}")
+                
         except Exception as e:
-            logger.error(f" Error processing packet: {e}")
+            logger.error(f"Lỗi xử lý gói tin: {e}")
     
     def handle_rfid_access(self, uid):
         """Handle RFID access request with improved logic (same as new gateway code)"""
@@ -361,9 +385,9 @@ class LoRaHandler:
         self.mqtt_manager.publish_to_vps(topic, log_entry)
 
         if access_allowed:
-            logger.info(f"[RFID] {uid}: ✅ ACCESS GRANTED")
+            logger.info(f"[RFID] {uid}:  ACCESS GRANTED")
         else:
-            logger.warning(f"[RFID] {uid}: ❌ ACCESS DENIED ({deny_reason})")
+            logger.warning(f"[RFID] {uid}:  ACCESS DENIED ({deny_reason})")
 
     
     def send_access_response(self, status):
