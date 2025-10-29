@@ -11,7 +11,7 @@ const char* wifiPass = "12052003A";
 
 // MQTT config
 const char* mqtt_host = "192.168.1.205";
-const uint16_t mqtt_port = 1883;
+const uint16_t mqtt_port = 1884;
 
 const char* device_id = "temp_01";
 const char* topic_telemetry = "home/devices/temp_01/telemetry";
@@ -19,6 +19,27 @@ const char* topic_status = "home/devices/temp_01/status";
 
 const char* mqtt_username = "temp_01";
 const char* mqtt_password = "125";
+
+const char root_ca_pem[] = R"EOF(
+-----BEGIN CERTIFICATE-----
+MIIC2TCCAcGgAwIBAgIUGzKEsK+dX0mutM0ljkvMu1uNo4AwDQYJKoZIhvcNAQEL
+BQAwFDESMBAGA1UEAwwJTXlMb2NhbENBMB4XDTI1MTAyNjE1MzE1M1oXDTM1MTAy
+NDE1MzY1M1owFDESMBAGA1UEAwwJTXlMb2NhbENBMIIBIjANBgkqhkiG9w0BAQEF
+AAOCAQ8AMIIBCgKCAQEAmUg4+p4lfwlXAHL23rfcyqntoifzdosr1SGSd+KHqt/V
+h7rvDNJN0pFY7J5hQGmqJ/pbAsvqBdWY15S3YraKMNV5SvsB5keeI6GgbPfqWo5v
+12EgRVLee4Gzq99iqfslzRgSrc1yq2Io6ZeXtA8xrEw63dzQ5sP+2ALKpcdOQ/kD
+tGRVHRMcT+4GOb/th/gX5SbQ/R+eGedVMultWRTpKlMXTMHp+xxuRxQH81Ap/Cae
+xetqJBloa5jSV2IvvKW6jb0DjXvtAlqNOF4EeL7qehbj6SdJBODH3V/65HFmKb3N
+PcdPpGtpeqxUk4qC2H+/ZsjOBnNwYkBcMWkN/IgdCQIDAQABoyMwITAPBgNVHRMB
+Af8EBTADAQH/MA4GA1UdDwEB/wQEAwIBhjANBgkqhkiG9w0BAQsFAAOCAQEAdDQh
+OBUxS7UnW2ILIm26DsvbIGcjijz8WXz023rg9be0D8kf9XdxTKo90H39qEju67lG
+DQJhsSEbi/eZsechJZGpY+wVYQv6KWVTgQL5uaif7yl5YKPLJU2Kx4RW5NIZZRd3
+ygSWDb/AKgI41aXN768wK3ZJLfBrGTVDdj4HMqlY5FNvCO/saENYkzu/OlKRB5P8
+oBJj9/w6OavM06x5WL0j/p5GRKw/YGQqrrxs33siOrmnvsEKj6k3z7rhTKKvrfqA
+zlpBDMfc2FyV77HanSHuHBZ7ETsl9DPmgePs6fReIszeAoKP7Yj5y8DnZ+eM1KTu
+ggouIvDY94tu2Wf/NQ==
+-----END CERTIFICATE-----
+)EOF";
 
 // DHT11 config
 #define DHTPIN D4
@@ -28,8 +49,9 @@ DHT dht(DHTPIN, DHTTYPE);
 // LCD I2C config (16x2)
 LiquidCrystal_I2C lcd(0x27, 16, 2);
 
-WiFiClient wifiClient;
-PubSubClient mqtt(wifiClient);
+BearSSL::X509List cert(root_ca_pem);
+WiFiClientSecure tlsClient;
+PubSubClient mqtt(tlsClient);
 
 // Timing
 unsigned long lastTelemetry = 0;
@@ -274,22 +296,25 @@ void setup() {
   lcd.print(WiFi.localIP());
   delay(2000);
   
-  configTime(7 * 3600, 0, "pool.ntp.org", "time.nist.gov");
-  Serial.println("[NTP] Waiting for time sync...");
+  // configTime(7 * 3600, 0, "pool.ntp.org", "time.nist.gov");
+  // Serial.println("[NTP] Waiting for time sync...");
   
-  time_t now = time(nullptr);
-  int timeAttempts = 0;
-  while (now < 1600000000 && timeAttempts < 20) {
-    delay(500);
-    now = time(nullptr);
-    timeAttempts++;
-  }
+  // time_t now = time(nullptr);
+  // int timeAttempts = 0;
+  // while (now < 1600000000 && timeAttempts < 20) {
+  //   delay(500);
+  //   now = time(nullptr);
+  //   timeAttempts++;
+  // }
   
-  if (now < 1600000000) {
-    Serial.println("\n[WARNING] Time sync failed");
-  } else {
-    Serial.printf("[NTP] Time synced: %lld\n", (long long)now);
-  }
+  // if (now < 1600000000) {
+  //   Serial.println("\n[WARNING] Time sync failed");
+  // } else {
+  //   Serial.printf("[NTP] Time synced: %lld\n", (long long)now);
+  // }
+
+  tlsClient.setTrustAnchors(&cert);
+  tlsClient.setInsecure();
   
   mqtt.setServer(mqtt_host, mqtt_port);
   mqtt.setKeepAlive(60);

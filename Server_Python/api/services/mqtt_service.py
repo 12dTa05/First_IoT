@@ -74,10 +74,13 @@ class MQTTService:
     
     def handle_telemetry(self, gateway_id, device_id, data):
         """Handle device telemetry data"""
+        time = f"'{data.get('timestamp')}'::timestamptz"
+        temp = data.get('data').get('data').get('temperature')
+        humid = data.get('data').get('data').get('humidity')
         try:
-            query = """
-                INSERT INTO telemetry (device_id, gateway_id, user_id, data)
-                SELECT %s, %s, d.user_id, %s
+            query = f"""
+                INSERT INTO telemetry (time, device_id, gateway_id, user_id, temperature, humidity, data)
+                SELECT {time} , %s, %s, d.user_id, {temp}, {humid}, %s
                 FROM devices d 
                 WHERE d.device_id = %s AND d.gateway_id = %s
             """

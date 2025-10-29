@@ -15,7 +15,7 @@ from threading import Thread
 from database_sync_manager import DatabaseSyncManager
 
 logging.basicConfig(
-    level=logging.INFO,
+    level=logging.DEBUG,
     format='%(asctime)s [%(levelname)s] %(message)s',
     datefmt='%Y-%m-%d %H:%M:%S'
 )
@@ -291,14 +291,12 @@ class MQTTManager:
     
     def handle_temperature_data(self, data):
         """Handle temperature telemetry and automation"""
-        temperature = data.get('temperature')
-        humidity = data.get('humidity')
-        
+        logger.debug(f"Received temperature data: {data}")
+        temperature = data.get('data', {}).get('temperature')
+        humidity = data.get('data', {}).get('humidity')
         if temperature is not None:
-            self.last_temperature = temperature
+            self.last_temperature = float(temperature)
             logger.info(f"[TEMP] {temperature}°C, {humidity}% RH")
-            
-            # Forward to VPS
             self.forward_telemetry_to_vps('temp_01', data)
             
             # Check automation

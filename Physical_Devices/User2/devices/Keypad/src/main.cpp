@@ -609,25 +609,25 @@ void setup() {
   Serial.println(WiFi.localIP());
   Serial.printf("[WiFi] Signal: %d dBm\n", WiFi.RSSI());
 
-  configTime(7 * 3600, 0, "pool.ntp.org", "time.nist.gov");
-  Serial.println("[NTP] Waiting for time sync...");
+  // configTime(7 * 3600, 0, "pool.ntp.org", "time.nist.gov");
+  // Serial.println("[NTP] Waiting for time sync...");
   
-  time_t now = time(nullptr);
-  int timeAttempts = 0;
-  while (now < 1600000000 && timeAttempts < 20) {
-    delay(500);
-    Serial.print(".");
-    now = time(nullptr);
-    timeAttempts++;
-  }
+  // time_t now = time(nullptr);
+  // int timeAttempts = 0;
+  // while (now < 1600000000 && timeAttempts < 20) {
+  //   delay(500);
+  //   Serial.print(".");
+  //   now = time(nullptr);
+  //   timeAttempts++;
+  // }
   
-  if (now < 1600000000) {
-    Serial.println("\n[WARNING] Time sync failed, continuing anyway...");
-  } else {
-    Serial.println();
-    Serial.print("[NTP] Time synced: ");
-    Serial.println(now);
-  }
+  // if (now < 1600000000) {
+  //   Serial.println("\n[WARNING] Time sync failed, continuing anyway...");
+  // } else {
+  //   Serial.println();
+  //   Serial.print("[NTP] Time synced: ");
+  //   Serial.println(now);
+  // }
 
   tlsClient.setTrustAnchors(&cert);
   tlsClient.setInsecure();

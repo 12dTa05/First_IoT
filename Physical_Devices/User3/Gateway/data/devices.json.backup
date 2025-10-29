@@ -10,7 +10,7 @@
       "registered_at": null,
       "last_seen": null,
       "metadata": null,
-      "updated_at": "2025-10-29T01:40:29.741991+00:00"
+      "updated_at": "2025-10-29T06:45:01.581102+00:00"
     },
     "fan_01": {
       "device_type": "relay_fan",
@@ -20,7 +20,7 @@
       "registered_at": null,
       "last_seen": null,
       "metadata": null,
-      "updated_at": "2025-10-29T01:40:29.741991+00:00"
+      "updated_at": "2025-10-29T06:45:01.581102+00:00"
     }
   }
 }
