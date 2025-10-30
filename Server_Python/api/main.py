@@ -14,7 +14,7 @@ from services.database import db
 from services.mqtt_service import mqtt_service
 from services.alert_service import alert_service
 
-from routes import auth, devices, telemetry, access, gateways, commands, sync, dashboard
+from routes import auth, devices, telemetry, access, gateways, commands, sync, dashboard, websocket, system
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -111,6 +111,8 @@ app.include_router(gateways.router)
 app.include_router(sync.router)
 app.include_router(commands.router)
 app.include_router(dashboard.router)
+app.include_router(websocket.router)
+app.include_router(system.router)
 
 logger.info('Sync routes loaded')
 
