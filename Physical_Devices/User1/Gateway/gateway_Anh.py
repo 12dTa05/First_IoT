@@ -10,6 +10,7 @@ import struct
 from datetime import datetime
 from threading import Thread
 from database_sync_manager import DatabaseSyncManager
+from timestamp_utils import now_compact
 
 logging.basicConfig(
     level=logging.INFO,
@@ -103,7 +104,7 @@ class DatabaseManager:
                 pass
         
         # Update last_used
-        card['last_used'] = datetime.now().isoformat()
+        card['last_used'] = now_compact()
         self.save_devices()
         
         return True, None
@@ -206,7 +207,7 @@ class VPSMQTTManager:
         payload = {
             'gateway_id': self.config['gateway_id'],
             'status': status,
-            'timestamp': datetime.now().isoformat()
+            'timestamp': now_compact()
         }
         topic = self.config['topics']['vps_gateway_status']
         return self.publish_to_vps(topic, payload)
@@ -321,7 +322,7 @@ class LoRaHandler:
                     'result': 'granted' if granted else 'denied',
                     'method': 'rfid',
                     'deny_reason': deny_reason,
-                    'time': datetime.now().isoformat()
+                    'time': now_compact()
                 }
                 
                 topic = self.config['topics']['vps_access'].format(device_id='rfid_gate_01')
@@ -361,7 +362,7 @@ class LoRaHandler:
             'device_id': 'rfid_gate_01',
             'status': status,
             'sequence': sequence,
-            'time': datetime.now().isoformat()
+            'time': now_compact()
         }
         
         topic = self.config['topics']['vps_status'].format(device_id='rfid_gate_01')

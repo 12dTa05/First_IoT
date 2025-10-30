@@ -1,9 +1,3 @@
-#!/usr/bin/env python3
-"""
-Gateway 3 - User 3 (Anh) - Temperature Sensor + Fan Control
-With Database Sync every 5 seconds
-"""
-
 import paho.mqtt.client as mqtt
 import ssl
 import json
@@ -13,6 +7,7 @@ import logging
 from datetime import datetime
 from threading import Thread
 from database_sync_manager import DatabaseSyncManager
+from timestamp_utils import now_compact
 
 logging.basicConfig(
     level=logging.DEBUG,
@@ -135,7 +130,7 @@ class DatabaseManager:
         log_entry = {
             'type': log_type,
             'event': event,
-            'timestamp': datetime.now().isoformat(),
+            'timestamp': now_compact(),
             **kwargs
         }
         self.logs_data.append(log_entry)
@@ -337,7 +332,7 @@ class MQTTManager:
         payload = {
             'gateway_id': self.config['gateway_id'],
             'device_id': device_id,
-            'timestamp': datetime.now().isoformat(),
+            'timestamp': now_compact(),
             'data': data
         }
         
@@ -350,7 +345,7 @@ class MQTTManager:
             'gateway_id': self.config['gateway_id'],
             'device_id': device_id,
             'status': data.get('state', 'unknown'),
-            'timestamp': datetime.now().isoformat(),
+            'timestamp': now_compact(),
             'metadata': data
         }
         
@@ -381,7 +376,7 @@ class MQTTManager:
             'status': status,
             'last_temperature': self.last_temperature,
             'fan_auto_on': self.fan_auto_on,
-            'timestamp': datetime.now().isoformat()
+            'timestamp': now_compact()
         }
         topic = self.config['topics']['vps_gateway_status']
         return self.publish_to_vps(topic, payload)

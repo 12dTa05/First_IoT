@@ -1,9 +1,3 @@
-#!/usr/bin/env python3
-"""
-Gateway 2 - User 2 (Thao) - Passkey Door via WiFi
-With Database Sync every 5 seconds
-"""
-
 import paho.mqtt.client as mqtt
 import ssl
 import json
@@ -13,6 +7,7 @@ import logging
 from datetime import datetime
 from threading import Thread
 from database_sync_manager import DatabaseSyncManager
+from timestamp_utils import now_compact
 
 logging.basicConfig(
     level=logging.INFO,
@@ -105,7 +100,7 @@ class DatabaseManager:
                         pass
                 
                 # Update last_used
-                password_data['last_used'] = datetime.now().isoformat()
+                password_data['last_used'] = now_compact()
                 self.save_devices()
                 
                 return True, None, password_id
@@ -279,7 +274,7 @@ class MQTTManager:
             'result': 'granted' if granted else 'denied',
             'method': 'passkey',
             'deny_reason': deny_reason,
-            'timestamp': datetime.now().isoformat()
+            'timestamp': now_compact()
         }
         
         topic = self.config['topics']['vps_access'].format(device_id='passkey_01')
@@ -296,7 +291,7 @@ class MQTTManager:
             'gateway_id': self.config['gateway_id'],
             'device_id': 'passkey_01',
             'status': data.get('state', 'unknown'),
-            'timestamp': datetime.now().isoformat(),
+            'timestamp': now_compact(),
             'metadata': data
         }
         
@@ -326,7 +321,7 @@ class MQTTManager:
         payload = {
             'gateway_id': self.config['gateway_id'],
             'status': status,
-            'timestamp': datetime.now().isoformat()
+            'timestamp': now_compact()
         }
         topic = self.config['topics']['vps_gateway_status']
         return self.publish_to_vps(topic, payload)
