@@ -29,7 +29,7 @@ CREATE TABLE IF NOT EXISTS gateways (
     name TEXT,
     location TEXT,
     status TEXT DEFAULT 'offline', -- 'online', 'offline', 'maintenance'
-    last_heartbeat TIMESTAMPTZ,
+    last_seen TIMESTAMPTZ,
     database_version TEXT,
     created_at TIMESTAMPTZ NOT NULL,
     updated_at TIMESTAMPTZ NOT NULL
@@ -37,7 +37,7 @@ CREATE TABLE IF NOT EXISTS gateways (
 
 CREATE INDEX IF NOT EXISTS idx_gateways_user ON gateways(user_id);
 CREATE INDEX IF NOT EXISTS idx_gateways_status ON gateways(status);
-CREATE INDEX IF NOT EXISTS idx_gateways_heartbeat ON gateways(last_heartbeat);
+CREATE INDEX IF NOT EXISTS idx_gateways_heartbeat ON gateways(last_seen);
 
 -- Devices table: ESP8266 devices 
 CREATE TABLE IF NOT EXISTS devices (
@@ -48,7 +48,6 @@ CREATE TABLE IF NOT EXISTS devices (
     location TEXT,
     communication TEXT, -- 'WiFi', 'LoRa'
     status TEXT DEFAULT 'offline', -- 'online', 'offline'
-    is_online BOOLEAN DEFAULT FALSE, -- Quick check for online status
     last_seen TIMESTAMPTZ, -- Last message received from device
     created_at TIMESTAMPTZ NOT NULL,
     updated_at TIMESTAMPTZ NOT NULL
@@ -58,7 +57,6 @@ CREATE INDEX IF NOT EXISTS idx_devices_gateway ON devices(gateway_id);
 CREATE INDEX IF NOT EXISTS idx_devices_user ON devices(user_id);
 CREATE INDEX IF NOT EXISTS idx_devices_type ON devices(device_type);
 CREATE INDEX IF NOT EXISTS idx_devices_status ON devices(status);
-CREATE INDEX IF NOT EXISTS idx_devices_online ON devices(is_online);
 CREATE INDEX IF NOT EXISTS idx_devices_last_seen ON devices(last_seen);
 
 -- Passwords table: passwords for keypad door access
@@ -209,7 +207,6 @@ SELECT
     d.device_type,
     d.location,
     d.status,
-    d.is_online,
     d.last_seen,
     u.username,
     u.full_name,
@@ -227,7 +224,6 @@ SELECT
     d.device_type,
     d.location,
     d.status,
-    d.is_online,
     d.last_seen,
     EXTRACT(EPOCH FROM (NOW() - d.last_seen))/60 AS minutes_since_seen,
     CASE 
@@ -274,7 +270,7 @@ ON CONFLICT (user_id) DO UPDATE SET
     full_name = EXCLUDED.full_name,
     updated_at = NOW();
 
-INSERT INTO gateways (gateway_id, user_id, name, location, status, last_heartbeat, database_version, created_at, updated_at)
+INSERT INTO gateways (gateway_id, user_id, name, location, status, last_seen, database_version, created_at, updated_at)
 VALUES ('Gateway1', '00001', 'Main Gate Gateway', 'Building Entrance', 'offline', NOW() - INTERVAL '1 minute', 'v1.0.0', NOW(), NOW()) 
 ON CONFLICT (gateway_id) DO UPDATE SET
     user_id = EXCLUDED.user_id,
@@ -282,7 +278,7 @@ ON CONFLICT (gateway_id) DO UPDATE SET
     location = EXCLUDED.location,
     updated_at = NOW();
 
-INSERT INTO gateways (gateway_id, user_id, name, location, status, last_heartbeat, database_version, created_at, updated_at)
+INSERT INTO gateways (gateway_id, user_id, name, location, status, last_seen, database_version, created_at, updated_at)
 VALUES ('Gateway2', '00002', 'Door Gateway', 'Apartment', 'offline', NOW() - INTERVAL '1 minute', 'v1.0.0', NOW(), NOW()) 
 ON CONFLICT (gateway_id) DO UPDATE SET
     user_id = EXCLUDED.user_id,
@@ -290,7 +286,7 @@ ON CONFLICT (gateway_id) DO UPDATE SET
     location = EXCLUDED.location,
     updated_at = NOW();
 
-INSERT INTO gateways (gateway_id, user_id, name, location, status, last_heartbeat, database_version, created_at, updated_at)
+INSERT INTO gateways (gateway_id, user_id, name, location, status, last_seen, database_version, created_at, updated_at)
 VALUES ('Gateway3', '00003', 'Fan Temp Gateway', 'Apartment', 'offline', NOW() - INTERVAL '1 minute', 'v1.0.0', NOW(), NOW()) 
 ON CONFLICT (gateway_id) DO UPDATE SET
     user_id = EXCLUDED.user_id,
@@ -298,32 +294,32 @@ ON CONFLICT (gateway_id) DO UPDATE SET
     location = EXCLUDED.location,
     updated_at = NOW();
 
-INSERT INTO devices (device_id, gateway_id, user_id, device_type, location, communication, status, is_online, last_seen, created_at, updated_at)
-VALUES ('rfid_gate_01', 'Gateway1', '00001', 'rfid_gate', 'Main Gate', 'LoRa', 'offline', FALSE, NOW() - INTERVAL '2 minutes', NOW(), NOW())
+INSERT INTO devices (device_id, gateway_id, user_id, device_type, location, communication, status, last_seen, created_at, updated_at)
+VALUES ('rfid_gate_01', 'Gateway1', '00001', 'rfid_gate', 'Main Gate', 'LoRa', 'offline', NOW() - INTERVAL '2 minutes', NOW(), NOW())
 ON CONFLICT (device_id) DO UPDATE SET
     gateway_id = EXCLUDED.gateway_id,
     user_id = EXCLUDED.user_id,
     location = EXCLUDED.location,
     updated_at = NOW();
 
-INSERT INTO devices (device_id, gateway_id, user_id, device_type, location, communication, status, is_online, last_seen, created_at, updated_at)
-VALUES ('passkey_01', 'Gateway2', '00002', 'passkey', 'Front Door', 'Wifi', 'offline', FALSE, NOW() - INTERVAL '2 minutes', NOW(), NOW())
+INSERT INTO devices (device_id, gateway_id, user_id, device_type, location, communication, status, last_seen, created_at, updated_at)
+VALUES ('passkey_01', 'Gateway2', '00002', 'passkey', 'Front Door', 'Wifi', 'offline', NOW() - INTERVAL '2 minutes', NOW(), NOW())
 ON CONFLICT (device_id) DO UPDATE SET
     gateway_id = EXCLUDED.gateway_id,
     user_id = EXCLUDED.user_id,
     location = EXCLUDED.location,
     updated_at = NOW();
 
-INSERT INTO devices (device_id, gateway_id, user_id, device_type, location, communication, status, is_online, last_seen, created_at, updated_at)
-VALUES ('temp_01', 'Gateway3', '00003', 'temperature sensor', 'Room', 'Wifi', 'offline', FALSE, NOW() - INTERVAL '2 minutes', NOW(), NOW())
+INSERT INTO devices (device_id, gateway_id, user_id, device_type, location, communication, status, last_seen, created_at, updated_at)
+VALUES ('temp_01', 'Gateway3', '00003', 'temperature sensor', 'Room', 'Wifi', 'offline', NOW() - INTERVAL '2 minutes', NOW(), NOW())
 ON CONFLICT (device_id) DO UPDATE SET
     gateway_id = EXCLUDED.gateway_id,
     user_id = EXCLUDED.user_id,
     location = EXCLUDED.location,
     updated_at = NOW();
 
-INSERT INTO devices (device_id, gateway_id, user_id, device_type, location, communication, status, is_online, last_seen, created_at, updated_at)
-VALUES ('fan_01', 'Gateway3', '00003', 'fan controller', 'Room', 'Wifi', 'offline', FALSE, NOW() - INTERVAL '2 minutes', NOW(), NOW())
+INSERT INTO devices (device_id, gateway_id, user_id, device_type, location, communication, status, last_seen, created_at, updated_at)
+VALUES ('fan_01', 'Gateway3', '00003', 'fan controller', 'Room', 'Wifi', 'offline', NOW() - INTERVAL '2 minutes', NOW(), NOW())
 ON CONFLICT (device_id) DO UPDATE SET
     gateway_id = EXCLUDED.gateway_id,
     user_id = EXCLUDED.user_id,

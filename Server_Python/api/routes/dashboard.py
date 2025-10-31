@@ -15,8 +15,8 @@ async def get_overview(current_user: dict = Depends(get_current_user)):
         devices_query = """
             SELECT 
                 COUNT(*) as total_devices,
-                COUNT(*) FILTER (WHERE is_online = TRUE) as online_devices,
-                COUNT(*) FILTER (WHERE is_online = FALSE) as offline_devices
+                COUNT(*) FILTER (WHERE status = 'online') as online_devices,
+                COUNT(*) FILTER (WHERE statu= 'offline') as offline_devices
             FROM devices
             WHERE user_id = %s
         """

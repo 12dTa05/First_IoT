@@ -2,25 +2,25 @@
   "passwords": {},
   "rfid_cards": {},
   "devices": {
-    "temp_01": {
-      "device_type": "temp_DH11",
-      "location": "Living Room",
-      "communication": "WiFi",
-      "status": "online",
-      "registered_at": null,
-      "last_seen": null,
-      "metadata": null,
-      "updated_at": "2025-10-29T06:45:01.581102+00:00"
-    },
     "fan_01": {
-      "device_type": "relay_fan",
-      "location": "Bedroom",
-      "communication": "WiFi",
-      "status": "online",
-      "registered_at": null,
-      "last_seen": null,
+      "device_type": "fan controller",
+      "location": "Room",
+      "communication": "Wifi",
+      "status": "offline",
+      "registered_at": "2025-10-31T13:25:31.765509+07:00",
+      "last_seen": "2025-10-31T13:23:31.765509+07:00",
       "metadata": null,
-      "updated_at": "2025-10-29T06:45:01.581102+00:00"
+      "updated_at": "2025-10-31T13:25:31.765509+07:00"
+    },
+    "temp_01": {
+      "device_type": "temperature sensor",
+      "location": "Room",
+      "communication": "Wifi",
+      "status": "offline",
+      "registered_at": "2025-10-31T13:25:31.761265+07:00",
+      "last_seen": "2025-10-31T13:23:31.761265+07:00",
+      "metadata": null,
+      "updated_at": "2025-10-31T13:25:31.761265+07:00"
     }
   }
 }

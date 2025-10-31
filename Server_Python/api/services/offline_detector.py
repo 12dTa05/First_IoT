@@ -1,21 +1,16 @@
-"""
-Offline Detection Service
-Periodically checks for offline devices and gateways
-Generates alerts when devices go offline
-"""
-
 import logging
 import asyncio
 from datetime import datetime, timedelta
 from services.database import db
+import json
 
 logger = logging.getLogger(__name__)
 
 class OfflineDetector:
-    def __init__(self, check_interval=60):
+    def __init__(self, check_interval=120):
         """
         Args:
-            check_interval: Seconds between checks (default: 60)
+            check_interval: Seconds between checks (default: 300)
         """
         self.check_interval = check_interval
         self.running = False
@@ -57,11 +52,10 @@ class OfflineDetector:
     async def check_offline_devices(self):
         """Check for devices that have gone offline"""
         try:
-            # Find devices that were online but haven't been seen in 5 minutes
             query = """
                 UPDATE devices
-                SET is_online = FALSE, status = 'offline', updated_at = NOW()
-                WHERE is_online = TRUE AND last_seen < NOW() - INTERVAL '5 minutes'
+                SET status = 'offline', updated_at = NOW()
+                WHERE status != 'offline' AND last_seen < NOW()
                 RETURNING device_id, user_id, device_type, last_seen
             """
             
@@ -76,7 +70,7 @@ class OfflineDetector:
                     """
                     
                     message = f"Device {device['device_id']} went offline"
-                    import json
+                    
                     metadata = json.dumps({
                         'last_seen': str(device['last_seen']),
                         'device_type': device['device_type']
@@ -101,13 +95,15 @@ class OfflineDetector:
             query = """
                 UPDATE gateways
                 SET status = 'offline', updated_at = NOW()
-                WHERE status = 'online' AND last_heartbeat < NOW() - INTERVAL '2 minutes'
-                RETURNING gateway_id, user_id, name, last_heartbeat
+                WHERE status = 'online' AND last_seen < NOW()
+                RETURNING gateway_id, user_id, name, last_seen
             """
             
             offline_gateways = db.query(query)
             
             if offline_gateways and len(offline_gateways) > 0:
+                gateway_ids = [g['gateway_id'] for g in offline_gateways]
+                
                 for gateway in offline_gateways:
                     # Log to system_logs
                     log_query = """
@@ -118,7 +114,7 @@ class OfflineDetector:
                     message = f"Gateway {gateway['gateway_id']} went offline"
                     import json
                     metadata = json.dumps({
-                        'last_heartbeat': str(gateway['last_heartbeat']),
+                        'last_seen': str(gateway['last_seen']),
                         'name': gateway.get('name')
                     })
                     
@@ -130,6 +126,14 @@ class OfflineDetector:
                     ))
                     
                     logger.error(f"Gateway offline: {gateway['gateway_id']}")
+
+                    cascade_query = """
+                            UPDATE devices
+                            SET status = 'offline', updated_at = NOW()
+                            WHERE gateway_id = ANY(%s) AND status != 'offline'
+                        """
+                        
+                    db.query(cascade_query, (gateway_ids,))
         
         except Exception as e:
             logger.error(f'Error checking offline gateways: {e}')

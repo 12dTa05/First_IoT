@@ -5,8 +5,9 @@ import paho.mqtt.client as mqtt
 import ssl
 from services.database import db
 from services.websocket_manager import ws_manager
-from config.settings import settings
 import asyncio
+from queue import Queue
+import threading
 
 logging.basicConfig(
     level=logging.INFO,
@@ -14,18 +15,31 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 
+# Global queue for WebSocket broadcasts from MQTT thread
+ws_broadcast_queue = Queue()
+
 class MQTTService:
     def __init__(self, config):
         self.config = config
         self.client = mqtt.Client()
+        self.connected = False
         self.setup_client()
     
     def setup_client(self):
+        """Configure MQTT client with authentication"""
+        # Set username/password if provided
+        if 'username' in self.config and 'password' in self.config:
+            self.client.username_pw_set(
+                self.config['username'],
+                self.config['password']
+            )
+        
+        # Configure TLS if enabled
         if self.config.get('use_tls', False):
             self.client.tls_set(
-                ca_certs=self.config['ca_cert'],
-                certfile=self.config['client_cert'],
-                keyfile=self.config['client_key'],
+                ca_certs=self.config.get('ca_cert'),
+                certfile=self.config.get('client_cert'),
+                keyfile=self.config.get('client_key'),
                 cert_reqs=ssl.CERT_REQUIRED,
                 tls_version=ssl.PROTOCOL_TLSv1_2
             )
@@ -35,17 +49,24 @@ class MQTTService:
         self.client.on_disconnect = self.on_disconnect
     
     def connect(self):
+        """Connect to MQTT broker"""
         try:
-            self.client.connect(self.config['host'], self.config.get('port', 8883), 300)
+            self.client.connect(
+                self.config['host'],
+                self.config.get('port', 1883),
+                60
+            )
             self.client.loop_start()
-            logger.info(f"MQTT service connected to {self.config['host']}")
+            logger.info(f"MQTT service connected to {self.config['host']}:{self.config.get('port', 1883)}")
             return True
         except Exception as e:
             logger.error(f"Failed to connect to MQTT broker: {e}")
             return False
     
     def on_connect(self, client, userdata, flags, rc):
+        """Callback when connected to broker"""
         if rc == 0:
+            self.connected = True
             logger.info("Connected to MQTT broker successfully")
             # Subscribe to all gateway topics
             self.client.subscribe('gateway/+/telemetry/+')
@@ -53,13 +74,17 @@ class MQTTService:
             self.client.subscribe('gateway/+/status/+')
             logger.info("Subscribed to gateway topics")
         else:
+            self.connected = False
             logger.error(f"Connection failed with code {rc}")
     
     def on_disconnect(self, client, userdata, rc):
+        """Callback when disconnected from broker"""
+        self.connected = False
         if rc != 0:
             logger.warning(f"Unexpected disconnection (code {rc}), attempting reconnect...")
     
     def on_message(self, client, userdata, msg):
+        """Handle incoming MQTT messages"""
         try:
             topic = msg.topic
             payload = msg.payload.decode('utf-8')
@@ -103,26 +128,21 @@ class MQTTService:
             logger.error(f"Error handling MQTT message: {e}", exc_info=True)
     
     def handle_telemetry(self, gateway_id, device_id, data):
-        """ Topic: gateway/{gateway_id}/telemetry/{device_id}"""
+        """Handle telemetry data from temperature sensors"""
         try:
-            # Extract timestamp from gateway
             timestamp = data.get('timestamp') or data.get('time')
-            
-            # Extract telemetry values safely
             telemetry_data = data.get('data', {})
             nested_data = telemetry_data.get('data', {})
             
             temperature = nested_data.get('temperature')
             humidity = nested_data.get('humidity')
             
-            # Prepare metadata
             metadata = {
                 'battery': nested_data.get('battery'),
                 'signal': nested_data.get('signal'),
                 'raw_data': telemetry_data
             }
             
-            # Insert into database
             query = """
                 INSERT INTO telemetry (time, device_id, gateway_id, user_id, temperature, humidity, metadata)
                 SELECT %s::timestamptz, %s, %s, d.user_id, %s, %s, %s
@@ -131,129 +151,114 @@ class MQTTService:
             """
             
             result = db.query(query, (
-                timestamp,
-                device_id,
-                gateway_id,
-                temperature,
-                humidity,
-                json.dumps(metadata),
-                device_id,
-                gateway_id
+                timestamp, device_id, gateway_id,
+                temperature, humidity, json.dumps(metadata),
+                device_id, gateway_id
             ))
             
             if result is not None:
                 logger.info(f"Telemetry saved: {device_id} - {temperature}°C, {humidity}%")
-                
-                # Update device last_seen
                 self.update_device_last_seen(device_id, gateway_id, timestamp)
 
-                # Broadcast to WebSocket 
-                result_ = db.query_one(
+                # Queue WebSocket broadcast (thread-safe)
+                result_user = db.query_one(
                     'SELECT user_id FROM devices WHERE device_id = %s',
                     (device_id,)
                 )
-                if result_:
-                    broadcast_to_websocket(ws_manager.broadcast_telemetry(
-                        result_['user_id'],
-                        {
+                if result_user:
+                    ws_broadcast_queue.put({
+                        'type': 'telemetry',
+                        'user_id': result_user['user_id'],
+                        'data': {
                             'device_id': device_id,
                             'temperature': temperature,
                             'humidity': humidity,
                             'timestamp': timestamp
                         }
-                    ))
+                    })
             else:
                 logger.warning(f"Device not found: {device_id} on {gateway_id}")
+
+            self.update_device_last_seen(device_id, gateway_id, timestamp)
             
         except Exception as e:
             logger.error(f"Error saving telemetry: {e}")
     
     def handle_access(self, gateway_id, device_id, data):
-        """Topic: gateway/{gateway_id}/access/{device_id}"""
+        """Handle access control events (RFID/Keypad)"""
         try:
-            # Extract timestamp from gateway
             timestamp = data.get('timestamp') or data.get('time')
-            
             method = data.get('method', 'unknown')
             result = data.get('result', 'unknown')
+            identifier = data.get('identifier') or data.get('uid') or data.get('password')
             
-            # Prepare metadata
-            metadata = {
-                'location': data.get('location'),
-                'source': data.get('source'),
-                'command_id': data.get('command_id')
-            }
-            
-            # Insert into access_logs
             query = """
-                INSERT INTO access_logs (time, device_id, gateway_id, user_id, method, result, password_id, rfid_uid, deny_reason, metadata)
-                SELECT %s::timestamptz, %s, %s, d.user_id, %s, %s, %s, %s, %s, %s
-                FROM devices d 
+                INSERT INTO access_logs (time, device_id, gateway_id, user_id, method, result, identifier, metadata)
+                SELECT %s::timestamptz, %s, %s, d.user_id, %s, %s, %s, %s
+                FROM devices d
                 WHERE d.device_id = %s AND d.gateway_id = %s
             """
             
-            db.query(query, (
-                timestamp,
-                device_id,
-                gateway_id,
-                method,
-                result,
-                data.get('password_id'),
-                data.get('rfid_uid'),
-                data.get('deny_reason'),
-                json.dumps(metadata),
-                device_id,
-                gateway_id
-            ))
-        
-            logger.info(f"Access log: {device_id} - {method} - {result}")
+            metadata = json.dumps(data.get('metadata', {}))
             
-            # Update device last_seen
+            db.query(query, (
+                timestamp, device_id, gateway_id,
+                method, result, identifier, metadata,
+                device_id, gateway_id
+            ))
+            
+            logger.info(f"Access log saved: {device_id} - {method} - {result}")
+            
             self.update_device_last_seen(device_id, gateway_id, timestamp)
             
-            # Update password/rfid last_used if access granted
-            if result == 'granted':
-                if method == 'passkey' and data.get('password_id'):
-                    self.update_password_last_used(data.get('password_id'), timestamp)
-                elif method == 'rfid' and data.get('rfid_uid'):
-                    self.update_rfid_last_used(data.get('rfid_uid'), timestamp)
-
-            result_db = db.query_one('SELECT user_id FROM devices WHERE device_id = %s', (device_id,))
-            if result_db:
-                broadcast_to_websocket(ws_manager.broadcast_access_event(
-                    result_db['user_id'],
-                    {
+            # Update last_used for password or RFID
+            if method == 'password' and identifier:
+                self.update_password_last_used(identifier, timestamp)
+            elif method == 'rfid' and identifier:
+                self.update_rfid_last_used(identifier, timestamp)
+            
+            # Queue WebSocket broadcast
+            result_user = db.query_one(
+                'SELECT user_id FROM devices WHERE device_id = %s',
+                (device_id,)
+            )
+            if result_user:
+                ws_broadcast_queue.put({
+                    'type': 'access_event',
+                    'user_id': result_user['user_id'],
+                    'data': {
                         'device_id': device_id,
                         'method': method,
                         'result': result,
                         'timestamp': timestamp
                     }
-                ))
+                })
                 
         except Exception as e:
             logger.error(f"Error saving access log: {e}")
     
     def handle_device_status(self, gateway_id, device_id, data):
-        """Topic: gateway/{gateway_id}/status/{device_id}"""
+        """Handle device status updates"""
         try:
             timestamp = data.get('timestamp') or data.get('time')
             status = data.get('status') or data.get('state', 'unknown')
             
-            # Determine if device is online
-            is_online = status.lower() in ['online', 'on', 'opened', 'locked', 'unlocked']
-            
-            # Update device status in devices table
+            if status.lower() in ['on', 'locked', 'unlocked', 'opened', 'closed', 'active']:
+                status = 'online'
+            elif status.lower() == 'offline':
+                status = 'offline'
+            else:
+                status = 'online'
+
             query = """
                 UPDATE devices
-                SET status = %s, is_online = %s, last_seen = %s::timestamptz, updated_at = %s::timestamptz
+                SET status = %s, last_seen = %s::timestamptz, updated_at = %s::timestamptz
                 WHERE device_id = %s AND gateway_id = %s
             """
             
-            db.query(query, (status, is_online, timestamp, timestamp, device_id, gateway_id))
-            
+            db.query(query, (status, timestamp, timestamp, device_id, gateway_id))
             logger.info(f"Device status updated: {device_id} -> {status}")
             
-            # Log status change to system_logs
             log_query = """
                 INSERT INTO system_logs (time, gateway_id, device_id, user_id, log_type, event, severity, message, metadata)
                 SELECT %s::timestamptz, %s, %s, d.user_id, 'device_event', 'device_status_change', 'info', %s, %s
@@ -268,36 +273,38 @@ class MQTTService:
                 timestamp, gateway_id, device_id, message, metadata, device_id, gateway_id
             ))
 
-            result = db.query_one('SELECT user_id FROM devices WHERE device_id = %s', (device_id,))
-            if result:
-                broadcast_to_websocket(ws_manager.broadcast_device_status(
-                    device_id,
-                    result['user_id'],
-                    {
+            # Queue WebSocket broadcast
+            result_user = db.query_one(
+                'SELECT user_id FROM devices WHERE device_id = %s',
+                (device_id,)
+            )
+            if result_user:
+                ws_broadcast_queue.put({
+                    'type': 'device_status',
+                    'user_id': result_user['user_id'],
+                    'device_id': device_id,
+                    'data': {
                         'status': status,
-                        'is_online': is_online,
                         'timestamp': timestamp
                     }
-                ))
+                })
             
         except Exception as e:
             logger.error(f"Error updating device status: {e}")
     
     def handle_gateway_status(self, gateway_id, data):
-        """Topic: gateway/{gateway_id}/status/gateway"""
+        """Handle gateway heartbeat status"""
         try:
             timestamp = data.get('timestamp') or data.get('time')
             status = data.get('status', 'online')
             
-            # Update gateway in database
             query = """
                 UPDATE gateways 
-                SET status = %s, last_heartbeat = %s::timestamptz, updated_at = %s::timestamptz
+                SET status = %s, last_seen = %s::timestamptz, updated_at = %s::timestamptz
                 WHERE gateway_id = %s
             """
             
             db.query(query, (status, timestamp, timestamp, gateway_id))
-            
             logger.info(f"Gateway heartbeat: {gateway_id} -> {status}")
             
         except Exception as e:
@@ -308,12 +315,11 @@ class MQTTService:
         try:
             query = """
                 UPDATE devices
-                SET last_seen = %s::timestamptz, is_online = TRUE, updated_at = %s::timestamptz
+                SET last_seen = %s::timestamptz,
+                    updated_at = %s::timestamptz
                 WHERE device_id = %s AND gateway_id = %s
             """
-            
             db.query(query, (timestamp, timestamp, device_id, gateway_id))
-            
         except Exception as e:
             logger.error(f"Error updating last_seen: {e}")
     
@@ -325,9 +331,7 @@ class MQTTService:
                 SET last_used = %s::timestamptz
                 WHERE password_id = %s
             """
-            
             db.query(query, (timestamp, password_id))
-            
         except Exception as e:
             logger.error(f"Error updating password last_used: {e}")
     
@@ -339,9 +343,7 @@ class MQTTService:
                 SET last_used = %s::timestamptz
                 WHERE uid = %s
             """
-            
             db.query(query, (timestamp, uid))
-            
         except Exception as e:
             logger.error(f"Error updating rfid last_used: {e}")
     
@@ -357,7 +359,7 @@ class MQTTService:
                 logger.debug(f"Published to {topic}")
                 return True
             else:
-                logger.error(f"Failed to publish to {topic}")
+                logger.error(f"Failed to publish to {topic}: rc={result.rc}")
                 return False
                 
         except Exception as e:
@@ -368,24 +370,45 @@ class MQTTService:
         """Disconnect from MQTT broker"""
         self.client.loop_stop()
         self.client.disconnect()
+        self.connected = False
         logger.info("MQTT service disconnected")
 
-    def broadcast_to_websocket(coro):
-        """Helper to run async broadcast in sync context"""
+# Background task to process WebSocket broadcasts
+async def process_websocket_broadcasts():
+    """Process WebSocket broadcasts from queue"""
+    logger.info("WebSocket broadcast processor started")
+    while True:
         try:
-            loop = asyncio.get_event_loop()
-            if loop.is_running():
-                asyncio.create_task(coro)
-            else:
-                loop.run_until_complete(coro)
+            # Non-blocking get from queue
+            if not ws_broadcast_queue.empty():
+                msg = ws_broadcast_queue.get_nowait()
+                
+                msg_type = msg.get('type')
+                user_id = msg.get('user_id')
+                data = msg.get('data')
+                
+                if msg_type == 'telemetry':
+                    await ws_manager.broadcast_telemetry(user_id, data)
+                elif msg_type == 'access_event':
+                    await ws_manager.broadcast_access_event(user_id, data)
+                elif msg_type == 'device_status':
+                    device_id = msg.get('device_id')
+                    await ws_manager.broadcast_device_status(device_id, user_id, data)
+                elif msg_type == 'alert':
+                    await ws_manager.broadcast_alert(user_id, data)
+            
+            # Small delay to prevent CPU spinning
+            await asyncio.sleep(0.1)
+            
         except Exception as e:
-            logger.error(f'Error broadcasting to WebSocket: {e}')
-
+            logger.error(f"Error processing WebSocket broadcast: {e}")
+            await asyncio.sleep(1)
 
 # Global MQTT service instance
-mqtt_config = {
-    'host': settings.MQTT_HOST,
-    'port': settings.MQTT_PORT,
-    'use_tls': False,  # Set True nếu dùng TLS
-}
-mqtt_service = MQTTService(mqtt_config)
+mqtt_service = None
+
+def init_mqtt_service(config):
+    """Initialize global MQTT service"""
+    global mqtt_service
+    mqtt_service = MQTTService(config)
+    return mqtt_service.connect()

@@ -58,7 +58,7 @@ async def get_database_for_gateway(
         # Get devices for this gateway
         devices_result = db.query(
             '''SELECT device_id, device_type, location, communication,
-                      status, is_online, last_seen, created_at, updated_at
+                      status, last_seen, created_at, updated_at
                FROM devices 
                WHERE gateway_id = %s
                ORDER BY created_at DESC''',
@@ -99,7 +99,6 @@ async def get_database_for_gateway(
                     'location': row['location'],
                     'communication': row['communication'],
                     'status': row['status'],
-                    'is_online': row['is_online'],
                     'registered_at': row['created_at'].isoformat() if row['created_at'] else None,  # Map created_at to registered_at
                     'last_seen': row['last_seen'].isoformat() if row['last_seen'] else None,
                     'metadata': None,  # Gateway doesn't use this field
@@ -229,13 +228,13 @@ async def get_database_version(gateway_id: str):
 async def gateway_heartbeat(gateway_id: str):
     """
     Gateway heartbeat endpoint
-    Updates last_heartbeat and status
+    Updates last_seen and status
     """
     try:
         # Update gateway heartbeat
         result = db.query(
             """UPDATE gateways 
-               SET last_heartbeat = NOW(),
+               SET last_seen = NOW(),
                    status = 'online',
                    updated_at = NOW()
                WHERE gateway_id = %s
@@ -270,7 +269,7 @@ async def get_sync_status(gateway_id: str):
         # Get gateway info
         gateway_result = db.query(
             """SELECT gateway_id, user_id, name, location, status, 
-                      last_heartbeat, database_version, updated_at
+                      last_seen, database_version, updated_at
                FROM gateways 
                WHERE gateway_id = %s""",
             (gateway_id,)
@@ -303,7 +302,7 @@ async def get_sync_status(gateway_id: str):
             'name': gateway['name'],
             'location': gateway['location'],
             'status': gateway['status'],
-            'last_heartbeat': gateway['last_heartbeat'].isoformat() if gateway['last_heartbeat'] else None,
+            'last_seen': gateway['last_seen'].isoformat() if gateway['last_seen'] else None,
             'database_version': gateway['database_version'],
             'resources': {
                 'passwords': password_count,

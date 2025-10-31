@@ -8,12 +8,13 @@ from datetime import datetime
 import logging
 import uvicorn
 import os
+import asyncio
 
 from config.settings import settings
 from services.database import db
-from services.mqtt_service import mqtt_service
+from services.mqtt_service import init_mqtt_service, process_websocket_broadcasts 
 from services.alert_service import alert_service
-from services.offline_detector import offline_detector 
+from services.offline_detector import offline_detector
 
 from routes import auth, devices, telemetry, access, gateways, commands, sync, dashboard, websocket, system
 
@@ -22,12 +23,28 @@ logger = logging.getLogger(__name__)
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
+    """Lifespan context manager for startup and shutdown events"""
     # Startup
     try:
         db.connect()
-        mqtt_service.connect()
+        
+        # Initialize MQTT service
+        mqtt_config = {
+            'host': settings.MQTT_HOST,
+            'port': settings.MQTT_PORT,
+            'username': settings.MQTT_USERNAME,
+            'password': settings.MQTT_PASSWORD,
+            'use_tls': False
+        }
+        init_mqtt_service(mqtt_config)
+        
+        # Start background tasks
         await offline_detector.start()
         await alert_service.start()
+        
+        # QUAN TRỌNG: Start WebSocket broadcast processor
+        asyncio.create_task(process_websocket_broadcasts())
+        
         logger.info('API Server started successfully')
         logger.info(f'Listening on port {settings.API_PORT}')
     except Exception as e:
@@ -40,13 +57,17 @@ async def lifespan(app: FastAPI):
     try:
         await alert_service.stop()
         await offline_detector.stop()
+        
+        from services.mqtt_service import mqtt_service
+        if mqtt_service:
+            mqtt_service.disconnect()
+            
         db.close()
-        mqtt_service.disconnect()
         logger.info('API Server shut down successfully')
     except Exception as e:
         logger.error(f'Error during shutdown: {e}')
 
-# Initialize FastAPI app with lifespan
+# Initialize FastAPI app
 app = FastAPI(
     title='IoT API Server',
     version='2.0.0',
@@ -71,8 +92,10 @@ app.add_middleware(
 @app.get('/health')
 @limiter.limit('100/15minutes')
 async def health_check(request: Request):
+    """Health check endpoint"""
     try:
-        # Check database by attempting a simple query
+        from services.mqtt_service import mqtt_service
+        
         db_healthy = False
         try:
             db.query('SELECT 1')
@@ -80,22 +103,20 @@ async def health_check(request: Request):
         except:
             pass
         
-        # Check MQTT status
-        mqtt_healthy = mqtt_service.client.is_connected()
+        mqtt_healthy = mqtt_service.connected if mqtt_service else False
         
         return {
             'status': 'healthy' if (db_healthy and mqtt_healthy) else 'degraded',
-            'timestamp': datetime.now().isoformat(),
+            'timestamp': datetime.utcnow().isoformat(),
             'services': {
-                'database': 'connected' if db_healthy else 'disconnected',
-                'mqtt': 'connected' if mqtt_healthy else 'disconnected'
+                'database': 'up' if db_healthy else 'down',
+                'mqtt': 'up' if mqtt_healthy else 'down'
             }
         }
     except Exception as e:
-        logger.error(f'Health check error: {e}')
+        logger.error(f'Health check failed: {e}')
         return {
             'status': 'unhealthy',
-            'timestamp': datetime.now().isoformat(),
             'error': str(e)
         }
 
@@ -105,22 +126,11 @@ app.include_router(devices.router)
 app.include_router(telemetry.router)
 app.include_router(access.router)
 app.include_router(gateways.router)
-app.include_router(sync.router)
 app.include_router(commands.router)
+app.include_router(sync.router)
 app.include_router(dashboard.router)
 app.include_router(websocket.router)
 app.include_router(system.router)
-
-logger.info('Sync routes loaded')
-
-# Global exception handler
-@app.exception_handler(Exception)
-async def global_exception_handler(request: Request, exc: Exception):
-    logger.error(f'Unhandled error: {exc}')
-    return {
-        'error': str(exc),
-        'timestamp': datetime.now().isoformat()
-    }
 
 if __name__ == '__main__':
     uvicorn.run(

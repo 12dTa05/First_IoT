@@ -2,7 +2,7 @@ import logging
 import asyncio
 from datetime import datetime, timedelta
 from services.database import db
-from services.mqtt_service import mqtt_service
+from services.websocket_manager import ws_manager  # THÊM IMPORT
 import json
 
 logger = logging.getLogger(__name__)
@@ -11,7 +11,7 @@ class AlertService:
     def __init__(self, check_interval=60):
         """
         Args:
-            check_interval: Seconds between checks (default: 30)
+            check_interval: Seconds between checks (default: 60)
         """
         self.check_interval = check_interval
         self.running = False
@@ -63,7 +63,6 @@ class AlertService:
     async def check_temperature_alerts(self):
         """Check for temperature threshold violations"""
         try:
-            # Get latest temperature readings from last 5 minutes
             query = """
                 SELECT DISTINCT ON (device_id) device_id, gateway_id, user_id, temperature, time
                 FROM telemetry
@@ -77,11 +76,9 @@ class AlertService:
                 device_id = reading['device_id']
                 temp = reading['temperature']
                 
-                # Check if in cooldown period
                 if self._is_in_cooldown(device_id, 'temp'):
                     continue
                 
-                # Check thresholds
                 alert_type = None
                 severity = None
                 
@@ -105,7 +102,6 @@ class AlertService:
                         timestamp=reading['time']
                     )
                     
-                    # Update cooldown
                     self._update_cooldown(device_id, 'temp')
         
         except Exception as e:
@@ -172,7 +168,7 @@ class AlertService:
     
     async def _create_alert(self, device_id, gateway_id, user_id, alert_type, 
                            severity, value, threshold, message, timestamp):
-        """Create alert in system_logs and publish to MQTT"""
+        """Create alert in system_logs and publish to MQTT + WebSocket"""
         try:
             # Insert into system_logs
             query = """
@@ -189,9 +185,23 @@ class AlertService:
             
             logger.warning(f'ALERT: {device_id} - {message}')
             
-            # Publish alert to MQTT for real-time notification
-            topic = f'alert/{user_id}/{device_id}'
-            alert_payload = {
+            # Publish alert to MQTT
+            from services.mqtt_service import mqtt_service
+            if mqtt_service:
+                topic = f'alert/{user_id}/{device_id}'
+                alert_payload = {
+                    'device_id': device_id,
+                    'alert_type': alert_type,
+                    'severity': severity,
+                    'value': value,
+                    'threshold': threshold,
+                    'message': message,
+                    'timestamp': timestamp.isoformat() if hasattr(timestamp, 'isoformat') else str(timestamp)
+                }
+                mqtt_service.publish(topic, alert_payload)
+            
+            # Broadcast to WebSocket
+            await ws_manager.broadcast_alert(user_id, {
                 'device_id': device_id,
                 'alert_type': alert_type,
                 'severity': severity,
@@ -199,10 +209,7 @@ class AlertService:
                 'threshold': threshold,
                 'message': message,
                 'timestamp': timestamp.isoformat() if hasattr(timestamp, 'isoformat') else str(timestamp)
-            }
-            
-            mqtt_service.publish(topic, alert_payload)
-            await ws_manager.broadcast_alert(user_id, alert_payload)
+            })
             
         except Exception as e:
             logger.error(f'Error creating alert: {e}')

@@ -65,7 +65,7 @@ async def get_system_stats(current_user: dict = Depends(get_current_user)):
         
         # Device stats
         devices_query = """
-            SELECT device_type, COUNT(*) as count, COUNT(*) FILTER (WHERE is_online = TRUE) as online_count
+            SELECT device_type, COUNT(*) as count, COUNT(*) FILTER (WHERE status = 'online') as online_count
             FROM devices
             WHERE user_id = %s
             GROUP BY device_type
@@ -113,7 +113,7 @@ async def system_health(current_user: dict = Depends(get_current_user)):
         offline_query = """
             SELECT device_id, device_type, location, last_seen, EXTRACT(EPOCH FROM (NOW() - last_seen))/60 as minutes_offline
             FROM devices
-            WHERE user_id = %s AND is_online = FALSE
+            WHERE user_id = %s AND status = 'offline'
         """
         offline_devices = db.query(offline_query, (user_id,))
         
@@ -134,7 +134,7 @@ async def system_health(current_user: dict = Depends(get_current_user)):
         )['total']
         
         online_devices = db.query_one(
-            'SELECT COUNT(*) as online FROM devices WHERE user_id = %s AND is_online = TRUE',
+            """SELECT COUNT(*) as online FROM devices WHERE user_id = %s AND status = 'online'""",
             (user_id,)
         )['online']
         
