@@ -34,12 +34,13 @@ async def get_database_for_gateway(
         
         user_id = gateway_result[0]['user_id']
         
-        # Get passwords for this user
+        # Get passwords for this user (only active or all)
         passwords_result = db.query(
             '''SELECT password_id, hash, active, description, 
                       created_at, last_used, expires_at, updated_at
                FROM passwords 
-               WHERE user_id = %s''',
+               WHERE user_id = %s
+               ORDER BY created_at DESC''',
             (user_id,)
         )
         
@@ -49,20 +50,22 @@ async def get_database_for_gateway(
                       registered_at, last_used, expires_at, 
                       deactivated_at, deactivation_reason, updated_at
                FROM rfid_cards 
-               WHERE user_id = %s''',
+               WHERE user_id = %s
+               ORDER BY registered_at DESC''',
             (user_id,)
         )
         
         # Get devices for this gateway
         devices_result = db.query(
             '''SELECT device_id, device_type, location, communication,
-                      status, registered_at, last_seen, metadata, updated_at
+                      status, is_online, last_seen, created_at, updated_at
                FROM devices 
-               WHERE gateway_id = %s''',
+               WHERE gateway_id = %s
+               ORDER BY created_at DESC''',
             (gateway_id,)
         )
         
-        # Format data
+        # Format data - convert to dict format that gateway expects
         database_content = {
             'passwords': {
                 row['password_id']: {
@@ -96,9 +99,10 @@ async def get_database_for_gateway(
                     'location': row['location'],
                     'communication': row['communication'],
                     'status': row['status'],
-                    'registered_at': row['registered_at'].isoformat() if row['registered_at'] else None,
+                    'is_online': row['is_online'],
+                    'registered_at': row['created_at'].isoformat() if row['created_at'] else None,  # Map created_at to registered_at
                     'last_seen': row['last_seen'].isoformat() if row['last_seen'] else None,
-                    'metadata': row['metadata'],
+                    'metadata': None,  # Gateway doesn't use this field
                     'updated_at': row['updated_at'].isoformat() if row['updated_at'] else None
                 }
                 for row in devices_result
@@ -140,7 +144,7 @@ async def notify_database_change(user_id: str):
     This triggers immediate sync via MQTT
     """
     try:
-        # Get all gateways for this user
+        # Get all online gateways for this user
         gateways = db.query(
             'SELECT gateway_id FROM gateways WHERE user_id = %s AND status = %s',
             (user_id, 'online')
@@ -161,7 +165,7 @@ async def notify_database_change(user_id: str):
                 'timestamp': datetime.now().isoformat()
             }
             
-            if mqtt_service.publish(topic, message):
+            if mqtt_service and mqtt_service.publish(topic, message):
                 notified_count += 1
         
         return {
@@ -214,6 +218,99 @@ async def get_database_version(gateway_id: str):
             'gateway_id': gateway_id,
             'version': version,
             'timestamp': datetime.now().isoformat()
+        }
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@router.post('/heartbeat/{gateway_id}')
+async def gateway_heartbeat(gateway_id: str):
+    """
+    Gateway heartbeat endpoint
+    Updates last_heartbeat and status
+    """
+    try:
+        # Update gateway heartbeat
+        result = db.query(
+            """UPDATE gateways 
+               SET last_heartbeat = NOW(),
+                   status = 'online',
+                   updated_at = NOW()
+               WHERE gateway_id = %s
+               RETURNING gateway_id, user_id, status""",
+            (gateway_id,)
+        )
+        
+        if not result:
+            raise HTTPException(status_code=404, detail='Gateway not found')
+        
+        gateway = result[0]
+        
+        return {
+            'success': True,
+            'gateway_id': gateway['gateway_id'],
+            'status': gateway['status'],
+            'timestamp': datetime.now().isoformat()
+        }
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@router.get('/status/{gateway_id}')
+async def get_sync_status(gateway_id: str):
+    """
+    Get sync status for gateway
+    Returns gateway info and database version
+    """
+    try:
+        # Get gateway info
+        gateway_result = db.query(
+            """SELECT gateway_id, user_id, name, location, status, 
+                      last_heartbeat, database_version, updated_at
+               FROM gateways 
+               WHERE gateway_id = %s""",
+            (gateway_id,)
+        )
+        
+        if not gateway_result:
+            raise HTTPException(status_code=404, detail='Gateway not found')
+        
+        gateway = gateway_result[0]
+        user_id = gateway['user_id']
+        
+        # Count resources
+        password_count = db.query_one(
+            'SELECT COUNT(*) as count FROM passwords WHERE user_id = %s',
+            (user_id,)
+        )['count']
+        
+        rfid_count = db.query_one(
+            'SELECT COUNT(*) as count FROM rfid_cards WHERE user_id = %s',
+            (user_id,)
+        )['count']
+        
+        device_count = db.query_one(
+            'SELECT COUNT(*) as count FROM devices WHERE gateway_id = %s',
+            (gateway_id,)
+        )['count']
+        
+        return {
+            'gateway_id': gateway['gateway_id'],
+            'name': gateway['name'],
+            'location': gateway['location'],
+            'status': gateway['status'],
+            'last_heartbeat': gateway['last_heartbeat'].isoformat() if gateway['last_heartbeat'] else None,
+            'database_version': gateway['database_version'],
+            'resources': {
+                'passwords': password_count,
+                'rfid_cards': rfid_count,
+                'devices': device_count
+            },
+            'last_updated': gateway['updated_at'].isoformat() if gateway['updated_at'] else None
         }
         
     except HTTPException:

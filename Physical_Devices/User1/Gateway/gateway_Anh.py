@@ -85,7 +85,7 @@ class DatabaseManager:
     
     def verify_rfid(self, uid):
         """Verify RFID card"""
-        card = self.devices_data.get('rfid_cards', {}).get(uid)
+        card = self.devices_data.get('rfid_cards', {}).get(uid.upper())
         
         if not card:
             return False, 'unknown_card'
@@ -104,8 +104,8 @@ class DatabaseManager:
                 pass
         
         # Update last_used
-        card['last_used'] = now_compact()
-        self.save_devices()
+        # card['last_used'] = now_compact()
+        # self.save_devices()
         
         return True, None
 
@@ -322,7 +322,7 @@ class LoRaHandler:
                     'result': 'granted' if granted else 'denied',
                     'method': 'rfid',
                     'deny_reason': deny_reason,
-                    'time': now_compact()
+                    'timestamp': now_compact()
                 }
                 
                 topic = self.config['topics']['vps_access'].format(device_id='rfid_gate_01')
@@ -362,7 +362,7 @@ class LoRaHandler:
             'device_id': 'rfid_gate_01',
             'status': status,
             'sequence': sequence,
-            'time': now_compact()
+            'timestamp': now_compact()
         }
         
         topic = self.config['topics']['vps_status'].format(device_id='rfid_gate_01')

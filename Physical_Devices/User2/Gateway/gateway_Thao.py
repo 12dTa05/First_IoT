@@ -100,8 +100,8 @@ class DatabaseManager:
                         pass
                 
                 # Update last_used
-                password_data['last_used'] = now_compact()
-                self.save_devices()
+                # password_data['last_used'] = now_compact()
+                # self.save_devices()
                 
                 return True, None, password_id
         

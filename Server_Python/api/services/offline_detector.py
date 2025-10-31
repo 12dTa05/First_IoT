@@ -60,11 +60,8 @@ class OfflineDetector:
             # Find devices that were online but haven't been seen in 5 minutes
             query = """
                 UPDATE devices
-                SET is_online = FALSE,
-                    status = 'offline',
-                    updated_at = NOW()
-                WHERE is_online = TRUE
-                  AND last_seen < NOW() - INTERVAL '5 minutes'
+                SET is_online = FALSE, status = 'offline', updated_at = NOW()
+                WHERE is_online = TRUE AND last_seen < NOW() - INTERVAL '5 minutes'
                 RETURNING device_id, user_id, device_type, last_seen
             """
             
@@ -74,10 +71,8 @@ class OfflineDetector:
                 for device in offline_devices:
                     # Log to system_logs
                     log_query = """
-                        INSERT INTO system_logs (time, device_id, user_id, log_type, 
-                                                event, severity, message, metadata)
-                        VALUES (NOW(), %s, %s, 'device_event', 'device_offline', 
-                                'warning', %s, %s)
+                        INSERT INTO system_logs (time, device_id, user_id, log_type, event, severity, message, metadata)
+                        VALUES (NOW(), %s, %s, 'device_event', 'device_offline', 'warning', %s, %s)
                     """
                     
                     message = f"Device {device['device_id']} went offline"
@@ -105,10 +100,8 @@ class OfflineDetector:
             # Find gateways that haven't sent heartbeat in 2 minutes
             query = """
                 UPDATE gateways
-                SET status = 'offline',
-                    updated_at = NOW()
-                WHERE status = 'online'
-                  AND last_heartbeat < NOW() - INTERVAL '2 minutes'
+                SET status = 'offline', updated_at = NOW()
+                WHERE status = 'online' AND last_heartbeat < NOW() - INTERVAL '2 minutes'
                 RETURNING gateway_id, user_id, name, last_heartbeat
             """
             
@@ -118,10 +111,8 @@ class OfflineDetector:
                 for gateway in offline_gateways:
                     # Log to system_logs
                     log_query = """
-                        INSERT INTO system_logs (time, gateway_id, user_id, log_type, 
-                                                event, severity, message, metadata)
-                        VALUES (NOW(), %s, %s, 'system_event', 'gateway_offline', 
-                                'critical', %s, %s)
+                        INSERT INTO system_logs (time, gateway_id, user_id, log_type, event, severity, message, metadata)
+                        VALUES (NOW(), %s, %s, 'system_event', 'gateway_offline', 'critical', %s, %s)
                     """
                     
                     message = f"Gateway {gateway['gateway_id']} went offline"

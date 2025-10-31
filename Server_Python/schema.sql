@@ -1,6 +1,9 @@
 -- Enable TimescaleDB extension for time-series data
 CREATE EXTENSION IF NOT EXISTS timescaledb;
 
+SET timezone = 'Asia/Ho_Chi_Minh';
+ALTER DATABASE iot_db SET timezone TO 'Asia/Ho_Chi_Minh';
+
 -- Users table
 CREATE TABLE IF NOT EXISTS users (
     user_id TEXT PRIMARY KEY,
@@ -246,5 +249,301 @@ GRANT EXECUTE ON ALL FUNCTIONS IN SCHEMA public TO iot;
 -- ============================================================================
 -- SCHEMA MIGRATION COMPLETE
 -- ============================================================================
+
+INSERT INTO users (user_id, username, email, password_hash, full_name, phone, role, active, created_at, updated_at)
+VALUES ('00001', 'Anh', 'anh@iot.local', '$2b$10$IhIlIxY2od5hr3oJyOcPFOsINCIQpE1xk/pw4oMJJZ1j76DRMGmEK', 'Death', '+84901234567', 'owner', TRUE, NOW(), NOW())
+ON CONFLICT (user_id) DO UPDATE SET 
+    username = EXCLUDED.username,
+    email = EXCLUDED.email,
+    full_name = EXCLUDED.full_name,
+    updated_at = NOW();
+
+INSERT INTO users (user_id, username, email, password_hash, full_name, phone, role, active, created_at, updated_at)
+VALUES ('00002', 'Thao', 'thao@iot.local', '$2b$10$hsu4FolYIVI1Qat9e5d5KuHaZXJeFmS9IyQc3tXgnptThex5jYOdG', 'Vuong Linh Thao', '+84901234567', 'owner', TRUE, NOW(), NOW())
+ON CONFLICT (user_id) DO UPDATE SET 
+    username = EXCLUDED.username,
+    email = EXCLUDED.email,
+    full_name = EXCLUDED.full_name,
+    updated_at = NOW();
+
+INSERT INTO users (user_id, username, email, password_hash, full_name, phone, role, active, created_at, updated_at)
+VALUES ('00003', 'Tu', 'tu@iot.local', '$2b$10$GO6tbC5XLZWil3clSFi/Heh4.Ij68flzb2HncZLxoZl3Ei7/T0iQK', 'Thai Thi Minh Tu', '+84901234567', 'owner', TRUE, NOW(), NOW())
+ON CONFLICT (user_id) DO UPDATE SET 
+    username = EXCLUDED.username,
+    email = EXCLUDED.email,
+    full_name = EXCLUDED.full_name,
+    updated_at = NOW();
+
+INSERT INTO gateways (gateway_id, user_id, name, location, status, last_heartbeat, database_version, created_at, updated_at)
+VALUES ('Gateway1', '00001', 'Main Gate Gateway', 'Building Entrance', 'offline', NOW() - INTERVAL '1 minute', 'v1.0.0', NOW(), NOW()) 
+ON CONFLICT (gateway_id) DO UPDATE SET
+    user_id = EXCLUDED.user_id,
+    name = EXCLUDED.name,
+    location = EXCLUDED.location,
+    updated_at = NOW();
+
+INSERT INTO gateways (gateway_id, user_id, name, location, status, last_heartbeat, database_version, created_at, updated_at)
+VALUES ('Gateway2', '00002', 'Door Gateway', 'Apartment', 'offline', NOW() - INTERVAL '1 minute', 'v1.0.0', NOW(), NOW()) 
+ON CONFLICT (gateway_id) DO UPDATE SET
+    user_id = EXCLUDED.user_id,
+    name = EXCLUDED.name,
+    location = EXCLUDED.location,
+    updated_at = NOW();
+
+INSERT INTO gateways (gateway_id, user_id, name, location, status, last_heartbeat, database_version, created_at, updated_at)
+VALUES ('Gateway3', '00003', 'Fan Temp Gateway', 'Apartment', 'offline', NOW() - INTERVAL '1 minute', 'v1.0.0', NOW(), NOW()) 
+ON CONFLICT (gateway_id) DO UPDATE SET
+    user_id = EXCLUDED.user_id,
+    name = EXCLUDED.name,
+    location = EXCLUDED.location,
+    updated_at = NOW();
+
+INSERT INTO devices (device_id, gateway_id, user_id, device_type, location, communication, status, is_online, last_seen, created_at, updated_at)
+VALUES ('rfid_gate_01', 'Gateway1', '00001', 'rfid_gate', 'Main Gate', 'LoRa', 'offline', FALSE, NOW() - INTERVAL '2 minutes', NOW(), NOW())
+ON CONFLICT (device_id) DO UPDATE SET
+    gateway_id = EXCLUDED.gateway_id,
+    user_id = EXCLUDED.user_id,
+    location = EXCLUDED.location,
+    updated_at = NOW();
+
+INSERT INTO devices (device_id, gateway_id, user_id, device_type, location, communication, status, is_online, last_seen, created_at, updated_at)
+VALUES ('passkey_01', 'Gateway2', '00002', 'passkey', 'Front Door', 'Wifi', 'offline', FALSE, NOW() - INTERVAL '2 minutes', NOW(), NOW())
+ON CONFLICT (device_id) DO UPDATE SET
+    gateway_id = EXCLUDED.gateway_id,
+    user_id = EXCLUDED.user_id,
+    location = EXCLUDED.location,
+    updated_at = NOW();
+
+INSERT INTO devices (device_id, gateway_id, user_id, device_type, location, communication, status, is_online, last_seen, created_at, updated_at)
+VALUES ('temp_01', 'Gateway3', '00003', 'temperature sensor', 'Room', 'Wifi', 'offline', FALSE, NOW() - INTERVAL '2 minutes', NOW(), NOW())
+ON CONFLICT (device_id) DO UPDATE SET
+    gateway_id = EXCLUDED.gateway_id,
+    user_id = EXCLUDED.user_id,
+    location = EXCLUDED.location,
+    updated_at = NOW();
+
+INSERT INTO devices (device_id, gateway_id, user_id, device_type, location, communication, status, is_online, last_seen, created_at, updated_at)
+VALUES ('fan_01', 'Gateway3', '00003', 'fan controller', 'Room', 'Wifi', 'offline', FALSE, NOW() - INTERVAL '2 minutes', NOW(), NOW())
+ON CONFLICT (device_id) DO UPDATE SET
+    gateway_id = EXCLUDED.gateway_id,
+    user_id = EXCLUDED.user_id,
+    location = EXCLUDED.location,
+    updated_at = NOW();
+
+INSERT INTO rfid_cards (uid, user_id, active, card_type, description, registered_at, last_used, expires_at, deactivated_at, deactivation_reason, updated_at)
+VALUES ('8675F205', '00001', TRUE, 'MIFARE Classic', 'Thai Thi Minh Tu - Main Card', NOW() - INTERVAL '30 days', NOW() - INTERVAL '1 hour', NULL, NULL, NULL, NOW())
+ON CONFLICT (uid) DO UPDATE SET
+    active = EXCLUDED.active,
+    description = EXCLUDED.description,
+    last_used = EXCLUDED.last_used,
+    updated_at = NOW();
+
+INSERT INTO passwords (password_id, user_id, hash, active, description, created_at, last_used, expires_at, updated_at)
+VALUES ('passwd_00002_001', '00002', '$2b$10$Qbctbhp.uV8WjJsygCGsCu42UGPyDr/8Y2R6bqY7UT8LbEi3himO2', TRUE, 'Vuong Linh Thao PIN - 251203', NOW() - INTERVAL '30 days', NOW() - INTERVAL '3 hours', NULL, NOW())
+ON CONFLICT (password_id) DO UPDATE SET
+    active = EXCLUDED.active,
+    last_used = EXCLUDED.last_used,
+    updated_at = NOW();
+
+INSERT INTO telemetry (time, device_id, gateway_id, user_id, temperature, humidity, metadata)
+SELECT NOW() - (interval '1 hour' * series), 'temp_01', 'Gateway3', '00003', 22.0 + (random() * 8), 50.0 + (random() * 30), jsonb_build_object('battery', 95 - (series * 0.5), 'signal', -45 - (random() * 10))
+FROM generate_series(0, 23) AS series;
+
+INSERT INTO access_logs (time, device_id, gateway_id, user_id, method, result, password_id, rfid_uid, deny_reason, metadata)
+SELECT NOW() - (interval '1 day' * series) - (interval '1 hour' * (random() * 12)::int), 'rfid_gate_01', 'Gateway1', '00001', 'rfid', 
+    CASE WHEN random() > 0.1 THEN 'granted' ELSE 'denied' END, 
+    NULL, 
+    CASE WHEN random() > 0.1 THEN '8675F205' ELSE 'UNKNOWN' END,
+    CASE WHEN random() > 0.1 THEN NULL ELSE 'unknown_card' END,
+    jsonb_build_object('source', 'rfid_reader')
+FROM generate_series(0, 20) AS series;
+
+INSERT INTO access_logs (time, device_id, gateway_id, user_id, method, result, password_id, rfid_uid, deny_reason, metadata)
+SELECT NOW() - (interval '1 day' * series) - (interval '1 hour' * (random() * 12)::int), 'passkey_01', 'Gateway2', '00002', 'passkey',
+    CASE WHEN random() > 0.15 THEN 'granted' ELSE 'denied' END,
+    CASE WHEN random() > 0.15 THEN 'passwd_00002_001' ELSE NULL END,
+    NULL,
+    CASE WHEN random() > 0.15 THEN NULL ELSE 'invalid_password' END,
+    jsonb_build_object('source', 'keypad', 'attempts', 1)
+FROM generate_series(0, 15) AS series;
+
+INSERT INTO system_logs (time, gateway_id, device_id, user_id, log_type, event, severity, message, value, threshold, metadata)
+VALUES
+    (NOW() - INTERVAL '2 hours', 'Gateway1', NULL, '00001', 'system_event', 'gateway_online', 'info', 'Gateway1 came online', NULL, NULL, '{"uptime": 7200}'::jsonb),
+    (NOW() - INTERVAL '3 hours', 'Gateway2', NULL, '00002', 'system_event', 'gateway_online', 'info', 'Gateway2 came online', NULL, NULL, '{"uptime": 10800}'::jsonb),
+    (NOW() - INTERVAL '1 hour', 'Gateway3', NULL, '00003', 'system_event', 'gateway_online', 'info', 'Gateway3 came online', NULL, NULL, '{"uptime": 3600}'::jsonb),
+    (NOW() - INTERVAL '30 minutes', 'Gateway3', 'temp_01', '00003', 'device_event', 'device_online', 'info', 'Temperature sensor connected', NULL, NULL, '{"firmware": "v1.2.3"}'::jsonb),
+    (NOW() - INTERVAL '25 minutes', 'Gateway3', 'fan_01', '00003', 'device_event', 'device_online', 'info', 'Fan controller connected', NULL, NULL, '{"firmware": "v1.2.1"}'::jsonb),
+    (NOW() - INTERVAL '1 hour', 'Gateway3', 'temp_01', '00003', 'alert', 'temperature_threshold', 'warning', 'High temperature detected', 31.5, 30.0, '{"auto_generated": true}'::jsonb);
+
+INSERT INTO command_logs (time, command_id, source, device_id, gateway_id, user_id, command_type, status, params, completed_at, result, metadata)
+VALUES
+    (
+        NOW() - INTERVAL '4 hours',
+        'cmd_' || substr(md5(random()::text), 1, 8),
+        'client',
+        'passkey_01',
+        'Gateway2',
+        '00002',
+        'remote_unlock',
+        'completed',
+        '{"duration": 5000}'::jsonb,
+        NOW() - INTERVAL '4 hours' + INTERVAL '2 seconds',
+        '{"success": true}'::jsonb,
+        '{"source_ip": "192.168.1.100"}'::jsonb
+    ),
+    (
+        NOW() - INTERVAL '2 days',
+        'cmd_' || substr(md5(random()::text), 1, 8),
+        'client',
+        'fan_01',
+        'Gateway3',
+        '00003',
+        'set_fan',
+        'completed',
+        '{"state": "on"}'::jsonb,
+        NOW() - INTERVAL '2 days' + INTERVAL '1 second',
+        '{"success": true}'::jsonb,
+        '{"source_ip": "192.168.1.101"}'::jsonb
+    );
+
+INSERT INTO access_logs (time, device_id, gateway_id, user_id, method, result, password_id, rfid_uid, deny_reason, metadata)
+SELECT 
+    NOW() - (interval '1 day' * (random() * 30)::int) - (interval '1 hour' * (random() * 24)::int),
+    CASE WHEN random() < 0.5 THEN 'rfid_gate_01' ELSE 'passkey_01' END AS device_id,
+    CASE WHEN random() < 0.5 THEN 'Gateway1' ELSE 'Gateway2' END AS gateway_id,
+    CASE WHEN random() < 0.5 THEN '00001' ELSE '00002' END AS user_id,
+    CASE WHEN random() < 0.5 THEN 'rfid' ELSE 'passkey' END AS method,
+    CASE WHEN random() > 0.2 THEN 'granted' ELSE 'denied' END AS result,
+    CASE 
+        WHEN random() < 0.5 AND random() > 0.2 THEN 'passwd_00002_001' 
+        ELSE NULL 
+    END AS password_id,
+    CASE 
+        WHEN random() >= 0.5 AND random() > 0.2 THEN '8675F205' 
+        ELSE CASE WHEN random() <= 0.2 THEN 'UNKNOWN' ELSE NULL END 
+    END AS rfid_uid,
+    CASE 
+        WHEN random() > 0.2 THEN NULL 
+        ELSE CASE WHEN random() < 0.5 THEN 'unknown_card' ELSE 'invalid_password' END 
+    END AS deny_reason,
+    jsonb_build_object(
+        'source', CASE WHEN random() < 0.5 THEN 'rfid_reader' ELSE 'keypad' END,
+        'attempts', (random() * 3)::int + 1
+    ) AS metadata
+FROM generate_series(1, 100) AS series;
+
+INSERT INTO system_logs (time, gateway_id, device_id, user_id, log_type, event, severity, message, value, threshold, metadata)
+SELECT 
+    NOW() - (interval '1 day' * (random() * 30)::int) - (interval '1 hour' * (random() * 24)::int),
+    CASE 
+        WHEN random() < 0.33 THEN 'Gateway1' 
+        WHEN random() < 0.66 THEN 'Gateway2' 
+        ELSE 'Gateway3' 
+    END AS gateway_id,
+    CASE 
+        WHEN random() < 0.25 THEN 'rfid_gate_01' 
+        WHEN random() < 0.5 THEN 'passkey_01' 
+        WHEN random() < 0.75 THEN 'temp_01' 
+        ELSE 'fan_01' 
+    END AS device_id,
+    CASE 
+        WHEN random() < 0.33 THEN '00001' 
+        WHEN random() < 0.66 THEN '00002' 
+        ELSE '00003' 
+    END AS user_id,
+    CASE 
+        WHEN random() < 0.4 THEN 'system_event' 
+        WHEN random() < 0.7 THEN 'device_event' 
+        WHEN random() < 0.9 THEN 'alert' 
+        ELSE 'error' 
+    END AS log_type,
+    CASE 
+        WHEN random() < 0.4 THEN 'gateway_online' 
+        WHEN random() < 0.6 THEN 'device_online' 
+        WHEN random() < 0.8 THEN 'device_offline' 
+        WHEN random() < 0.9 THEN 'temperature_threshold' 
+        ELSE 'connection_error' 
+    END AS event,
+    CASE 
+        WHEN random() < 0.5 THEN 'info' 
+        WHEN random() < 0.8 THEN 'warning' 
+        WHEN random() < 0.95 THEN 'error' 
+        ELSE 'critical' 
+    END AS severity,
+    CASE 
+        WHEN random() < 0.4 THEN 'Gateway online event detected' 
+        WHEN random() < 0.6 THEN 'Device connected successfully' 
+        WHEN random() < 0.8 THEN 'Device went offline' 
+        WHEN random() < 0.9 THEN 'High temperature detected' 
+        ELSE 'Connection to device lost' 
+    END AS message,
+    CASE 
+        WHEN random() < 0.9 THEN NULL 
+        ELSE 25.0 + (random() * 10) 
+    END AS value,
+    CASE 
+        WHEN random() < 0.9 THEN NULL 
+        ELSE 30.0 
+    END AS threshold,
+    jsonb_build_object(
+        'firmware', 'v1.' || (random() * 2)::int || '.' || (random() * 5)::int,
+        'uptime', (random() * 86400)::int
+    ) AS metadata
+FROM generate_series(1, 100) AS series;
+
+INSERT INTO command_logs (time, command_id, source, device_id, gateway_id, user_id, command_type, status, params, completed_at, result, metadata)
+SELECT 
+    NOW() - (interval '1 day' * (random() * 30)::int) - (interval '1 hour' * (random() * 24)::int),
+    'cmd_' || substr(md5(random()::text), 1, 8) AS command_id,
+    CASE 
+        WHEN random() < 0.7 THEN 'client' 
+        WHEN random() < 0.9 THEN 'api' 
+        ELSE 'gateway_auto' 
+    END AS source,
+    CASE 
+        WHEN random() < 0.4 THEN 'rfid_gate_01' 
+        WHEN random() < 0.7 THEN 'passkey_01' 
+        ELSE 'fan_01' 
+    END AS device_id,
+    CASE 
+        WHEN random() < 0.4 THEN 'Gateway1' 
+        WHEN random() < 0.7 THEN 'Gateway2' 
+        ELSE 'Gateway3' 
+    END AS gateway_id,
+    CASE 
+        WHEN random() < 0.4 THEN '00001' 
+        WHEN random() < 0.7 THEN '00002' 
+        ELSE '00003' 
+    END AS user_id,
+    CASE 
+        WHEN random() < 0.4 THEN 'remote_unlock' 
+        WHEN random() < 0.6 THEN 'lock' 
+        WHEN random() < 0.8 THEN 'set_fan' 
+        ELSE 'set_auto' 
+    END AS command_type,
+    CASE 
+        WHEN random() < 0.8 THEN 'completed' 
+        WHEN random() < 0.9 THEN 'failed' 
+        ELSE 'executing' 
+    END AS status,
+    CASE 
+        WHEN random() < 0.4 THEN jsonb_build_object('duration', (random() * 10000)::int) 
+        WHEN random() < 0.8 THEN jsonb_build_object('state', CASE WHEN random() < 0.5 THEN 'on' ELSE 'off' END) 
+        ELSE jsonb_build_object('mode', 'auto') 
+    END AS params,
+    CASE 
+        WHEN random() < 0.9 THEN NOW() - (interval '1 day' * (random() * 30)::int) + INTERVAL '2 seconds' 
+        ELSE NULL 
+    END AS completed_at,
+    CASE 
+        WHEN random() < 0.8 THEN jsonb_build_object('success', true) 
+        WHEN random() < 0.9 THEN jsonb_build_object('success', false, 'error', 'timeout') 
+        ELSE NULL 
+    END AS result,
+    jsonb_build_object(
+        'source_ip', '192.168.1.' || (100 + (random() * 50)::int)::text
+    ) AS metadata
+FROM generate_series(1, 100) AS series;
 
 SELECT 'Optimized schema created successfully!' AS status;

@@ -10,6 +10,9 @@ services:
       POSTGRES_USER: iot
       POSTGRES_PASSWORD: ${DB_PASSWORD}
       PGDATA: /var/lib/postgresql/data/pgdata
+      TZ: Asia/Ho_Chi_Minh
+    command: >
+      postgres -c timezone=Asia/Ho_Chi_Minh -c log_timezone=Asia/Ho_Chi_Minh
     volumes:
       - postgres_data:/var/lib/postgresql/data
       - ./schema.sql:/docker-entrypoint-initdb.d/schema.sql

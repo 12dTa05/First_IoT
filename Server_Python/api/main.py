@@ -13,6 +13,7 @@ from config.settings import settings
 from services.database import db
 from services.mqtt_service import mqtt_service
 from services.alert_service import alert_service
+from services.offline_detector import offline_detector 
 
 from routes import auth, devices, telemetry, access, gateways, commands, sync, dashboard, websocket, system
 
@@ -21,7 +22,6 @@ logger = logging.getLogger(__name__)
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    """Lifespan context manager for startup and shutdown events"""
     # Startup
     try:
         db.connect()
@@ -71,9 +71,6 @@ app.add_middleware(
 @app.get('/health')
 @limiter.limit('100/15minutes')
 async def health_check(request: Request):
-    """
-    Health check endpoint with database and MQTT status
-    """
     try:
         # Check database by attempting a simple query
         db_healthy = False
@@ -84,7 +81,7 @@ async def health_check(request: Request):
             pass
         
         # Check MQTT status
-        mqtt_healthy = mqtt_service.connected
+        mqtt_healthy = mqtt_service.client.is_connected()
         
         return {
             'status': 'healthy' if (db_healthy and mqtt_healthy) else 'degraded',

@@ -86,10 +86,26 @@ class DatabaseSyncManager:
             
             # Backup current database
             backup_file = f"{self.db_manager.devices_file}.backup"
-            with open(self.db_manager.devices_file, 'r') as f:
-                current_data = f.read()
-            with open(backup_file, 'w') as f:
-                f.write(current_data)
+            try:
+                with open(self.db_manager.devices_file, 'r') as f:
+                    current_data = f.read()
+                with open(backup_file, 'w') as f:
+                    f.write(current_data)
+            except Exception as e:
+                logger.warning(f"[SYNC] Could not create backup: {e}")
+            
+            # Validate server data structure
+            if not isinstance(database, dict):
+                logger.error("[SYNC] Invalid database format from server")
+                return False
+            
+            # Ensure required keys exist
+            if 'passwords' not in database:
+                database['passwords'] = {}
+            if 'rfid_cards' not in database:
+                database['rfid_cards'] = {}
+            if 'devices' not in database:
+                database['devices'] = {}
             
             # Update local database
             self.db_manager.devices_data = database
@@ -100,7 +116,7 @@ class DatabaseSyncManager:
             self.last_update_time = datetime.now()
             
             stats = server_data.get('stats', {})
-            logger.info(f"[SYNC] ✓ Database updated successfully")
+            logger.info(f"[SYNC]  Database updated successfully")
             logger.info(f"[SYNC]   Version: {self.current_version}")
             logger.info(f"[SYNC]   Passwords: {stats.get('passwords_count', 0)}")
             logger.info(f"[SYNC]   RFID Cards: {stats.get('rfid_cards_count', 0)}")
@@ -118,9 +134,10 @@ class DatabaseSyncManager:
                     with open(backup_file, 'r') as f:
                         backup_data = json.load(f)
                     self.db_manager.devices_data = backup_data
+                    self.db_manager.save_devices()
                     logger.warning("[SYNC] Restored from backup")
-            except:
-                pass
+            except Exception as restore_error:
+                logger.error(f"[SYNC] Failed to restore backup: {restore_error}")
             
             return False
     
@@ -154,6 +171,7 @@ class DatabaseSyncManager:
                 self.current_version = server_data.get('version')
                 self.last_sync_time = datetime.now()
                 self.sync_count += 1
+                logger.debug("[SYNC] Database is up-to-date")
                 return True
                 
         except Exception as e:
@@ -195,7 +213,7 @@ class DatabaseSyncManager:
         self.sync_thread = Thread(target=self.sync_loop, daemon=True)
         self.sync_thread.start()
         
-        logger.info("[SYNC] ✓ Sync service started")
+        logger.info("[SYNC]  Sync service started")
     
     def stop(self):
         """Stop sync service"""
