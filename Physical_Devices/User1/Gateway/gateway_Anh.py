@@ -8,7 +8,7 @@ import time
 import logging
 import struct
 from datetime import datetime
-from threading import Thread
+from threading import Thread, Event
 from database_sync_manager import DatabaseSyncManager
 from timestamp_utils import now_compact
 
@@ -49,7 +49,7 @@ CONFIG = {
     
     'db_path': './data',
     'devices_db': 'devices.json',
-    'heartbeat_interval': 60,
+    'heartbeat_interval': 30,  # Changed from 60 to 30 seconds
 }
 
 # ============= CRC32 =============
@@ -80,21 +80,27 @@ class DatabaseManager:
         return {'passwords': {}, 'rfid_cards': {}, 'devices': {}}
     
     def save_devices(self):
+        backup_file = f"{self.devices_file}.backup"
+        if os.path.exists(self.devices_file):
+            import shutil
+            shutil.copy2(self.devices_file, backup_file)
+        
         with open(self.devices_file, 'w') as f:
             json.dump(self.devices_data, f, indent=2)
     
     def verify_rfid(self, uid):
-        """Verify RFID card"""
-        card = self.devices_data.get('rfid_cards', {}).get(uid.upper())
+        rfid_cards = self.devices_data.get('rfid_cards', {})
+        uid_lower = uid.lower()
         
-        if not card:
+        if uid_lower not in rfid_cards:
             return False, 'unknown_card'
         
-        if not card.get('active', False):
+        card_data = rfid_cards[uid_lower]
+        
+        if not card_data.get('active', False):
             return False, 'inactive_card'
         
-        # Check expiration
-        expires_at = card.get('expires_at')
+        expires_at = card_data.get('expires_at')
         if expires_at:
             try:
                 expire_time = datetime.fromisoformat(expires_at.replace('Z', '+00:00'))
@@ -102,10 +108,6 @@ class DatabaseManager:
                     return False, 'expired_card'
             except:
                 pass
-        
-        # Update last_used
-        # card['last_used'] = now_compact()
-        # self.save_devices()
         
         return True, None
 
@@ -116,11 +118,13 @@ class VPSMQTTManager:
         self.sync_manager = sync_manager
         self.vps_client = None
         self.connected_vps = False
+        self.connection_lost_time = None
+        self.reconnect_attempts = 0
+        self.max_reconnect_attempts = 5
         
     def setup_vps_broker(self):
-        """Connect to VPS MQTT broker with mTLS"""
         self.vps_client = mqtt.Client(
-            client_id=f"{self.config['gateway_id']}",
+            client_id=f"{self.config['gateway_id']}_vps",
             clean_session=False
         )
         
@@ -153,37 +157,62 @@ class VPSMQTTManager:
     def on_vps_connect(self, client, userdata, flags, rc):
         if rc == 0:
             self.connected_vps = True
+            self.connection_lost_time = None
+            self.reconnect_attempts = 0
             logger.info(" Connected to VPS Broker")
             
-            # Subscribe to sync trigger topic
             sync_topic = self.config['topics']['sync_trigger']
             client.subscribe(sync_topic)
             logger.info(f" Subscribed to sync trigger: {sync_topic}")
+            
+            # Send immediate online status upon connection
+            self.publish_gateway_status('online')
             
         else:
             logger.error(f" VPS Broker Connection Failed: {rc}")
     
     def on_vps_disconnect(self, client, userdata, rc):
+        was_connected = self.connected_vps
         self.connected_vps = False
-        logger.warning(" Disconnected from VPS Broker")
+        
+        if was_connected and self.connection_lost_time is None:
+            self.connection_lost_time = datetime.now()
+            logger.error(f" Disconnected from VPS Broker (rc={rc})")
+        
+        if rc != 0:
+            logger.warning(f" Unexpected disconnect, attempting reconnect...")
+            self.attempt_reconnect()
+    
+    def attempt_reconnect(self):
+        if self.reconnect_attempts < self.max_reconnect_attempts:
+            self.reconnect_attempts += 1
+            backoff_time = min(2 ** self.reconnect_attempts, 60)
+            
+            logger.info(f" Reconnect attempt {self.reconnect_attempts}/{self.max_reconnect_attempts} "
+                       f"in {backoff_time}s")
+            
+            time.sleep(backoff_time)
+            
+            try:
+                self.vps_client.reconnect()
+            except Exception as e:
+                logger.error(f" Reconnect failed: {e}")
+        else:
+            logger.critical(f" Max reconnect attempts reached, please check VPS connection")
     
     def on_vps_message(self, client, userdata, msg):
-        """Handle messages from VPS (sync triggers, commands, etc.)"""
         try:
             logger.info(f" VPS message: {msg.topic}")
             
             if 'sync/trigger' in msg.topic and self.sync_manager:
                 data = json.loads(msg.payload.decode())
                 logger.info(f" Sync trigger received: {data.get('reason', 'unknown')}")
-                
-                # Trigger immediate sync
                 self.sync_manager.trigger_immediate_sync()
                 
         except Exception as e:
             logger.error(f"Error processing VPS message: {e}")
     
     def publish_to_vps(self, topic, payload):
-        """Publish message to VPS broker"""
         if not self.connected_vps:
             logger.warning(" Cannot publish - VPS not connected")
             return False
@@ -196,18 +225,19 @@ class VPSMQTTManager:
                 logger.debug(f" Published to VPS: {topic}")
                 return True
             else:
-                logger.error(f"Failed to publish to VPS: {topic}")
+                logger.error(f"Failed to publish to VPS: {topic}, rc={result.rc}")
                 return False
         except Exception as e:
             logger.error(f"Error publishing to VPS: {e}")
             return False
     
     def publish_gateway_status(self, status):
-        """Publish gateway heartbeat status"""
         payload = {
             'gateway_id': self.config['gateway_id'],
             'status': status,
-            'timestamp': now_compact()
+            'timestamp': now_compact(),
+            'uptime': time.time() - start_time if 'start_time' in globals() else 0,
+            'reconnect_count': self.reconnect_attempts
         }
         topic = self.config['topics']['vps_gateway_status']
         return self.publish_to_vps(topic, payload)
@@ -222,7 +252,6 @@ class LoRaHandler:
         self.running = False
         
     def connect(self):
-        """Connect to LoRa module"""
         try:
             self.serial_port = serial.Serial(
                 port=self.config['lora_serial']['port'],
@@ -236,14 +265,12 @@ class LoRaHandler:
             return False
     
     def start(self):
-        """Start LoRa message handler thread"""
         self.running = True
         thread = Thread(target=self.message_loop, daemon=True)
         thread.start()
         logger.info(" LoRa Handler Started")
     
     def message_loop(self):
-        """Main loop to handle LoRa messages"""
         buffer = bytearray()
         
         while self.running:
@@ -252,10 +279,8 @@ class LoRaHandler:
                     data = self.serial_port.read(self.serial_port.in_waiting)
                     buffer.extend(data)
                     
-                    # Process complete packets
-                    while len(buffer) >= 12:  # Minimum packet size: 3 (header) + 5 (header + length) + 4 (CRC)
+                    while len(buffer) >= 12:
                         if buffer[0] == 0x00 and buffer[1] == 0x02 and buffer[2] == 0x17:
-                            # Extract header fields
                             header0 = buffer[3]
                             msg_type = (header0 >> 4) & 0x0F
                             version = header0 & 0x0F
@@ -264,34 +289,29 @@ class LoRaHandler:
                             flags = (header1 >> 4) & 0x0F
                             device_type = header1 & 0x0F
                             
-                            # Extract sequence and timestamp
                             sequence = struct.unpack('<H', buffer[5:7])[0]
                             timestamp = struct.unpack('<I', buffer[7:11])[0]
-                            
-                            # Extract payload length
                             payload_length = buffer[11]
-                            
-                            # Calculate total packet length
-                            total_length = 12 + payload_length + 4  # 12 bytes header + payload + 4 bytes CRC
+                            total_length = 12 + payload_length + 4
                             
                             if len(buffer) >= total_length:
                                 packet = buffer[:total_length]
                                 buffer = buffer[total_length:]
                                 
-                                # Verify CRC
                                 received_crc = struct.unpack('<I', packet[-4:])[0]
-                                calculated_crc = crc32(packet[3:12 + payload_length])  # CRC from header0 to end of payload
+                                calculated_crc = crc32(packet[3:12 + payload_length])
                                 
                                 if received_crc == calculated_crc:
                                     payload = packet[12:12 + payload_length]
-                                    logger.info(f"Gói tin hợp lệ: msg_type={msg_type:02x}, sequence={sequence}, timestamp={timestamp}")
+                                    logger.info(f"Valid packet: msg_type={msg_type:02x}, seq={sequence}")
                                     self.process_packet(msg_type, payload, sequence, timestamp, device_type)
                                 else:
-                                    logger.warning(f"CRC không khớp: received={received_crc:08x}, calculated={calculated_crc:08x}")
+                                    logger.warning(f"CRC mismatch: received={received_crc:08x}, "
+                                                 f"calculated={calculated_crc:08x}")
                             else:
-                                break  # Wait for more data
+                                break
                         else:
-                            logger.warning(f"Tiêu đề không hợp lệ: {buffer[0:3].hex()}")
+                            logger.warning(f"Invalid header: {buffer[0:3].hex()}")
                             buffer.pop(0)
                 
                 time.sleep(0.01)
@@ -301,20 +321,16 @@ class LoRaHandler:
                 time.sleep(1)
     
     def process_packet(self, msg_type, payload, sequence, timestamp, device_type):
-        """Process LoRa packet from RFID gate"""
         try:
-            if msg_type == 0x01:  # RFID Scan
+            if msg_type == 0x01:
                 uid = payload.hex()
-                logger.info(f"[RFID] Card detected: {uid} (seq: {sequence}, device_type: {device_type:02x})")
+                logger.info(f"[RFID] Card detected: {uid} (seq: {sequence})")
                 
-                # Verify with local database
                 granted, deny_reason = self.db_manager.verify_rfid(uid)
                 
-                # Send response back to gate
-                status = "GRANT" if granted else "DENY5"
+                status = "GRANT" if granted else "DENY"
                 self.send_access_response(status)
                 
-                # Log to VPS
                 access_log = {
                     'gateway_id': self.config['gateway_id'],
                     'device_id': 'rfid_gate_01',
@@ -329,23 +345,22 @@ class LoRaHandler:
                 self.mqtt_manager.publish_to_vps(topic, access_log)
                 
                 if granted:
-                    logger.info(f"[RFID] {uid}:  ACCESS GRANTED")
+                    logger.info(f"[RFID] {uid}: ACCESS GRANTED")
                 else:
-                    logger.warning(f"[RFID] {uid}:  ACCESS DENIED ({deny_reason})")
+                    logger.warning(f"[RFID] {uid}: ACCESS DENIED ({deny_reason})")
             
-            elif msg_type == 0x06:  # Gate Status
+            elif msg_type == 0x06:
                 status = payload.decode('utf-8', errors='ignore')
-                logger.info(f"[RFID] Status update: {status} (seq: {sequence}, device_type: {device_type:02x})")
+                logger.info(f"[RFID] Status update: {status} (seq: {sequence})")
                 self.publish_gate_status(status, sequence)
                 
             else:
-                logger.warning(f"Loại thông điệp không xác định: {msg_type:02x}")
+                logger.warning(f"Unknown message type: {msg_type:02x}")
                 
         except Exception as e:
             logger.error(f"Error processing LoRa packet: {e}")
     
     def send_access_response(self, status):
-        """Send access response to LoRa gate"""
         try:
             response_bytes = status.encode('utf-8')
             packet = bytearray([0xC0, 0x00, 0x00, 0x00, 0x00, 0x17, len(response_bytes)])
@@ -356,7 +371,6 @@ class LoRaHandler:
             logger.error(f"[LoRa] Error sending response: {e}")
     
     def publish_gate_status(self, status, sequence):
-        """Publish RFID gate status to VPS"""
         payload = {
             'gateway_id': self.config['gateway_id'],
             'device_id': 'rfid_gate_01',
@@ -374,52 +388,80 @@ class LoRaHandler:
             self.serial_port.close()
             logger.info(" LoRa Serial Closed")
 
-# ============= HEARTBEAT =============
-def heartbeat_loop(mqtt_manager, sync_manager, interval):
-    """Send periodic heartbeat and sync stats to VPS"""
-    while True:
-        try:
-            # Send gateway heartbeat
-            mqtt_manager.publish_gateway_status('online')
-            
-            # Get sync stats
-            sync_stats = sync_manager.get_stats()
-            logger.info(f" Heartbeat | Syncs: {sync_stats['sync_count']} | Errors: {sync_stats['sync_errors']} | Version: {sync_stats['current_version']}")
-            
-            time.sleep(interval)
-        except Exception as e:
-            logger.error(f"Heartbeat error: {e}")
-            time.sleep(interval)
+# ============= ENHANCED HEARTBEAT =============
+class HeartbeatManager:
+    def __init__(self, mqtt_manager, sync_manager, interval, stop_event):
+        self.mqtt_manager = mqtt_manager
+        self.sync_manager = sync_manager
+        self.interval = interval
+        self.stop_event = stop_event
+        self.heartbeat_count = 0
+        self.failed_heartbeats = 0
+        self.last_successful_heartbeat = None
+        
+    def run(self):
+        logger.info(f" Heartbeat Manager started (interval: {self.interval}s)")
+        
+        while not self.stop_event.is_set():
+            try:
+                success = self.mqtt_manager.publish_gateway_status('online')
+                
+                if success:
+                    self.heartbeat_count += 1
+                    self.failed_heartbeats = 0
+                    self.last_successful_heartbeat = datetime.now()
+                    
+                    sync_stats = self.sync_manager.get_stats()
+                    logger.info(f" Heartbeat #{self.heartbeat_count} | "
+                              f"Syncs: {sync_stats['sync_count']} | "
+                              f"Errors: {sync_stats['sync_errors']} | "
+                              f"Version: {sync_stats['current_version']}")
+                else:
+                    self.failed_heartbeats += 1
+                    logger.warning(f" Heartbeat failed (consecutive: {self.failed_heartbeats})")
+                    
+                    if self.failed_heartbeats >= 3:
+                        logger.error(" Multiple heartbeat failures detected, checking connection...")
+                        if not self.mqtt_manager.connected_vps:
+                            logger.error(" VPS connection lost, attempting reconnect...")
+                            self.mqtt_manager.attempt_reconnect()
+                
+                if self.stop_event.wait(timeout=self.interval):
+                    break
+                    
+            except Exception as e:
+                logger.error(f"Heartbeat error: {e}")
+                if self.stop_event.wait(timeout=self.interval):
+                    break
+        
+        logger.info(" Heartbeat Manager stopped")
 
 # ============= MAIN =============
+start_time = time.time()
+stop_event = Event()
+
 def main():
     logger.info("=" * 70)
-    logger.info("  Gateway 1 (User 1 - Tu) - RFID Gate with Database Sync")
+    logger.info("  Gateway 1 (User 1 - Tu) - RFID Gate with Enhanced Heartbeat")
     logger.info("=" * 70)
     
-    # Initialize database manager
     db_manager = DatabaseManager(CONFIG['db_path'], CONFIG['devices_db'])
     logger.info(" Database Manager Initialized")
     
-    # Initialize sync manager
     sync_manager = DatabaseSyncManager(CONFIG, db_manager)
     logger.info(" Sync Manager Initialized")
     
-    # Initialize MQTT manager with sync manager reference
     mqtt_manager = VPSMQTTManager(CONFIG, sync_manager)
     
-    # Connect to VPS broker
     logger.info(" Connecting to VPS Broker...")
     if not mqtt_manager.setup_vps_broker():
         logger.error("Failed to connect to VPS. Exiting.")
         return
     
-    # Start database sync service
     logger.info(" Starting Database Sync Service (5s interval)...")
     sync_manager.start()
     time.sleep(2)
     
-    # Start LoRa handler
     logger.info(" Starting LoRa Handler...")
     lora_handler = LoRaHandler(CONFIG, db_manager, mqtt_manager)
     
@@ -427,30 +469,30 @@ def main():
         lora_handler.start()
     else:
         logger.error("Failed to start LoRa handler. Exiting.")
-        sync_manager.stop()
         return
     
-    # Start heartbeat thread
-    logger.info(" Starting Heartbeat Thread...")
-    heartbeat_thread = Thread(
-        target=heartbeat_loop,
-        args=(mqtt_manager, sync_manager, CONFIG['heartbeat_interval']),
-        daemon=True
+    logger.info(" Starting Enhanced Heartbeat Manager...")
+    heartbeat_manager = HeartbeatManager(
+        mqtt_manager, 
+        sync_manager, 
+        CONFIG['heartbeat_interval'],
+        stop_event
     )
+    heartbeat_thread = Thread(target=heartbeat_manager.run, daemon=True)
     heartbeat_thread.start()
     
     logger.info("=" * 70)
-    logger.info(" Gateway 1 Running - Database syncing every 5 seconds")
+    logger.info(" Gateway 1 Running - Enhanced heartbeat every 30 seconds")
     logger.info("=" * 70)
     
-    # Keep main thread alive
     try:
         while True:
             time.sleep(1)
     except KeyboardInterrupt:
-        logger.info("\ Shutdown signal received")
-        lora_handler.stop()
+        logger.info("\n Shutdown signal received")
+        stop_event.set()
         sync_manager.stop()
+        lora_handler.stop()
         logger.info(" Gateway stopped")
 
 if __name__ == '__main__':

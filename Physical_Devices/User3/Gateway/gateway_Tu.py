@@ -5,12 +5,12 @@ import os
 import time
 import logging
 from datetime import datetime
-from threading import Thread
+from threading import Thread, Event
 from database_sync_manager import DatabaseSyncManager
 from timestamp_utils import now_compact
 
 logging.basicConfig(
-    level=logging.DEBUG,
+    level=logging.INFO,
     format='%(asctime)s [%(levelname)s] %(message)s',
     datefmt='%Y-%m-%d %H:%M:%S'
 )
@@ -21,19 +21,17 @@ CONFIG = {
     'gateway_id': 'Gateway3',
     'user_id': '00003',
     
-    # Local Broker (for Temp + Fan devices)
     'local_broker': {
         'host': '192.168.1.205',
         'port': 1884,
         'use_tls': True,
-        'ca_cert': './certs/ca.cert.pem',  # Same CA as VPS
-        'client_cert': './certs/gateway3.cert.pem',  # Client certificate for Gateway2
-        'client_key': './certs/gateway3.key.pem',   # Client key for Gateway2
-        'username': 'Gateway3',                     # MQTT username
-        'password': '125',         # MQTT password (replace with actual password)
+        'ca_cert': './certs/ca.cert.pem',
+        'client_cert': './certs/gateway3.cert.pem',
+        'client_key': './certs/gateway3.key.pem',
+        'username': 'Gateway3',
+        'password': '125',
     },
     
-    # VPS Broker (mTLS)
     'vps_broker': {
         'host': '159.223.63.61',
         'port': 8883,
@@ -43,10 +41,8 @@ CONFIG = {
         'client_key': './certs/gateway3.key.pem',
     },
     
-    # VPS API for sync
     'vps_api_url': 'http://159.223.63.61:3000',
     
-    # MQTT Topics
     'topics': {
         'local_temp_telemetry': 'home/devices/temp_01/telemetry',
         'local_temp_status': 'home/devices/temp_01/status',
@@ -56,16 +52,15 @@ CONFIG = {
         'vps_telemetry': 'gateway/Gateway3/telemetry/{device_id}',
         'vps_status': 'gateway/Gateway3/status/{device_id}',
         'vps_gateway_status': 'gateway/Gateway3/status/gateway',
-        'sync_trigger': 'gateway/Gateway3/sync/trigger',  # NEW: Sync trigger
+        'sync_trigger': 'gateway/Gateway3/sync/trigger',
     },
     
     'db_path': './data',
     'devices_db': 'devices.json',
     'logs_db': 'logs.json',
     'settings_db': 'settings.json',
-    'heartbeat_interval': 300,
+    'heartbeat_interval': 30,  # Changed from 300 to 30 seconds
     
-    # Automation settings
     'automation': {
         'temp_threshold': 30.0,
         'auto_fan_enabled': True,
@@ -110,11 +105,15 @@ class DatabaseManager:
         }
     
     def save_devices(self):
+        backup_file = f"{self.devices_file}.backup"
+        if os.path.exists(self.devices_file):
+            import shutil
+            shutil.copy2(self.devices_file, backup_file)
+        
         with open(self.devices_file, 'w') as f:
             json.dump(self.devices_data, f, indent=2)
     
     def save_logs(self):
-        # Keep only last 1000 logs
         if len(self.logs_data) > 1000:
             self.logs_data = self.logs_data[-1000:]
         
@@ -126,7 +125,6 @@ class DatabaseManager:
             json.dump(self.settings_data, f, indent=2)
     
     def add_log(self, log_type, event, **kwargs):
-        """Add log entry"""
         log_entry = {
             'type': log_type,
             'event': event,
@@ -146,14 +144,15 @@ class MQTTManager:
         self.vps_client = None
         self.connected_local = False
         self.connected_vps = False
+        self.connection_lost_time = None
+        self.reconnect_attempts = 0
+        self.max_reconnect_attempts = 5
         
-        # Automation state
         self.last_temperature = None
         self.fan_auto_on = False
         
     def setup_local_broker(self):
-        """Connect to local MQTT broker for Passkey device"""
-        self.local_client = mqtt.Client(client_id=f"{self.config['gateway_id']}")
+        self.local_client = mqtt.Client(client_id=f"{self.config['gateway_id']}_local")
         
         if self.config['local_broker']['use_tls']:
             self.local_client.tls_set(
@@ -164,7 +163,6 @@ class MQTTManager:
                 tls_version=ssl.PROTOCOL_TLSv1_2
             )
         
-        # Set username and password for authentication
         self.local_client.username_pw_set(
             username=self.config['local_broker']['username'],
             password=self.config['local_broker']['password']
@@ -188,7 +186,6 @@ class MQTTManager:
             return False
     
     def setup_vps_broker(self):
-        """Connect to VPS MQTT broker with mTLS"""
         self.vps_client = mqtt.Client(
             client_id=f"{self.config['gateway_id']}_vps",
             clean_session=False
@@ -232,33 +229,72 @@ class MQTTManager:
                 self.config['topics']['local_fan_status']
             ]
             for topic in topics:
-                client.subscribe(topic)
+                client.subscribe(topic, qos=1)
                 logger.info(f" Subscribed: {topic}")
         else:
             logger.error(f" Local Broker Connection Failed: {rc}")
     
     def on_local_disconnect(self, client, userdata, rc):
         self.connected_local = False
-        logger.warning(" Disconnected from Local Broker")
+        logger.warning(f" Disconnected from Local Broker (rc={rc})")
+        
+        if rc != 0:
+            logger.warning(" Attempting to reconnect to local broker...")
+            self.attempt_local_reconnect()
     
     def on_vps_connect(self, client, userdata, flags, rc):
         if rc == 0:
             self.connected_vps = True
+            self.connection_lost_time = None
+            self.reconnect_attempts = 0
             logger.info(" Connected to VPS Broker")
             
-            # Subscribe to sync trigger
             sync_topic = self.config['topics']['sync_trigger']
-            client.subscribe(sync_topic)
+            client.subscribe(sync_topic, qos=1)
             logger.info(f" Subscribed to sync trigger: {sync_topic}")
+            
+            self.publish_gateway_status('online')
         else:
             logger.error(f" VPS Connection Failed: {rc}")
     
     def on_vps_disconnect(self, client, userdata, rc):
+        was_connected = self.connected_vps
         self.connected_vps = False
-        logger.warning(" Disconnected from VPS Broker")
+        
+        if was_connected and self.connection_lost_time is None:
+            self.connection_lost_time = datetime.now()
+            logger.error(f" Disconnected from VPS Broker (rc={rc})")
+        
+        if rc != 0:
+            logger.warning(" Unexpected disconnect from VPS, attempting reconnect...")
+            self.attempt_vps_reconnect()
+    
+    def attempt_local_reconnect(self):
+        try:
+            time.sleep(2)
+            self.local_client.reconnect()
+            logger.info(" Local broker reconnection initiated")
+        except Exception as e:
+            logger.error(f" Local broker reconnect failed: {e}")
+    
+    def attempt_vps_reconnect(self):
+        if self.reconnect_attempts < self.max_reconnect_attempts:
+            self.reconnect_attempts += 1
+            backoff_time = min(2 ** self.reconnect_attempts, 60)
+            
+            logger.info(f" VPS reconnect attempt {self.reconnect_attempts}/{self.max_reconnect_attempts} "
+                       f"in {backoff_time}s")
+            
+            time.sleep(backoff_time)
+            
+            try:
+                self.vps_client.reconnect()
+            except Exception as e:
+                logger.error(f" VPS reconnect failed: {e}")
+        else:
+            logger.critical(" Max VPS reconnect attempts reached")
     
     def on_local_message(self, client, userdata, msg):
-        """Handle messages from local devices"""
         try:
             data = json.loads(msg.payload.decode())
             
@@ -275,7 +311,6 @@ class MQTTManager:
             logger.error(f"Error processing local message: {e}")
     
     def on_vps_message(self, client, userdata, msg):
-        """Handle messages from VPS (sync triggers, commands)"""
         try:
             if 'sync/trigger' in msg.topic and self.sync_manager:
                 data = json.loads(msg.payload.decode())
@@ -285,50 +320,55 @@ class MQTTManager:
             logger.error(f"Error processing VPS message: {e}")
     
     def handle_temperature_data(self, data):
-        """Handle temperature telemetry and automation"""
-        logger.debug(f"Received temperature data: {data}")
-        temperature = data.get('data', {}).get('temperature')
-        humidity = data.get('data', {}).get('humidity')
-        if temperature is not None:
-            self.last_temperature = float(temperature)
-            logger.info(f"[TEMP] {temperature}°C, {humidity}% RH")
-            self.forward_telemetry_to_vps('temp_01', data)
+        try:
+            logger.debug(f"Received temperature data: {data}")
+            temperature = data.get('data', {}).get('temperature')
+            humidity = data.get('data', {}).get('humidity')
             
-            # Check automation
-            auto_enabled = self.db_manager.settings_data.get('automation', {}).get('auto_fan_enabled', True)
-            threshold = self.db_manager.settings_data.get('automation', {}).get('temp_threshold', 30.0)
-            
-            if auto_enabled:
-                if temperature > threshold and not self.fan_auto_on:
-                    logger.warning(f"[AUTO] Temperature {temperature}°C > {threshold}°C - Turning fan ON")
-                    self.control_fan('on', 'auto')
-                    self.fan_auto_on = True
-                    
-                    # Log alert
-                    self.db_manager.add_log('alert', 'high_temperature', 
-                                           device_id='temp_01', 
-                                           temperature=temperature)
-                    
-                elif temperature <= threshold and self.fan_auto_on:
-                    logger.info(f"[AUTO] Temperature {temperature}°C <= {threshold}°C - Turning fan OFF")
-                    self.control_fan('off', 'auto')
-                    self.fan_auto_on = False
+            if temperature is not None:
+                self.last_temperature = float(temperature)
+                logger.info(f"[TEMP] {temperature}°C, {humidity}% RH")
+                self.forward_telemetry_to_vps('temp_01', data)
+                
+                auto_enabled = self.db_manager.settings_data.get('automation', {}).get('auto_fan_enabled', True)
+                threshold = self.db_manager.settings_data.get('automation', {}).get('temp_threshold', 30.0)
+                
+                if auto_enabled:
+                    if temperature > threshold and not self.fan_auto_on:
+                        logger.warning(f"[AUTO] Temperature {temperature}°C > {threshold}°C - Turning fan ON")
+                        self.control_fan('on', 'auto')
+                        self.fan_auto_on = True
+                        
+                        self.db_manager.add_log('alert', 'high_temperature', 
+                                               device_id='temp_01', 
+                                               temperature=temperature)
+                        
+                    elif temperature <= threshold and self.fan_auto_on:
+                        logger.info(f"[AUTO] Temperature {temperature}°C <= {threshold}°C - Turning fan OFF")
+                        self.control_fan('off', 'auto')
+                        self.fan_auto_on = False
+        except Exception as e:
+            logger.error(f"Error handling temperature data: {e}")
     
     def control_fan(self, action, source='manual'):
-        """Send fan control command"""
-        command = {
-            'cmd': 'set_power',
-            'state': action,
-            'source': source,
-            'timestamp': time.time()
-        }
-        
-        topic = self.config['topics']['local_fan_command']
-        self.local_client.publish(topic, json.dumps(command))
-        logger.info(f"[FAN] Command sent: {action} ({source})")
+        try:
+            command = {
+                'cmd': 'fan_on' if action == 'on' else 'fan_off',
+                'source': source,
+                'timestamp': time.time()
+            }
+            
+            topic = self.config['topics']['local_fan_command']
+            
+            if self.connected_local:
+                self.local_client.publish(topic, json.dumps(command), qos=1)
+                logger.info(f"[FAN] Command sent: {action} ({source})")
+            else:
+                logger.error("[FAN] Cannot send command - local broker disconnected")
+        except Exception as e:
+            logger.error(f"Error controlling fan: {e}")
     
     def forward_telemetry_to_vps(self, device_id, data):
-        """Forward device telemetry to VPS"""
         payload = {
             'gateway_id': self.config['gateway_id'],
             'device_id': device_id,
@@ -340,7 +380,6 @@ class MQTTManager:
         self.publish_to_vps(topic, payload)
     
     def forward_status_to_vps(self, device_id, data):
-        """Forward device status to VPS"""
         payload = {
             'gateway_id': self.config['gateway_id'],
             'device_id': device_id,
@@ -353,8 +392,8 @@ class MQTTManager:
         self.publish_to_vps(topic, payload)
     
     def publish_to_vps(self, topic, payload):
-        """Publish to VPS broker"""
         if not self.connected_vps:
+            logger.warning(" Cannot publish to VPS - not connected")
             return False
         
         try:
@@ -364,45 +403,93 @@ class MQTTManager:
             if result.rc == mqtt.MQTT_ERR_SUCCESS:
                 logger.debug(f" Published to VPS: {topic}")
                 return True
+            else:
+                logger.error(f" Failed to publish to VPS: {topic}, rc={result.rc}")
+                return False
         except Exception as e:
             logger.error(f"Error publishing to VPS: {e}")
         
         return False
     
     def publish_gateway_status(self, status):
-        """Publish gateway heartbeat"""
         payload = {
             'gateway_id': self.config['gateway_id'],
             'status': status,
             'last_temperature': self.last_temperature,
             'fan_auto_on': self.fan_auto_on,
-            'timestamp': now_compact()
+            'timestamp': now_compact(),
+            'uptime': time.time() - start_time if 'start_time' in globals() else 0,
+            'local_connected': self.connected_local,
+            'vps_connected': self.connected_vps,
+            'reconnect_count': self.reconnect_attempts
         }
         topic = self.config['topics']['vps_gateway_status']
         return self.publish_to_vps(topic, payload)
 
-# ============= HEARTBEAT =============
-def heartbeat_loop(mqtt_manager, sync_manager, interval):
-    """Send periodic heartbeat with sync stats"""
-    while True:
-        try:
-            mqtt_manager.publish_gateway_status('online')
-            
-            sync_stats = sync_manager.get_stats()
-            logger.info(f" Heartbeat | Temp: {mqtt_manager.last_temperature}°C | Fan Auto: {mqtt_manager.fan_auto_on} | Syncs: {sync_stats['sync_count']}")
-            
-            time.sleep(interval)
-        except Exception as e:
-            logger.error(f"Heartbeat error: {e}")
-            time.sleep(interval)
+# ============= ENHANCED HEARTBEAT =============
+class HeartbeatManager:
+    def __init__(self, mqtt_manager, sync_manager, interval, stop_event):
+        self.mqtt_manager = mqtt_manager
+        self.sync_manager = sync_manager
+        self.interval = interval
+        self.stop_event = stop_event
+        self.heartbeat_count = 0
+        self.failed_heartbeats = 0
+        self.last_successful_heartbeat = None
+        
+    def run(self):
+        logger.info(f" Heartbeat Manager started (interval: {self.interval}s)")
+        
+        while not self.stop_event.is_set():
+            try:
+                success = self.mqtt_manager.publish_gateway_status('online')
+                
+                if success:
+                    self.heartbeat_count += 1
+                    self.failed_heartbeats = 0
+                    self.last_successful_heartbeat = datetime.now()
+                    
+                    sync_stats = self.sync_manager.get_stats()
+                    logger.info(f" Heartbeat #{self.heartbeat_count} | "
+                              f"Temp: {self.mqtt_manager.last_temperature}°C | "
+                              f"Fan Auto: {self.mqtt_manager.fan_auto_on} | "
+                              f"Syncs: {sync_stats['sync_count']} | "
+                              f"Local: {'OK' if self.mqtt_manager.connected_local else 'FAIL'} | "
+                              f"VPS: {'OK' if self.mqtt_manager.connected_vps else 'FAIL'}")
+                else:
+                    self.failed_heartbeats += 1
+                    logger.warning(f" Heartbeat failed (consecutive: {self.failed_heartbeats})")
+                    
+                    if self.failed_heartbeats >= 3:
+                        logger.error(" Multiple heartbeat failures - checking connections...")
+                        
+                        if not self.mqtt_manager.connected_local:
+                            logger.error(" Local broker connection lost")
+                            self.mqtt_manager.attempt_local_reconnect()
+                        
+                        if not self.mqtt_manager.connected_vps:
+                            logger.error(" VPS connection lost")
+                            self.mqtt_manager.attempt_vps_reconnect()
+                
+                if self.stop_event.wait(timeout=self.interval):
+                    break
+                    
+            except Exception as e:
+                logger.error(f"Heartbeat error: {e}")
+                if self.stop_event.wait(timeout=self.interval):
+                    break
+        
+        logger.info(" Heartbeat Manager stopped")
 
 # ============= MAIN =============
+start_time = time.time()
+stop_event = Event()
+
 def main():
     logger.info("=" * 70)
-    logger.info("  Gateway 3 (User 3 - Anh) - Temp/Fan with Database Sync")
+    logger.info("  Gateway 3 (User 3 - Anh) - Temp/Fan with Enhanced Heartbeat")
     logger.info("=" * 70)
     
-    # Initialize components
     db_manager = DatabaseManager(
         CONFIG['db_path'],
         CONFIG['devices_db'],
@@ -416,7 +503,6 @@ def main():
     
     mqtt_manager = MQTTManager(CONFIG, db_manager, sync_manager)
     
-    # Connect to brokers
     logger.info(" Connecting to Local Broker...")
     if not mqtt_manager.setup_local_broker():
         logger.error("Failed to connect to local broker. Exiting.")
@@ -427,29 +513,30 @@ def main():
         logger.error("Failed to connect to VPS. Exiting.")
         return
     
-    # Start sync service
     logger.info(" Starting Database Sync Service (5s interval)...")
     sync_manager.start()
     time.sleep(2)
     
-    # Start heartbeat
-    logger.info(" Starting Heartbeat Thread...")
-    heartbeat_thread = Thread(
-        target=heartbeat_loop,
-        args=(mqtt_manager, sync_manager, CONFIG['heartbeat_interval']),
-        daemon=True
+    logger.info(" Starting Enhanced Heartbeat Manager...")
+    heartbeat_manager = HeartbeatManager(
+        mqtt_manager,
+        sync_manager,
+        CONFIG['heartbeat_interval'],
+        stop_event
     )
+    heartbeat_thread = Thread(target=heartbeat_manager.run, daemon=True)
     heartbeat_thread.start()
     
     logger.info("=" * 70)
-    logger.info(" Gateway 3 Running - Database syncing every 5 seconds")
+    logger.info(" Gateway 3 Running - Enhanced heartbeat every 30 seconds")
     logger.info("=" * 70)
     
     try:
         while True:
             time.sleep(1)
     except KeyboardInterrupt:
-        logger.info("\ Shutdown signal received")
+        logger.info("\n Shutdown signal received")
+        stop_event.set()
         sync_manager.stop()
         logger.info(" Gateway stopped")
 

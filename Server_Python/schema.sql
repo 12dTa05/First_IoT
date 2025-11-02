@@ -542,4 +542,231 @@ SELECT
     ) AS metadata
 FROM generate_series(1, 100) AS series;
 
+-- ============================================================================
+-- SCHEMA UPDATES FOR IMPROVED STATUS TRACKING
+-- ============================================================================
+
+-- Add timestamp validation constraint to prevent future timestamps
+ALTER TABLE devices 
+ADD CONSTRAINT check_last_seen_not_future 
+CHECK (last_seen IS NULL OR last_seen <= NOW() + INTERVAL '1 minute');
+
+ALTER TABLE gateways 
+ADD CONSTRAINT check_gateway_last_seen_not_future 
+CHECK (last_seen IS NULL OR last_seen <= NOW() + INTERVAL '1 minute');
+
+-- Create function to automatically mark devices offline when gateway goes offline
+CREATE OR REPLACE FUNCTION cascade_gateway_offline()
+RETURNS TRIGGER AS $$
+BEGIN
+    IF NEW.status = 'offline' AND OLD.status = 'online' THEN
+        UPDATE devices
+        SET status = 'offline',
+            updated_at = NOW()
+        WHERE gateway_id = NEW.gateway_id
+          AND status = 'online';
+        
+        INSERT INTO system_logs (time, gateway_id, user_id, log_type, event, severity, message, metadata)
+        VALUES (
+            NOW(),
+            NEW.gateway_id,
+            NEW.user_id,
+            'system_event',
+            'gateway_offline_cascade',
+            'warning',
+            format('Gateway %s went offline, cascaded to %s devices', NEW.gateway_id, 
+                   (SELECT COUNT(*) FROM devices WHERE gateway_id = NEW.gateway_id)),
+            jsonb_build_object(
+                'gateway_id', NEW.gateway_id,
+                'old_status', OLD.status,
+                'new_status', NEW.status,
+                'last_seen', OLD.last_seen
+            )
+        );
+    END IF;
+    
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+-- Create trigger for cascade offline
+DROP TRIGGER IF EXISTS trigger_gateway_offline_cascade ON gateways;
+CREATE TRIGGER trigger_gateway_offline_cascade
+    AFTER UPDATE OF status ON gateways
+    FOR EACH ROW
+    EXECUTE FUNCTION cascade_gateway_offline();
+
+-- Create function to log device status changes
+CREATE OR REPLACE FUNCTION log_device_status_change()
+RETURNS TRIGGER AS $$
+BEGIN
+    IF NEW.status != OLD.status THEN
+        INSERT INTO system_logs (time, gateway_id, device_id, user_id, log_type, event, severity, message, metadata)
+        VALUES (
+            NOW(),
+            NEW.gateway_id,
+            NEW.device_id,
+            NEW.user_id,
+            'device_event',
+            'device_status_change',
+            CASE 
+                WHEN NEW.status = 'offline' THEN 'warning'
+                ELSE 'info'
+            END,
+            format('Device %s status changed from %s to %s', NEW.device_id, OLD.status, NEW.status),
+            jsonb_build_object(
+                'device_id', NEW.device_id,
+                'device_type', NEW.device_type,
+                'old_status', OLD.status,
+                'new_status', NEW.status,
+                'old_last_seen', OLD.last_seen,
+                'new_last_seen', NEW.last_seen
+            )
+        );
+    END IF;
+    
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+-- Create trigger for device status change logging
+DROP TRIGGER IF EXISTS trigger_log_device_status_change ON devices;
+CREATE TRIGGER trigger_log_device_status_change
+    AFTER UPDATE OF status ON devices
+    FOR EACH ROW
+    EXECUTE FUNCTION log_device_status_change();
+
+-- Create materialized view for real-time device health monitoring
+CREATE MATERIALIZED VIEW IF NOT EXISTS device_health_summary AS
+SELECT 
+    d.user_id,
+    COUNT(*) as total_devices,
+    COUNT(*) FILTER (WHERE d.status = 'online') as online_devices,
+    COUNT(*) FILTER (WHERE d.status = 'offline') as offline_devices,
+    COUNT(*) FILTER (WHERE d.last_seen IS NULL) as never_seen_devices,
+    COUNT(*) FILTER (WHERE d.last_seen > NOW() - INTERVAL '1 minute') as active_last_minute,
+    COUNT(*) FILTER (WHERE d.last_seen > NOW() - INTERVAL '5 minutes') as active_last_5min,
+    COUNT(*) FILTER (WHERE d.last_seen > NOW() - INTERVAL '30 minutes') as active_last_30min,
+    MAX(d.last_seen) as most_recent_activity,
+    MIN(d.last_seen) as least_recent_activity
+FROM devices d
+GROUP BY d.user_id;
+
+-- Create index for faster refresh
+CREATE UNIQUE INDEX IF NOT EXISTS idx_device_health_summary_user 
+ON device_health_summary(user_id);
+
+-- Create function to refresh materialized view
+CREATE OR REPLACE FUNCTION refresh_device_health_summary()
+RETURNS void AS $$
+BEGIN
+    REFRESH MATERIALIZED VIEW CONCURRENTLY device_health_summary;
+END;
+$$ LANGUAGE plpgsql;
+
+-- Create view for gateway connection quality
+CREATE OR REPLACE VIEW gateway_connection_quality AS
+SELECT 
+    g.gateway_id,
+    g.user_id,
+    g.name,
+    g.status,
+    g.last_seen,
+    EXTRACT(EPOCH FROM (NOW() - g.last_seen)) as seconds_since_last_seen,
+    CASE 
+        WHEN g.status = 'offline' THEN 'offline'
+        WHEN g.last_seen IS NULL THEN 'unknown'
+        WHEN g.last_seen > NOW() - INTERVAL '1 minute' THEN 'excellent'
+        WHEN g.last_seen > NOW() - INTERVAL '2 minutes' THEN 'good'
+        WHEN g.last_seen > NOW() - INTERVAL '5 minutes' THEN 'fair'
+        ELSE 'poor'
+    END as connection_quality,
+    (
+        SELECT COUNT(*) 
+        FROM devices d 
+        WHERE d.gateway_id = g.gateway_id AND d.status = 'online'
+    ) as online_devices_count,
+    (
+        SELECT COUNT(*) 
+        FROM devices d 
+        WHERE d.gateway_id = g.gateway_id
+    ) as total_devices_count
+FROM gateways g;
+
+-- Create view for devices requiring attention
+CREATE OR REPLACE VIEW devices_requiring_attention AS
+SELECT 
+    d.device_id,
+    d.gateway_id,
+    d.user_id,
+    d.device_type,
+    d.location,
+    d.status,
+    d.last_seen,
+    EXTRACT(EPOCH FROM (NOW() - d.last_seen))/60 as minutes_since_last_seen,
+    CASE 
+        WHEN d.status = 'offline' AND d.last_seen > NOW() - INTERVAL '5 minutes' THEN 'recently_offline'
+        WHEN d.status = 'offline' AND d.last_seen > NOW() - INTERVAL '1 hour' THEN 'offline_short_term'
+        WHEN d.status = 'offline' THEN 'offline_long_term'
+        WHEN d.status = 'online' AND d.last_seen < NOW() - INTERVAL '2 minutes' THEN 'stale_online'
+        ELSE 'ok'
+    END as attention_reason,
+    g.status as gateway_status,
+    g.name as gateway_name
+FROM devices d
+JOIN gateways g ON d.gateway_id = g.gateway_id
+WHERE 
+    (d.status = 'offline')
+    OR (d.status = 'online' AND d.last_seen < NOW() - INTERVAL '2 minutes')
+ORDER BY d.last_seen ASC NULLS FIRST;
+
+-- Add comments for documentation
+COMMENT ON FUNCTION cascade_gateway_offline() IS 'Automatically marks all devices under a gateway as offline when the gateway goes offline';
+COMMENT ON FUNCTION log_device_status_change() IS 'Logs all device status changes to system_logs for audit trail';
+COMMENT ON VIEW gateway_connection_quality IS 'Provides real-time assessment of gateway connection quality based on heartbeat recency';
+COMMENT ON VIEW devices_requiring_attention IS 'Identifies devices that may need attention due to offline status or stale heartbeats';
+COMMENT ON MATERIALIZED VIEW device_health_summary IS 'Aggregated device health statistics per user, refresh periodically for performance';
+
+-- Create indexes for performance optimization
+CREATE INDEX IF NOT EXISTS idx_devices_status_last_seen 
+ON devices(status, last_seen DESC) 
+WHERE status = 'online';
+
+CREATE INDEX IF NOT EXISTS idx_gateways_status_last_seen 
+ON gateways(status, last_seen DESC) 
+WHERE status = 'online';
+
+CREATE INDEX IF NOT EXISTS idx_system_logs_device_status 
+ON system_logs(device_id, time DESC) 
+WHERE event IN ('device_status_change', 'device_offline', 'device_online');
+
+-- Grant necessary permissions
+GRANT SELECT ON device_health_summary TO iot;
+GRANT SELECT ON gateway_connection_quality TO iot;
+GRANT SELECT ON devices_requiring_attention TO iot;
+GRANT EXECUTE ON FUNCTION refresh_device_health_summary() TO iot;
+
+-- Log schema update completion
+DO $$
+BEGIN
+    INSERT INTO system_logs (time, log_type, event, severity, message, metadata)
+    VALUES (
+        NOW(),
+        'system_event',
+        'schema_update_applied',
+        'info',
+        'Enhanced status tracking schema updates applied successfully',
+        jsonb_build_object(
+            'update_version', '2.0',
+            'update_date', NOW(),
+            'features', ARRAY[
+                'cascade_gateway_offline',
+                'device_status_logging',
+                'health_monitoring_views',
+                'connection_quality_tracking'
+            ]
+        )
+    );
+END $$;
+
 SELECT 'Optimized schema created successfully!' AS status;

@@ -269,13 +269,30 @@ void reconnectMQTT() {
   
   Serial.print("[MQTT] Connecting...");
   
-  if (mqtt.connect(device_id, mqtt_username, mqtt_password)) {
+  // ✅ THÊM: Tạo LWT message
+  StaticJsonDocument<128> lwt;
+  lwt["device_id"] = device_id;
+  lwt["state"] = "offline";
+  lwt["reason"] = "unexpected_disconnect";
+  lwt["timestamp"] = time(nullptr);
+  
+  String lwtPayload;
+  serializeJson(lwt, lwtPayload);
+  
+  // ✅ THÊM: Connect với LWT
+  if (mqtt.connect(
+        device_id, 
+        mqtt_username, 
+        mqtt_password,
+        topic_status,           // LWT topic
+        1,                      // LWT QoS
+        true,                   // LWT retain
+        lwtPayload.c_str()      // LWT message
+      )) {
     Serial.println(" connected");
+    mqtt.subscribe(topic_command, 1);
     
-    mqtt.subscribe(topic_command, 1); // QoS 1
-    Serial.printf("[MQTT] Subscribed to: %s\n", topic_command);
-    
-    // Send online status with retained flag
+    // Gửi online status
     StaticJsonDocument<128> st;
     st["device_id"] = device_id;
     st["state"] = "online";
@@ -285,7 +302,6 @@ void reconnectMQTT() {
     serializeJson(st, out);
     mqtt.publish(topic_status, out.c_str(), true);
     
-    // Send current status
     sendStatus("reconnect");
     
   } else {
