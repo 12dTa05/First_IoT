@@ -1,0 +1,208 @@
+[
+  {
+    "type": "system_event",
+    "event": "gateway_started",
+    "timestamp": "2025-10-15T15:47:13.166287"
+  },
+  {
+    "type": "access_attempt",
+    "method": "passkey",
+    "device_id": "passkey_01",
+    "result": "granted",
+    "timestamp": "2025-10-15T15:48:53.486416",
+    "password_id": "user_001"
+  },
+  {
+    "type": "access_attempt",
+    "method": "passkey",
+    "device_id": "passkey_01",
+    "result": "denied",
+    "timestamp": "2025-10-15T15:49:23.098666"
+  },
+  {
+    "type": "door_status",
+    "status": "ONLINE",
+    "device": "rfid_gate_01",
+    "timestamp": "2025-10-15T15:52:07.426093",
+    "sequence": 0
+  },
+  {
+    "type": "access_attempt",
+    "method": "rfid",
+    "uid": "8675f205",
+    "result": "granted",
+    "device": "rfid_gate_01",
+    "timestamp": "2025-10-15T15:52:25.435674",
+    "deny_reason": null
+  },
+  {
+    "type": "access_attempt",
+    "method": "rfid",
+    "uid": "ca75f005",
+    "result": "denied",
+    "device": "rfid_gate_01",
+    "timestamp": "2025-10-15T15:52:41.322747",
+    "deny_reason": "invalid_card"
+  },
+  {
+    "type": "alert",
+    "event": "high_temperature",
+    "device_id": "temp_01",
+    "temperature": 30.3,
+    "timestamp": "2025-10-15T16:04:47.689165"
+  },
+  {
+    "type": "alert",
+    "event": "high_temperature",
+    "device_id": "temp_01",
+    "temperature": 33.3,
+    "timestamp": "2025-10-15T16:05:17.696089"
+  },
+  {
+    "type": "alert",
+    "event": "high_temperature",
+    "device_id": "temp_01",
+    "temperature": 32.1,
+    "timestamp": "2025-10-15T16:05:47.704130"
+  },
+  {
+    "type": "alert",
+    "event": "high_temperature",
+    "device_id": "temp_01",
+    "temperature": 30.8,
+    "timestamp": "2025-10-15T16:06:17.697595"
+  },
+  {
+    "type": "alert",
+    "event": "high_temperature",
+    "device_id": "temp_01",
+    "temperature": 29.7,
+    "timestamp": "2025-10-15T16:06:47.697863"
+  },
+  {
+    "type": "alert",
+    "event": "high_temperature",
+    "device_id": "temp_01",
+    "temperature": 28.8,
+    "timestamp": "2025-10-15T16:07:17.700202"
+  },
+  {
+    "type": "alert",
+    "event": "high_temperature",
+    "device_id": "temp_01",
+    "temperature": 31.0,
+    "timestamp": "2025-10-15T16:09:12.698481"
+  },
+  {
+    "type": "alert",
+    "event": "high_temperature",
+    "device_id": "temp_01",
+    "temperature": 34.1,
+    "timestamp": "2025-10-15T16:09:43.931665"
+  },
+  {
+    "type": "alert",
+    "event": "high_temperature",
+    "device_id": "temp_01",
+    "temperature": 35.3,
+    "timestamp": "2025-10-15T16:10:12.699638"
+  },
+  {
+    "type": "alert",
+    "event": "high_temperature",
+    "device_id": "temp_01",
+    "temperature": 34.5,
+    "timestamp": "2025-10-15T16:10:42.709490"
+  },
+  {
+    "type": "alert",
+    "event": "high_temperature",
+    "device_id": "temp_01",
+    "temperature": 33.9,
+    "timestamp": "2025-10-15T16:11:12.702495"
+  },
+  {
+    "type": "alert",
+    "event": "high_temperature",
+    "device_id": "temp_01",
+    "temperature": 33.0,
+    "timestamp": "2025-10-15T16:11:42.713150"
+  },
+  {
+    "type": "alert",
+    "event": "high_temperature",
+    "device_id": "temp_01",
+    "temperature": 30.2,
+    "timestamp": "2025-10-15T16:12:42.710174"
+  },
+  {
+    "type": "alert",
+    "event": "high_temperature",
+    "device_id": "temp_01",
+    "temperature": 29.4,
+    "timestamp": "2025-10-15T16:13:12.715543"
+  },
+  {
+    "type": "alert",
+    "event": "high_temperature",
+    "device_id": "temp_01",
+    "temperature": 28.9,
+    "timestamp": "2025-10-15T16:13:42.717965"
+  },
+  {
+    "type": "alert",
+    "event": "high_temperature",
+    "device_id": "temp_01",
+    "temperature": 28.3,
+    "timestamp": "2025-10-15T16:14:12.717889"
+  },
+  {
+    "type": "alert",
+    "event": "high_temperature",
+    "device_id": "temp_01",
+    "temperature": 29.6,
+    "timestamp": "2025-10-15T16:15:42.736047"
+  },
+  {
+    "type": "alert",
+    "event": "high_temperature",
+    "device_id": "temp_01",
+    "temperature": 30.7,
+    "timestamp": "2025-10-15T16:16:12.724713"
+  },
+  {
+    "type": "alert",
+    "event": "high_temperature",
+    "device_id": "temp_01",
+    "temperature": 30.7,
+    "timestamp": "2025-10-15T16:16:42.724085"
+  },
+  {
+    "type": "alert",
+    "event": "high_temperature",
+    "device_id": "temp_01",
+    "temperature": 31.3,
+    "timestamp": "2025-10-15T16:17:12.732887"
+  },
+  {
+    "type": "alert",
+    "event": "high_temperature",
+    "device_id": "temp_01",
+    "temperature": 31.0,
+    "timestamp": "2025-10-15T16:17:42.719760"
+  },
+  {
+    "type": "alert",
+    "event": "high_temperature",
+    "device_id": "temp_01",
+    "temperature": 29.8,
+    "timestamp": "2025-10-15T16:18:12.728002"
+  },
+  {
+    "type": "alert",
+    "event": "high_temperature",
+    "device_id": "temp_01",
+    "temperature": 28.8,
+    "timestamp": "2025-10-15T16:18:42.729533"
+  }
+]

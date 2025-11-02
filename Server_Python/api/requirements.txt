@@ -1,0 +1,30 @@
+# FastAPI & Web Server
+fastapi==0.104.1
+uvicorn[standard]==0.24.0  # Include websockets, httptools, uvloop
+pydantic==2.5.0
+python-multipart==0.0.6
+
+# Database
+psycopg2-binary==2.9.9
+python-dotenv==1.0.0
+
+# MQTT
+paho-mqtt==1.6.1
+
+# Security & Authentication
+passlib[bcrypt]==1.7.4
+PyJWT==2.8.0
+python-jose[cryptography]==3.3.0
+
+# API Rate Limiting
+slowapi==0.1.9
+
+# HTTP Client
+requests==2.31.0
+
+# WebSocket support (included in uvicorn[standard] but explicit for clarity)
+websockets==12.0
+httptools==0.6.1
+uvloop==0.19.0
+watchfiles==0.21.0
+python-dotenv==1.0.0

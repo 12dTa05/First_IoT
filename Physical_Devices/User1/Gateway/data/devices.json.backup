@@ -1,0 +1,28 @@
+{
+  "passwords": {},
+  "rfid_cards": {
+    "8675f205": {
+      "active": true,
+      "card_type": "MIFARE Classic",
+      "description": "Thai Thi Minh Tu",
+      "registered_at": "2025-10-29T00:28:13.091448+00:00",
+      "last_used": null,
+      "expires_at": null,
+      "deactivated_at": null,
+      "deactivation_reason": null,
+      "updated_at": "2025-10-29T00:28:13.091448+00:00"
+    }
+  },
+  "devices": {
+    "rfid_gate_01": {
+      "device_type": "rfid_gate",
+      "location": "Main Gate",
+      "communication": "LoRa",
+      "status": "online",
+      "registered_at": null,
+      "last_seen": null,
+      "metadata": null,
+      "updated_at": "2025-10-29T00:28:13.079679+00:00"
+    }
+  }
+}

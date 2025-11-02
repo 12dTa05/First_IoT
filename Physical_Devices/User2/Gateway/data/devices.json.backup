@@ -1,0 +1,27 @@
+{
+  "passwords": {
+    "passwd_00002_001": {
+      "hash": "$2b$10$Qbctbhp.uV8WjJsygCGsCu42UGPyDr/8Y2R6bqY7UT8LbEi3himO2",
+      "active": true,
+      "description": "Vuong Linh Thao PIN - 251203",
+      "created_at": "2025-10-01T00:46:39.539220+00:00",
+      "last_used": "2025-10-30T21:46:39.539220+00:00",
+      "expires_at": null,
+      "updated_at": "2025-10-31T00:46:39.539220+00:00"
+    }
+  },
+  "rfid_cards": {},
+  "devices": {
+    "passkey_01": {
+      "device_type": "passkey",
+      "location": "Front Door",
+      "communication": "Wifi",
+      "status": "offline",
+      "is_online": false,
+      "registered_at": "2025-10-31T00:46:39.527889+00:00",
+      "last_seen": "2025-10-31T00:44:39.527889+00:00",
+      "metadata": null,
+      "updated_at": "2025-10-31T00:46:39.527889+00:00"
+    }
+  }
+}

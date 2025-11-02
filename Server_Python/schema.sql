@@ -1,0 +1,772 @@
+-- Enable TimescaleDB extension for time-series data
+CREATE EXTENSION IF NOT EXISTS timescaledb;
+
+SET timezone = 'Asia/Ho_Chi_Minh';
+ALTER DATABASE iot_db SET timezone TO 'Asia/Ho_Chi_Minh';
+
+-- Users table
+CREATE TABLE IF NOT EXISTS users (
+    user_id TEXT PRIMARY KEY,
+    username TEXT UNIQUE NOT NULL,
+    email TEXT UNIQUE NOT NULL,
+    password_hash TEXT NOT NULL,
+    full_name TEXT,
+    phone TEXT,
+    role TEXT DEFAULT 'client', -- 'owner', 'admin', 'member'
+    active BOOLEAN DEFAULT TRUE,
+    created_at TIMESTAMPTZ NOT NULL,
+    updated_at TIMESTAMPTZ NOT NULL
+);
+
+CREATE INDEX IF NOT EXISTS idx_users_username ON users(username);
+CREATE INDEX IF NOT EXISTS idx_users_email ON users(email);
+CREATE INDEX IF NOT EXISTS idx_users_active ON users(active);
+
+-- Gateways table
+CREATE TABLE IF NOT EXISTS gateways (
+    gateway_id TEXT PRIMARY KEY,
+    user_id TEXT NOT NULL REFERENCES users(user_id) ON DELETE CASCADE,
+    name TEXT,
+    location TEXT,
+    status TEXT DEFAULT 'offline', -- 'online', 'offline', 'maintenance'
+    last_seen TIMESTAMPTZ,
+    database_version TEXT,
+    created_at TIMESTAMPTZ NOT NULL,
+    updated_at TIMESTAMPTZ NOT NULL
+);
+
+CREATE INDEX IF NOT EXISTS idx_gateways_user ON gateways(user_id);
+CREATE INDEX IF NOT EXISTS idx_gateways_status ON gateways(status);
+CREATE INDEX IF NOT EXISTS idx_gateways_heartbeat ON gateways(last_seen);
+
+-- Devices table: ESP8266 devices 
+CREATE TABLE IF NOT EXISTS devices (
+    device_id TEXT PRIMARY KEY,
+    gateway_id TEXT NOT NULL REFERENCES gateways(gateway_id) ON DELETE CASCADE,
+    user_id TEXT NOT NULL REFERENCES users(user_id) ON DELETE CASCADE,
+    device_type TEXT NOT NULL,
+    location TEXT,
+    communication TEXT, -- 'WiFi', 'LoRa'
+    status TEXT DEFAULT 'offline', -- 'online', 'offline'
+    last_seen TIMESTAMPTZ, -- Last message received from device
+    created_at TIMESTAMPTZ NOT NULL,
+    updated_at TIMESTAMPTZ NOT NULL
+);
+
+CREATE INDEX IF NOT EXISTS idx_devices_gateway ON devices(gateway_id);
+CREATE INDEX IF NOT EXISTS idx_devices_user ON devices(user_id);
+CREATE INDEX IF NOT EXISTS idx_devices_type ON devices(device_type);
+CREATE INDEX IF NOT EXISTS idx_devices_status ON devices(status);
+CREATE INDEX IF NOT EXISTS idx_devices_last_seen ON devices(last_seen);
+
+-- Passwords table: passwords for keypad door access
+CREATE TABLE IF NOT EXISTS passwords (
+    password_id TEXT PRIMARY KEY,
+    user_id TEXT NOT NULL REFERENCES users(user_id) ON DELETE CASCADE,
+    hash TEXT NOT NULL,
+    active BOOLEAN DEFAULT TRUE,
+    description TEXT,
+    created_at TIMESTAMPTZ NOT NULL,
+    last_used TIMESTAMPTZ,
+    expires_at TIMESTAMPTZ,
+    updated_at TIMESTAMPTZ NOT NULL
+);
+
+CREATE INDEX IF NOT EXISTS idx_passwords_user ON passwords(user_id);
+CREATE INDEX IF NOT EXISTS idx_passwords_active ON passwords(active);
+CREATE INDEX IF NOT EXISTS idx_passwords_hash ON passwords(hash);
+
+-- RFID cards table: RFID cards for gate access
+CREATE TABLE IF NOT EXISTS rfid_cards (
+    uid TEXT PRIMARY KEY,
+    user_id TEXT NOT NULL REFERENCES users(user_id) ON DELETE CASCADE,
+    active BOOLEAN DEFAULT TRUE,
+    card_type TEXT,
+    description TEXT,
+    registered_at TIMESTAMPTZ NOT NULL,
+    last_used TIMESTAMPTZ,
+    expires_at TIMESTAMPTZ,
+    deactivated_at TIMESTAMPTZ,
+    deactivation_reason TEXT,
+    updated_at TIMESTAMPTZ NOT NULL
+);
+
+CREATE INDEX IF NOT EXISTS idx_rfid_user ON rfid_cards(user_id);
+CREATE INDEX IF NOT EXISTS idx_rfid_active ON rfid_cards(active);
+
+-- Telemetry table: temperature and humidity readings from sensors
+CREATE TABLE telemetry (
+    time TIMESTAMPTZ NOT NULL, -- Timestamp from gateway, not server
+    device_id TEXT NOT NULL,
+    gateway_id TEXT NOT NULL,
+    user_id TEXT NOT NULL,
+    temperature DOUBLE PRECISION,
+    humidity DOUBLE PRECISION,
+    metadata JSONB -- Additional sensor data (battery, signal strength, etc.)
+);
+
+SELECT create_hypertable('telemetry', 'time', if_not_exists => TRUE);
+
+CREATE INDEX IF NOT EXISTS idx_telemetry_user_time ON telemetry(user_id, time DESC);
+CREATE INDEX IF NOT EXISTS idx_telemetry_device_time ON telemetry(device_id, time DESC);
+CREATE INDEX IF NOT EXISTS idx_telemetry_gateway_time ON telemetry(gateway_id, time DESC);
+
+-- Access logs table: RFID and password access attempts
+CREATE TABLE access_logs (
+    time TIMESTAMPTZ NOT NULL, -- Timestamp from gateway, not server
+    device_id TEXT NOT NULL,
+    gateway_id TEXT NOT NULL,
+    user_id TEXT NOT NULL,
+    method TEXT NOT NULL, -- 'rfid', 'passkey', 'remote'
+    result TEXT NOT NULL, -- 'granted', 'denied'
+    password_id TEXT,
+    rfid_uid TEXT,
+    deny_reason TEXT, -- Reason for denial if result is 'denied'
+    metadata JSONB -- Additional context (source, command_id, etc.)
+);
+
+SELECT create_hypertable('access_logs', 'time', if_not_exists => TRUE);
+
+CREATE INDEX IF NOT EXISTS idx_access_logs_user_time ON access_logs(user_id, time DESC);
+CREATE INDEX IF NOT EXISTS idx_access_logs_device_time ON access_logs(device_id, time DESC);
+CREATE INDEX IF NOT EXISTS idx_access_logs_method ON access_logs(method, time DESC);
+CREATE INDEX IF NOT EXISTS idx_access_logs_result ON access_logs(result, time DESC);
+
+-- System logs table: system events, errors, alerts, and device status changes
+CREATE TABLE system_logs (
+    time TIMESTAMPTZ NOT NULL, -- Timestamp from gateway, not server
+    gateway_id TEXT,
+    device_id TEXT, -- NULL for gateway-level logs
+    user_id TEXT,
+    log_type TEXT NOT NULL, -- 'system_event', 'device_event', 'error', 'alert'
+    event TEXT NOT NULL, -- Event name: 'device_online', 'device_offline', 'high_temperature', etc.
+    severity TEXT NOT NULL, -- 'info', 'warning', 'error', 'critical'
+    message TEXT,
+    value DOUBLE PRECISION, -- For alerts with threshold values
+    threshold DOUBLE PRECISION, -- Threshold that triggered the alert
+    metadata JSONB -- Additional event data
+);
+
+SELECT create_hypertable('system_logs', 'time', if_not_exists => TRUE);
+
+CREATE INDEX IF NOT EXISTS idx_system_logs_user_time ON system_logs(user_id, time DESC);
+CREATE INDEX IF NOT EXISTS idx_system_logs_gateway_time ON system_logs(gateway_id, time DESC);
+CREATE INDEX IF NOT EXISTS idx_system_logs_device_time ON system_logs(device_id, time DESC);
+CREATE INDEX IF NOT EXISTS idx_system_logs_type ON system_logs(log_type, time DESC);
+CREATE INDEX IF NOT EXISTS idx_system_logs_severity ON system_logs(severity, time DESC);
+CREATE INDEX IF NOT EXISTS idx_system_logs_event ON system_logs(event);
+
+-- Command logs table: track commands sent to devices
+CREATE TABLE command_logs (
+    time TIMESTAMPTZ NOT NULL, -- Timestamp when command was sent
+    command_id TEXT NOT NULL,
+    source TEXT NOT NULL, -- 'client', 'gateway_auto', 'api'
+    device_id TEXT NOT NULL,
+    gateway_id TEXT NOT NULL,
+    user_id TEXT,
+    command_type TEXT NOT NULL, -- 'unlock', 'lock', 'fan_on', 'fan_off', 'set_auto', etc.
+    status TEXT NOT NULL, -- 'sent', 'executing', 'completed', 'failed'
+    params JSONB, -- Command parameters
+    result JSONB, -- Command execution result
+    completed_at TIMESTAMPTZ,
+    metadata JSONB
+);
+
+SELECT create_hypertable('command_logs', 'time', if_not_exists => TRUE);
+
+CREATE INDEX IF NOT EXISTS idx_command_logs_device_time ON command_logs(device_id, time DESC);
+CREATE INDEX IF NOT EXISTS idx_command_logs_status ON command_logs(status);
+CREATE INDEX IF NOT EXISTS idx_command_logs_command_id ON command_logs(command_id);
+
+-- ============================================================================
+-- RETENTION POLICIES (Auto-cleanup old data)
+-- ============================================================================
+
+-- Keep telemetry data for 90 days
+SELECT add_retention_policy('telemetry', INTERVAL '90 days', if_not_exists => TRUE);
+
+-- Keep access logs for 180 days (6 months)
+SELECT add_retention_policy('access_logs', INTERVAL '180 days', if_not_exists => TRUE);
+
+-- Keep system logs for 90 days
+SELECT add_retention_policy('system_logs', INTERVAL '90 days', if_not_exists => TRUE);
+
+-- Keep command logs for 30 days
+SELECT add_retention_policy('command_logs', INTERVAL '30 days', if_not_exists => TRUE);
+
+-- ============================================================================
+-- VIEWS FOR COMMON QUERIES
+-- ============================================================================
+
+-- View: devices with owner information
+CREATE OR REPLACE VIEW user_devices_view AS
+SELECT 
+    d.device_id,
+    d.user_id,
+    d.gateway_id,
+    d.device_type,
+    d.location,
+    d.status,
+    d.last_seen,
+    u.username,
+    u.full_name,
+    g.name AS gateway_name
+FROM devices d
+JOIN users u ON d.user_id = u.user_id
+JOIN gateways g ON d.gateway_id = g.gateway_id
+WHERE u.active = TRUE;
+
+-- View: device health status based on last_seen
+CREATE OR REPLACE VIEW device_health_view AS
+SELECT 
+    d.device_id,
+    d.user_id,
+    d.device_type,
+    d.location,
+    d.status,
+    d.last_seen,
+    EXTRACT(EPOCH FROM (NOW() - d.last_seen))/60 AS minutes_since_seen,
+    CASE 
+        WHEN d.last_seen IS NULL THEN 'unknown'
+        WHEN d.last_seen > NOW() - INTERVAL '5 minutes' THEN 'healthy'
+        WHEN d.last_seen > NOW() - INTERVAL '15 minutes' THEN 'warning'
+        ELSE 'critical'
+    END AS health_status
+FROM devices d;
+
+-- ============================================================================
+-- PERMISSIONS
+-- ============================================================================
+
+GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA public TO iot;
+GRANT ALL PRIVILEGES ON ALL SEQUENCES IN SCHEMA public TO iot;
+GRANT EXECUTE ON ALL FUNCTIONS IN SCHEMA public TO iot;
+
+-- ============================================================================
+-- SCHEMA MIGRATION COMPLETE
+-- ============================================================================
+
+INSERT INTO users (user_id, username, email, password_hash, full_name, phone, role, active, created_at, updated_at)
+VALUES ('00001', 'Anh', 'anh@iot.local', '$2b$10$IhIlIxY2od5hr3oJyOcPFOsINCIQpE1xk/pw4oMJJZ1j76DRMGmEK', 'Death', '+84901234567', 'owner', TRUE, NOW(), NOW())
+ON CONFLICT (user_id) DO UPDATE SET 
+    username = EXCLUDED.username,
+    email = EXCLUDED.email,
+    full_name = EXCLUDED.full_name,
+    updated_at = NOW();
+
+INSERT INTO users (user_id, username, email, password_hash, full_name, phone, role, active, created_at, updated_at)
+VALUES ('00002', 'Thao', 'thao@iot.local', '$2b$10$hsu4FolYIVI1Qat9e5d5KuHaZXJeFmS9IyQc3tXgnptThex5jYOdG', 'Vuong Linh Thao', '+84901234567', 'owner', TRUE, NOW(), NOW())
+ON CONFLICT (user_id) DO UPDATE SET 
+    username = EXCLUDED.username,
+    email = EXCLUDED.email,
+    full_name = EXCLUDED.full_name,
+    updated_at = NOW();
+
+INSERT INTO users (user_id, username, email, password_hash, full_name, phone, role, active, created_at, updated_at)
+VALUES ('00003', 'Tu', 'tu@iot.local', '$2b$10$GO6tbC5XLZWil3clSFi/Heh4.Ij68flzb2HncZLxoZl3Ei7/T0iQK', 'Thai Thi Minh Tu', '+84901234567', 'owner', TRUE, NOW(), NOW())
+ON CONFLICT (user_id) DO UPDATE SET 
+    username = EXCLUDED.username,
+    email = EXCLUDED.email,
+    full_name = EXCLUDED.full_name,
+    updated_at = NOW();
+
+INSERT INTO gateways (gateway_id, user_id, name, location, status, last_seen, database_version, created_at, updated_at)
+VALUES ('Gateway1', '00001', 'Main Gate Gateway', 'Building Entrance', 'offline', NOW() - INTERVAL '1 minute', 'v1.0.0', NOW(), NOW()) 
+ON CONFLICT (gateway_id) DO UPDATE SET
+    user_id = EXCLUDED.user_id,
+    name = EXCLUDED.name,
+    location = EXCLUDED.location,
+    updated_at = NOW();
+
+INSERT INTO gateways (gateway_id, user_id, name, location, status, last_seen, database_version, created_at, updated_at)
+VALUES ('Gateway2', '00002', 'Door Gateway', 'Apartment', 'offline', NOW() - INTERVAL '1 minute', 'v1.0.0', NOW(), NOW()) 
+ON CONFLICT (gateway_id) DO UPDATE SET
+    user_id = EXCLUDED.user_id,
+    name = EXCLUDED.name,
+    location = EXCLUDED.location,
+    updated_at = NOW();
+
+INSERT INTO gateways (gateway_id, user_id, name, location, status, last_seen, database_version, created_at, updated_at)
+VALUES ('Gateway3', '00003', 'Fan Temp Gateway', 'Apartment', 'offline', NOW() - INTERVAL '1 minute', 'v1.0.0', NOW(), NOW()) 
+ON CONFLICT (gateway_id) DO UPDATE SET
+    user_id = EXCLUDED.user_id,
+    name = EXCLUDED.name,
+    location = EXCLUDED.location,
+    updated_at = NOW();
+
+INSERT INTO devices (device_id, gateway_id, user_id, device_type, location, communication, status, last_seen, created_at, updated_at)
+VALUES ('rfid_gate_01', 'Gateway1', '00001', 'rfid_gate', 'Main Gate', 'LoRa', 'offline', NOW() - INTERVAL '2 minutes', NOW(), NOW())
+ON CONFLICT (device_id) DO UPDATE SET
+    gateway_id = EXCLUDED.gateway_id,
+    user_id = EXCLUDED.user_id,
+    location = EXCLUDED.location,
+    updated_at = NOW();
+
+INSERT INTO devices (device_id, gateway_id, user_id, device_type, location, communication, status, last_seen, created_at, updated_at)
+VALUES ('passkey_01', 'Gateway2', '00002', 'passkey', 'Front Door', 'Wifi', 'offline', NOW() - INTERVAL '2 minutes', NOW(), NOW())
+ON CONFLICT (device_id) DO UPDATE SET
+    gateway_id = EXCLUDED.gateway_id,
+    user_id = EXCLUDED.user_id,
+    location = EXCLUDED.location,
+    updated_at = NOW();
+
+INSERT INTO devices (device_id, gateway_id, user_id, device_type, location, communication, status, last_seen, created_at, updated_at)
+VALUES ('temp_01', 'Gateway3', '00003', 'temperature sensor', 'Room', 'Wifi', 'offline', NOW() - INTERVAL '2 minutes', NOW(), NOW())
+ON CONFLICT (device_id) DO UPDATE SET
+    gateway_id = EXCLUDED.gateway_id,
+    user_id = EXCLUDED.user_id,
+    location = EXCLUDED.location,
+    updated_at = NOW();
+
+INSERT INTO devices (device_id, gateway_id, user_id, device_type, location, communication, status, last_seen, created_at, updated_at)
+VALUES ('fan_01', 'Gateway3', '00003', 'fan controller', 'Room', 'Wifi', 'offline', NOW() - INTERVAL '2 minutes', NOW(), NOW())
+ON CONFLICT (device_id) DO UPDATE SET
+    gateway_id = EXCLUDED.gateway_id,
+    user_id = EXCLUDED.user_id,
+    location = EXCLUDED.location,
+    updated_at = NOW();
+
+INSERT INTO rfid_cards (uid, user_id, active, card_type, description, registered_at, last_used, expires_at, deactivated_at, deactivation_reason, updated_at)
+VALUES ('8675F205', '00001', TRUE, 'MIFARE Classic', 'Thai Thi Minh Tu - Main Card', NOW() - INTERVAL '30 days', NOW() - INTERVAL '1 hour', NULL, NULL, NULL, NOW())
+ON CONFLICT (uid) DO UPDATE SET
+    active = EXCLUDED.active,
+    description = EXCLUDED.description,
+    last_used = EXCLUDED.last_used,
+    updated_at = NOW();
+
+INSERT INTO passwords (password_id, user_id, hash, active, description, created_at, last_used, expires_at, updated_at)
+VALUES ('passwd_00002_001', '00002', '$2b$10$Qbctbhp.uV8WjJsygCGsCu42UGPyDr/8Y2R6bqY7UT8LbEi3himO2', TRUE, 'Vuong Linh Thao PIN - 251203', NOW() - INTERVAL '30 days', NOW() - INTERVAL '3 hours', NULL, NOW())
+ON CONFLICT (password_id) DO UPDATE SET
+    active = EXCLUDED.active,
+    last_used = EXCLUDED.last_used,
+    updated_at = NOW();
+
+INSERT INTO telemetry (time, device_id, gateway_id, user_id, temperature, humidity, metadata)
+SELECT NOW() - (interval '1 hour' * series), 'temp_01', 'Gateway3', '00003', 22.0 + (random() * 8), 50.0 + (random() * 30), jsonb_build_object('battery', 95 - (series * 0.5), 'signal', -45 - (random() * 10))
+FROM generate_series(0, 23) AS series;
+
+INSERT INTO access_logs (time, device_id, gateway_id, user_id, method, result, password_id, rfid_uid, deny_reason, metadata)
+SELECT NOW() - (interval '1 day' * series) - (interval '1 hour' * (random() * 12)::int), 'rfid_gate_01', 'Gateway1', '00001', 'rfid', 
+    CASE WHEN random() > 0.1 THEN 'granted' ELSE 'denied' END, 
+    NULL, 
+    CASE WHEN random() > 0.1 THEN '8675F205' ELSE 'UNKNOWN' END,
+    CASE WHEN random() > 0.1 THEN NULL ELSE 'unknown_card' END,
+    jsonb_build_object('source', 'rfid_reader')
+FROM generate_series(0, 20) AS series;
+
+INSERT INTO access_logs (time, device_id, gateway_id, user_id, method, result, password_id, rfid_uid, deny_reason, metadata)
+SELECT NOW() - (interval '1 day' * series) - (interval '1 hour' * (random() * 12)::int), 'passkey_01', 'Gateway2', '00002', 'passkey',
+    CASE WHEN random() > 0.15 THEN 'granted' ELSE 'denied' END,
+    CASE WHEN random() > 0.15 THEN 'passwd_00002_001' ELSE NULL END,
+    NULL,
+    CASE WHEN random() > 0.15 THEN NULL ELSE 'invalid_password' END,
+    jsonb_build_object('source', 'keypad', 'attempts', 1)
+FROM generate_series(0, 15) AS series;
+
+INSERT INTO system_logs (time, gateway_id, device_id, user_id, log_type, event, severity, message, value, threshold, metadata)
+VALUES
+    (NOW() - INTERVAL '2 hours', 'Gateway1', NULL, '00001', 'system_event', 'gateway_online', 'info', 'Gateway1 came online', NULL, NULL, '{"uptime": 7200}'::jsonb),
+    (NOW() - INTERVAL '3 hours', 'Gateway2', NULL, '00002', 'system_event', 'gateway_online', 'info', 'Gateway2 came online', NULL, NULL, '{"uptime": 10800}'::jsonb),
+    (NOW() - INTERVAL '1 hour', 'Gateway3', NULL, '00003', 'system_event', 'gateway_online', 'info', 'Gateway3 came online', NULL, NULL, '{"uptime": 3600}'::jsonb),
+    (NOW() - INTERVAL '30 minutes', 'Gateway3', 'temp_01', '00003', 'device_event', 'device_online', 'info', 'Temperature sensor connected', NULL, NULL, '{"firmware": "v1.2.3"}'::jsonb),
+    (NOW() - INTERVAL '25 minutes', 'Gateway3', 'fan_01', '00003', 'device_event', 'device_online', 'info', 'Fan controller connected', NULL, NULL, '{"firmware": "v1.2.1"}'::jsonb),
+    (NOW() - INTERVAL '1 hour', 'Gateway3', 'temp_01', '00003', 'alert', 'temperature_threshold', 'warning', 'High temperature detected', 31.5, 30.0, '{"auto_generated": true}'::jsonb);
+
+INSERT INTO command_logs (time, command_id, source, device_id, gateway_id, user_id, command_type, status, params, completed_at, result, metadata)
+VALUES
+    (
+        NOW() - INTERVAL '4 hours',
+        'cmd_' || substr(md5(random()::text), 1, 8),
+        'client',
+        'passkey_01',
+        'Gateway2',
+        '00002',
+        'remote_unlock',
+        'completed',
+        '{"duration": 5000}'::jsonb,
+        NOW() - INTERVAL '4 hours' + INTERVAL '2 seconds',
+        '{"success": true}'::jsonb,
+        '{"source_ip": "192.168.1.100"}'::jsonb
+    ),
+    (
+        NOW() - INTERVAL '2 days',
+        'cmd_' || substr(md5(random()::text), 1, 8),
+        'client',
+        'fan_01',
+        'Gateway3',
+        '00003',
+        'set_fan',
+        'completed',
+        '{"state": "on"}'::jsonb,
+        NOW() - INTERVAL '2 days' + INTERVAL '1 second',
+        '{"success": true}'::jsonb,
+        '{"source_ip": "192.168.1.101"}'::jsonb
+    );
+
+INSERT INTO access_logs (time, device_id, gateway_id, user_id, method, result, password_id, rfid_uid, deny_reason, metadata)
+SELECT 
+    NOW() - (interval '1 day' * (random() * 30)::int) - (interval '1 hour' * (random() * 24)::int),
+    CASE WHEN random() < 0.5 THEN 'rfid_gate_01' ELSE 'passkey_01' END AS device_id,
+    CASE WHEN random() < 0.5 THEN 'Gateway1' ELSE 'Gateway2' END AS gateway_id,
+    CASE WHEN random() < 0.5 THEN '00001' ELSE '00002' END AS user_id,
+    CASE WHEN random() < 0.5 THEN 'rfid' ELSE 'passkey' END AS method,
+    CASE WHEN random() > 0.2 THEN 'granted' ELSE 'denied' END AS result,
+    CASE 
+        WHEN random() < 0.5 AND random() > 0.2 THEN 'passwd_00002_001' 
+        ELSE NULL 
+    END AS password_id,
+    CASE 
+        WHEN random() >= 0.5 AND random() > 0.2 THEN '8675F205' 
+        ELSE CASE WHEN random() <= 0.2 THEN 'UNKNOWN' ELSE NULL END 
+    END AS rfid_uid,
+    CASE 
+        WHEN random() > 0.2 THEN NULL 
+        ELSE CASE WHEN random() < 0.5 THEN 'unknown_card' ELSE 'invalid_password' END 
+    END AS deny_reason,
+    jsonb_build_object(
+        'source', CASE WHEN random() < 0.5 THEN 'rfid_reader' ELSE 'keypad' END,
+        'attempts', (random() * 3)::int + 1
+    ) AS metadata
+FROM generate_series(1, 100) AS series;
+
+INSERT INTO system_logs (time, gateway_id, device_id, user_id, log_type, event, severity, message, value, threshold, metadata)
+SELECT 
+    NOW() - (interval '1 day' * (random() * 30)::int) - (interval '1 hour' * (random() * 24)::int),
+    CASE 
+        WHEN random() < 0.33 THEN 'Gateway1' 
+        WHEN random() < 0.66 THEN 'Gateway2' 
+        ELSE 'Gateway3' 
+    END AS gateway_id,
+    CASE 
+        WHEN random() < 0.25 THEN 'rfid_gate_01' 
+        WHEN random() < 0.5 THEN 'passkey_01' 
+        WHEN random() < 0.75 THEN 'temp_01' 
+        ELSE 'fan_01' 
+    END AS device_id,
+    CASE 
+        WHEN random() < 0.33 THEN '00001' 
+        WHEN random() < 0.66 THEN '00002' 
+        ELSE '00003' 
+    END AS user_id,
+    CASE 
+        WHEN random() < 0.4 THEN 'system_event' 
+        WHEN random() < 0.7 THEN 'device_event' 
+        WHEN random() < 0.9 THEN 'alert' 
+        ELSE 'error' 
+    END AS log_type,
+    CASE 
+        WHEN random() < 0.4 THEN 'gateway_online' 
+        WHEN random() < 0.6 THEN 'device_online' 
+        WHEN random() < 0.8 THEN 'device_offline' 
+        WHEN random() < 0.9 THEN 'temperature_threshold' 
+        ELSE 'connection_error' 
+    END AS event,
+    CASE 
+        WHEN random() < 0.5 THEN 'info' 
+        WHEN random() < 0.8 THEN 'warning' 
+        WHEN random() < 0.95 THEN 'error' 
+        ELSE 'critical' 
+    END AS severity,
+    CASE 
+        WHEN random() < 0.4 THEN 'Gateway online event detected' 
+        WHEN random() < 0.6 THEN 'Device connected successfully' 
+        WHEN random() < 0.8 THEN 'Device went offline' 
+        WHEN random() < 0.9 THEN 'High temperature detected' 
+        ELSE 'Connection to device lost' 
+    END AS message,
+    CASE 
+        WHEN random() < 0.9 THEN NULL 
+        ELSE 25.0 + (random() * 10) 
+    END AS value,
+    CASE 
+        WHEN random() < 0.9 THEN NULL 
+        ELSE 30.0 
+    END AS threshold,
+    jsonb_build_object(
+        'firmware', 'v1.' || (random() * 2)::int || '.' || (random() * 5)::int,
+        'uptime', (random() * 86400)::int
+    ) AS metadata
+FROM generate_series(1, 100) AS series;
+
+INSERT INTO command_logs (time, command_id, source, device_id, gateway_id, user_id, command_type, status, params, completed_at, result, metadata)
+SELECT 
+    NOW() - (interval '1 day' * (random() * 30)::int) - (interval '1 hour' * (random() * 24)::int),
+    'cmd_' || substr(md5(random()::text), 1, 8) AS command_id,
+    CASE 
+        WHEN random() < 0.7 THEN 'client' 
+        WHEN random() < 0.9 THEN 'api' 
+        ELSE 'gateway_auto' 
+    END AS source,
+    CASE 
+        WHEN random() < 0.4 THEN 'rfid_gate_01' 
+        WHEN random() < 0.7 THEN 'passkey_01' 
+        ELSE 'fan_01' 
+    END AS device_id,
+    CASE 
+        WHEN random() < 0.4 THEN 'Gateway1' 
+        WHEN random() < 0.7 THEN 'Gateway2' 
+        ELSE 'Gateway3' 
+    END AS gateway_id,
+    CASE 
+        WHEN random() < 0.4 THEN '00001' 
+        WHEN random() < 0.7 THEN '00002' 
+        ELSE '00003' 
+    END AS user_id,
+    CASE 
+        WHEN random() < 0.4 THEN 'remote_unlock' 
+        WHEN random() < 0.6 THEN 'lock' 
+        WHEN random() < 0.8 THEN 'set_fan' 
+        ELSE 'set_auto' 
+    END AS command_type,
+    CASE 
+        WHEN random() < 0.8 THEN 'completed' 
+        WHEN random() < 0.9 THEN 'failed' 
+        ELSE 'executing' 
+    END AS status,
+    CASE 
+        WHEN random() < 0.4 THEN jsonb_build_object('duration', (random() * 10000)::int) 
+        WHEN random() < 0.8 THEN jsonb_build_object('state', CASE WHEN random() < 0.5 THEN 'on' ELSE 'off' END) 
+        ELSE jsonb_build_object('mode', 'auto') 
+    END AS params,
+    CASE 
+        WHEN random() < 0.9 THEN NOW() - (interval '1 day' * (random() * 30)::int) + INTERVAL '2 seconds' 
+        ELSE NULL 
+    END AS completed_at,
+    CASE 
+        WHEN random() < 0.8 THEN jsonb_build_object('success', true) 
+        WHEN random() < 0.9 THEN jsonb_build_object('success', false, 'error', 'timeout') 
+        ELSE NULL 
+    END AS result,
+    jsonb_build_object(
+        'source_ip', '192.168.1.' || (100 + (random() * 50)::int)::text
+    ) AS metadata
+FROM generate_series(1, 100) AS series;
+
+-- ============================================================================
+-- SCHEMA UPDATES FOR IMPROVED STATUS TRACKING
+-- ============================================================================
+
+-- Add timestamp validation constraint to prevent future timestamps
+ALTER TABLE devices 
+ADD CONSTRAINT check_last_seen_not_future 
+CHECK (last_seen IS NULL OR last_seen <= NOW() + INTERVAL '1 minute');
+
+ALTER TABLE gateways 
+ADD CONSTRAINT check_gateway_last_seen_not_future 
+CHECK (last_seen IS NULL OR last_seen <= NOW() + INTERVAL '1 minute');
+
+-- Create function to automatically mark devices offline when gateway goes offline
+CREATE OR REPLACE FUNCTION cascade_gateway_offline()
+RETURNS TRIGGER AS $$
+BEGIN
+    IF NEW.status = 'offline' AND OLD.status = 'online' THEN
+        UPDATE devices
+        SET status = 'offline',
+            updated_at = NOW()
+        WHERE gateway_id = NEW.gateway_id
+          AND status = 'online';
+        
+        INSERT INTO system_logs (time, gateway_id, user_id, log_type, event, severity, message, metadata)
+        VALUES (
+            NOW(),
+            NEW.gateway_id,
+            NEW.user_id,
+            'system_event',
+            'gateway_offline_cascade',
+            'warning',
+            format('Gateway %s went offline, cascaded to %s devices', NEW.gateway_id, 
+                   (SELECT COUNT(*) FROM devices WHERE gateway_id = NEW.gateway_id)),
+            jsonb_build_object(
+                'gateway_id', NEW.gateway_id,
+                'old_status', OLD.status,
+                'new_status', NEW.status,
+                'last_seen', OLD.last_seen
+            )
+        );
+    END IF;
+    
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+-- Create trigger for cascade offline
+DROP TRIGGER IF EXISTS trigger_gateway_offline_cascade ON gateways;
+CREATE TRIGGER trigger_gateway_offline_cascade
+    AFTER UPDATE OF status ON gateways
+    FOR EACH ROW
+    EXECUTE FUNCTION cascade_gateway_offline();
+
+-- Create function to log device status changes
+CREATE OR REPLACE FUNCTION log_device_status_change()
+RETURNS TRIGGER AS $$
+BEGIN
+    IF NEW.status != OLD.status THEN
+        INSERT INTO system_logs (time, gateway_id, device_id, user_id, log_type, event, severity, message, metadata)
+        VALUES (
+            NOW(),
+            NEW.gateway_id,
+            NEW.device_id,
+            NEW.user_id,
+            'device_event',
+            'device_status_change',
+            CASE 
+                WHEN NEW.status = 'offline' THEN 'warning'
+                ELSE 'info'
+            END,
+            format('Device %s status changed from %s to %s', NEW.device_id, OLD.status, NEW.status),
+            jsonb_build_object(
+                'device_id', NEW.device_id,
+                'device_type', NEW.device_type,
+                'old_status', OLD.status,
+                'new_status', NEW.status,
+                'old_last_seen', OLD.last_seen,
+                'new_last_seen', NEW.last_seen
+            )
+        );
+    END IF;
+    
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+-- Create trigger for device status change logging
+DROP TRIGGER IF EXISTS trigger_log_device_status_change ON devices;
+CREATE TRIGGER trigger_log_device_status_change
+    AFTER UPDATE OF status ON devices
+    FOR EACH ROW
+    EXECUTE FUNCTION log_device_status_change();
+
+-- Create materialized view for real-time device health monitoring
+CREATE MATERIALIZED VIEW IF NOT EXISTS device_health_summary AS
+SELECT 
+    d.user_id,
+    COUNT(*) as total_devices,
+    COUNT(*) FILTER (WHERE d.status = 'online') as online_devices,
+    COUNT(*) FILTER (WHERE d.status = 'offline') as offline_devices,
+    COUNT(*) FILTER (WHERE d.last_seen IS NULL) as never_seen_devices,
+    COUNT(*) FILTER (WHERE d.last_seen > NOW() - INTERVAL '1 minute') as active_last_minute,
+    COUNT(*) FILTER (WHERE d.last_seen > NOW() - INTERVAL '5 minutes') as active_last_5min,
+    COUNT(*) FILTER (WHERE d.last_seen > NOW() - INTERVAL '30 minutes') as active_last_30min,
+    MAX(d.last_seen) as most_recent_activity,
+    MIN(d.last_seen) as least_recent_activity
+FROM devices d
+GROUP BY d.user_id;
+
+-- Create index for faster refresh
+CREATE UNIQUE INDEX IF NOT EXISTS idx_device_health_summary_user 
+ON device_health_summary(user_id);
+
+-- Create function to refresh materialized view
+CREATE OR REPLACE FUNCTION refresh_device_health_summary()
+RETURNS void AS $$
+BEGIN
+    REFRESH MATERIALIZED VIEW CONCURRENTLY device_health_summary;
+END;
+$$ LANGUAGE plpgsql;
+
+-- Create view for gateway connection quality
+CREATE OR REPLACE VIEW gateway_connection_quality AS
+SELECT 
+    g.gateway_id,
+    g.user_id,
+    g.name,
+    g.status,
+    g.last_seen,
+    EXTRACT(EPOCH FROM (NOW() - g.last_seen)) as seconds_since_last_seen,
+    CASE 
+        WHEN g.status = 'offline' THEN 'offline'
+        WHEN g.last_seen IS NULL THEN 'unknown'
+        WHEN g.last_seen > NOW() - INTERVAL '1 minute' THEN 'excellent'
+        WHEN g.last_seen > NOW() - INTERVAL '2 minutes' THEN 'good'
+        WHEN g.last_seen > NOW() - INTERVAL '5 minutes' THEN 'fair'
+        ELSE 'poor'
+    END as connection_quality,
+    (
+        SELECT COUNT(*) 
+        FROM devices d 
+        WHERE d.gateway_id = g.gateway_id AND d.status = 'online'
+    ) as online_devices_count,
+    (
+        SELECT COUNT(*) 
+        FROM devices d 
+        WHERE d.gateway_id = g.gateway_id
+    ) as total_devices_count
+FROM gateways g;
+
+-- Create view for devices requiring attention
+CREATE OR REPLACE VIEW devices_requiring_attention AS
+SELECT 
+    d.device_id,
+    d.gateway_id,
+    d.user_id,
+    d.device_type,
+    d.location,
+    d.status,
+    d.last_seen,
+    EXTRACT(EPOCH FROM (NOW() - d.last_seen))/60 as minutes_since_last_seen,
+    CASE 
+        WHEN d.status = 'offline' AND d.last_seen > NOW() - INTERVAL '5 minutes' THEN 'recently_offline'
+        WHEN d.status = 'offline' AND d.last_seen > NOW() - INTERVAL '1 hour' THEN 'offline_short_term'
+        WHEN d.status = 'offline' THEN 'offline_long_term'
+        WHEN d.status = 'online' AND d.last_seen < NOW() - INTERVAL '2 minutes' THEN 'stale_online'
+        ELSE 'ok'
+    END as attention_reason,
+    g.status as gateway_status,
+    g.name as gateway_name
+FROM devices d
+JOIN gateways g ON d.gateway_id = g.gateway_id
+WHERE 
+    (d.status = 'offline')
+    OR (d.status = 'online' AND d.last_seen < NOW() - INTERVAL '2 minutes')
+ORDER BY d.last_seen ASC NULLS FIRST;
+
+-- Add comments for documentation
+COMMENT ON FUNCTION cascade_gateway_offline() IS 'Automatically marks all devices under a gateway as offline when the gateway goes offline';
+COMMENT ON FUNCTION log_device_status_change() IS 'Logs all device status changes to system_logs for audit trail';
+COMMENT ON VIEW gateway_connection_quality IS 'Provides real-time assessment of gateway connection quality based on heartbeat recency';
+COMMENT ON VIEW devices_requiring_attention IS 'Identifies devices that may need attention due to offline status or stale heartbeats';
+COMMENT ON MATERIALIZED VIEW device_health_summary IS 'Aggregated device health statistics per user, refresh periodically for performance';
+
+-- Create indexes for performance optimization
+CREATE INDEX IF NOT EXISTS idx_devices_status_last_seen 
+ON devices(status, last_seen DESC) 
+WHERE status = 'online';
+
+CREATE INDEX IF NOT EXISTS idx_gateways_status_last_seen 
+ON gateways(status, last_seen DESC) 
+WHERE status = 'online';
+
+CREATE INDEX IF NOT EXISTS idx_system_logs_device_status 
+ON system_logs(device_id, time DESC) 
+WHERE event IN ('device_status_change', 'device_offline', 'device_online');
+
+-- Grant necessary permissions
+GRANT SELECT ON device_health_summary TO iot;
+GRANT SELECT ON gateway_connection_quality TO iot;
+GRANT SELECT ON devices_requiring_attention TO iot;
+GRANT EXECUTE ON FUNCTION refresh_device_health_summary() TO iot;
+
+-- Log schema update completion
+DO $$
+BEGIN
+    INSERT INTO system_logs (time, log_type, event, severity, message, metadata)
+    VALUES (
+        NOW(),
+        'system_event',
+        'schema_update_applied',
+        'info',
+        'Enhanced status tracking schema updates applied successfully',
+        jsonb_build_object(
+            'update_version', '2.0',
+            'update_date', NOW(),
+            'features', ARRAY[
+                'cascade_gateway_offline',
+                'device_status_logging',
+                'health_monitoring_views',
+                'connection_quality_tracking'
+            ]
+        )
+    );
+END $$;
+
+SELECT 'Optimized schema created successfully!' AS status;

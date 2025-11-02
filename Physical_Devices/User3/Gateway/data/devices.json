@@ -1,0 +1,26 @@
+{
+  "passwords": {},
+  "rfid_cards": {},
+  "devices": {
+    "fan_01": {
+      "device_type": "fan controller",
+      "location": "Room",
+      "communication": "Wifi",
+      "status": "offline",
+      "registered_at": "2025-10-31T13:33:44.518020+07:00",
+      "last_seen": "2025-10-31T13:31:44.518020+07:00",
+      "metadata": null,
+      "updated_at": "2025-10-31T13:33:44.518020+07:00"
+    },
+    "temp_01": {
+      "device_type": "temperature sensor",
+      "location": "Room",
+      "communication": "Wifi",
+      "status": "offline",
+      "registered_at": "2025-10-31T13:33:44.515108+07:00",
+      "last_seen": "2025-10-31T13:31:44.515108+07:00",
+      "metadata": null,
+      "updated_at": "2025-10-31T13:33:44.515108+07:00"
+    }
+  }
+}

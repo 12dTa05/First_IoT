@@ -1,0 +1,127 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: timescale/timescaledb:latest-pg16
+    container_name: iot-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: iot_db
+      POSTGRES_USER: iot
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      PGDATA: /var/lib/postgresql/data/pgdata
+      TZ: Asia/Ho_Chi_Minh
+    command: >
+      postgres -c timezone=Asia/Ho_Chi_Minh -c log_timezone=Asia/Ho_Chi_Minh
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./schema.sql:/docker-entrypoint-initdb.d/schema.sql
+    ports:
+      - "5432:5432"
+    networks:
+      - iot-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U iot -d iot_db"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  mosquitto:
+    image: eclipse-mosquitto:2
+    container_name: iot-mosquitto
+    restart: unless-stopped
+    volumes:
+      - ./mosquitto/config:/mosquitto/config
+      - ./mosquitto/acl:/mosquitto/acl
+      - ./mosquitto/data:/mosquitto/data
+      - ./mosquitto/log:/mosquitto/log
+      - ./mosquitto/passwd:/mosquitto/passwd
+      - ./mosquitto/certs:/mosquitto/certs
+    ports:
+      - "1883:1883"
+      - "8883:8883"
+    networks:
+      - iot-network
+    # healthcheck:
+    #   test: ["CMD", ""]
+    #   interval: 30s
+    #   timeout: 10s
+    #   retries: 3
+
+  api:
+    build:
+      context: ./api
+      dockerfile: Dockerfile
+    container_name: iot-api-python
+    restart: unless-stopped
+    environment:
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_NAME: iot_db
+      DB_USER: iot
+      DB_PASSWORD: ${DB_PASSWORD}
+      MQTT_HOST: mosquitto
+      MQTT_PORT: 1883
+      API_PORT: 3000
+      JWT_SECRET: ${JWT_SECRET}
+      LOG_LEVEL: info
+    ports:
+      - "3000:3000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      # mosquitto:
+      #   condition: service_healthy
+    networks:
+      - iot-network
+    volumes:
+      - ./api/logs:/app/logs
+    # healthcheck:
+    #   test: ["CMD", "curl", "-f", "http://localhost:3000/health"]
+    #   interval: 30s
+    #   timeout: 10s
+    #   retries: 3
+    #   start_period: 10s
+
+  adminer:
+    image: adminer:latest
+    container_name: iot-adminer
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:8080:8080"
+    environment:
+      ADMINER_DEFAULT_SERVER: postgres
+    depends_on:
+      - postgres
+    networks:
+      - iot-network
+
+  nginx:
+    image: nginx:alpine
+    container_name: iot-nginx
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./nginx/ssl:/etc/nginx/ssl:ro
+      - ./nginx/logs:/var/log/nginx
+    # depends_on:
+    #   api:
+    #     condition: service_healthy
+    networks:
+      - iot-network
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+networks:
+  iot-network:
+    driver: bridge
+
+volumes:
+  postgres_data:
+    name: iot_postgres_data

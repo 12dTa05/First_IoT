@@ -1,0 +1,469 @@
+2025-10-27 13:48:55,142 - gateway2 - INFO - ============================================================
+2025-10-27 13:48:55,142 - gateway2 - INFO -  Starting Gateway 2 (User 2 - Passkey via MQTT)
+2025-10-27 13:48:55,143 - gateway2 - INFO - ============================================================
+2025-10-27 13:48:55,143 - gateway2 - INFO -  Connecting to Local Broker...
+2025-10-27 13:49:00,238 - gateway2 - ERROR -  Failed to connect to Local Broker: timed out
+2025-10-27 13:49:02,241 - gateway2 - INFO -  Connecting to VPS Broker...
+2025-10-27 13:49:02,546 - gateway2 - INFO -  Connected to VPS Broker
+2025-10-27 13:49:02,614 - gateway2 - INFO -  VPS Broker Connected
+2025-10-27 13:49:02,614 - gateway2 - INFO -  Subscribed to: gateway/Gateway2/command/#
+2025-10-27 13:49:02,614 - gateway2 - INFO -  Published to VPS: gateway/Gateway2/status/gateway
+2025-10-27 13:49:04,551 - gateway2 - INFO - ============================================================
+2025-10-27 13:49:04,551 - gateway2 - INFO -  Published to VPS: gateway/Gateway2/status/gateway
+2025-10-27 13:49:04,551 - gateway2 - INFO -  Gateway 2 Running Successfully
+2025-10-27 13:49:04,551 - gateway2 - INFO -  Heartbeat sent
+2025-10-27 13:49:04,551 - gateway2 - INFO -  Local: Connected to 192.168.1.205
+2025-10-27 13:49:04,551 - gateway2 - INFO -   VPS: Connected to 159.223.63.61
+2025-10-27 13:49:04,551 - gateway2 - INFO - ============================================================
+2025-10-27 13:50:04,558 - gateway2 - INFO -  Published to VPS: gateway/Gateway2/status/gateway
+2025-10-27 13:50:04,558 - gateway2 - INFO -  Heartbeat sent
+2025-10-27 13:51:04,565 - gateway2 - INFO -  Published to VPS: gateway/Gateway2/status/gateway
+2025-10-27 13:51:04,565 - gateway2 - INFO -  Heartbeat sent
+2025-10-27 13:52:04,568 - gateway2 - INFO -  Published to VPS: gateway/Gateway2/status/gateway
+2025-10-27 13:52:04,568 - gateway2 - INFO -  Heartbeat sent
+2025-10-27 13:53:04,584 - gateway2 - INFO -  Published to VPS: gateway/Gateway2/status/gateway
+2025-10-27 13:53:04,584 - gateway2 - INFO -  Heartbeat sent
+2025-10-27 13:54:04,599 - gateway2 - INFO -  Published to VPS: gateway/Gateway2/status/gateway
+2025-10-27 13:54:04,599 - gateway2 - INFO -  Heartbeat sent
+2025-10-27 13:55:04,610 - gateway2 - INFO -  Published to VPS: gateway/Gateway2/status/gateway
+2025-10-27 13:55:04,610 - gateway2 - INFO -  Heartbeat sent
+2025-10-27 13:56:04,621 - gateway2 - INFO -  Published to VPS: gateway/Gateway2/status/gateway
+2025-10-27 13:56:04,621 - gateway2 - INFO -  Heartbeat sent
+2025-10-27 13:57:04,626 - gateway2 - INFO -  Published to VPS: gateway/Gateway2/status/gateway
+2025-10-27 13:57:04,626 - gateway2 - INFO -  Heartbeat sent
+2025-10-27 13:58:04,643 - gateway2 - INFO -  Published to VPS: gateway/Gateway2/status/gateway
+2025-10-27 13:58:04,643 - gateway2 - INFO -  Heartbeat sent
+2025-10-27 13:59:04,658 - gateway2 - INFO -  Published to VPS: gateway/Gateway2/status/gateway
+2025-10-27 13:59:04,658 - gateway2 - INFO -  Heartbeat sent
+2025-10-27 14:00:04,675 - gateway2 - INFO -  Published to VPS: gateway/Gateway2/status/gateway
+2025-10-27 14:00:04,675 - gateway2 - INFO -  Heartbeat sent
+2025-10-27 14:00:28,687 - gateway2 - INFO -  Shutting down Gateway 2...
+2025-10-27 14:00:28,994 - gateway2 - INFO -  Gateway 2 stopped
+2025-10-27 14:00:31,571 - gateway2 - INFO - ============================================================
+2025-10-27 14:00:31,571 - gateway2 - INFO -  Starting Gateway 2 (User 2 - Passkey via MQTT)
+2025-10-27 14:00:31,571 - gateway2 - INFO - ============================================================
+2025-10-27 14:00:31,576 - gateway2 - INFO -  Connecting to Local Broker...
+2025-10-27 14:00:31,654 - gateway2 - ERROR -  Failed to connect to Local Broker: [SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: IP address mismatch, certificate is not valid for '192.168.1.209'. (_ssl.c:1017)
+2025-10-27 14:00:33,665 - gateway2 - INFO -  Connecting to VPS Broker...
+2025-10-27 14:00:33,970 - gateway2 - INFO -  Connected to VPS Broker
+2025-10-27 14:00:34,028 - gateway2 - INFO -  VPS Broker Connected
+2025-10-27 14:00:34,028 - gateway2 - INFO -  Subscribed to: gateway/Gateway2/command/#
+2025-10-27 14:00:34,028 - gateway2 - INFO -  Published to VPS: gateway/Gateway2/status/gateway
+2025-10-27 14:00:35,973 - gateway2 - INFO - ============================================================
+2025-10-27 14:00:35,973 - gateway2 - INFO -  Published to VPS: gateway/Gateway2/status/gateway
+2025-10-27 14:00:35,974 - gateway2 - INFO -  Gateway 2 Running Successfully
+2025-10-27 14:00:35,974 - gateway2 - INFO -  Heartbeat sent
+2025-10-27 14:00:35,974 - gateway2 - INFO -  Local: Connected to 192.168.1.209
+2025-10-27 14:00:35,974 - gateway2 - INFO -   VPS: Connected to 159.223.63.61
+2025-10-27 14:00:35,974 - gateway2 - INFO - ============================================================
+2025-10-27 14:01:06,128 - gateway2 - INFO -  Shutting down Gateway 2...
+2025-10-27 14:01:06,291 - gateway2 - INFO -  Gateway 2 stopped
+2025-10-27 14:01:10,735 - gateway2 - INFO - ============================================================
+2025-10-27 14:01:10,735 - gateway2 - INFO -  Starting Gateway 2 (User 2 - Passkey via MQTT)
+2025-10-27 14:01:10,735 - gateway2 - INFO - ============================================================
+2025-10-27 14:01:10,735 - gateway2 - INFO -  Connecting to Local Broker...
+2025-10-27 14:01:10,771 - gateway2 - ERROR -  Failed to connect to Local Broker: [SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: IP address mismatch, certificate is not valid for '192.168.1.209'. (_ssl.c:1017)
+2025-10-27 14:01:12,773 - gateway2 - INFO -  Connecting to VPS Broker...
+2025-10-27 14:01:13,013 - gateway2 - INFO -  Connected to VPS Broker
+2025-10-27 14:01:13,106 - gateway2 - INFO -  VPS Broker Connected
+2025-10-27 14:01:13,107 - gateway2 - INFO -  Subscribed to: gateway/Gateway2/command/#
+2025-10-27 14:01:13,108 - gateway2 - INFO -  Published to VPS: gateway/Gateway2/status/gateway
+2025-10-27 14:01:15,019 - gateway2 - INFO - ============================================================
+2025-10-27 14:01:15,019 - gateway2 - INFO -  Published to VPS: gateway/Gateway2/status/gateway
+2025-10-27 14:01:15,020 - gateway2 - INFO -  Gateway 2 Running Successfully
+2025-10-27 14:01:15,020 - gateway2 - INFO -  Heartbeat sent
+2025-10-27 14:01:15,020 - gateway2 - INFO -  Local: Connected to 192.168.1.209
+2025-10-27 14:01:15,021 - gateway2 - INFO -   VPS: Connected to 159.223.63.61
+2025-10-27 14:01:15,021 - gateway2 - INFO - ============================================================
+2025-10-27 14:02:15,027 - gateway2 - INFO -  Published to VPS: gateway/Gateway2/status/gateway
+2025-10-27 14:02:15,027 - gateway2 - INFO -  Heartbeat sent
+2025-10-27 14:03:15,037 - gateway2 - INFO -  Published to VPS: gateway/Gateway2/status/gateway
+2025-10-27 14:03:15,038 - gateway2 - INFO -  Heartbeat sent
+2025-10-27 14:04:15,051 - gateway2 - INFO -  Published to VPS: gateway/Gateway2/status/gateway
+2025-10-27 14:04:15,052 - gateway2 - INFO -  Heartbeat sent
+2025-10-27 14:05:15,066 - gateway2 - INFO -  Published to VPS: gateway/Gateway2/status/gateway
+2025-10-27 14:05:15,066 - gateway2 - INFO -  Heartbeat sent
+2025-10-27 14:06:15,078 - gateway2 - INFO -  Published to VPS: gateway/Gateway2/status/gateway
+2025-10-27 14:06:15,079 - gateway2 - INFO -  Heartbeat sent
+2025-10-27 14:07:09,400 - gateway2 - INFO -  Shutting down Gateway 2...
+2025-10-27 14:07:09,617 - gateway2 - INFO -  Gateway 2 stopped
+2025-10-27 14:07:10,663 - gateway2 - INFO - ============================================================
+2025-10-27 14:07:10,663 - gateway2 - INFO -  Starting Gateway 2 (User 2 - Passkey via MQTT)
+2025-10-27 14:07:10,663 - gateway2 - INFO - ============================================================
+2025-10-27 14:07:10,664 - gateway2 - INFO -  Connecting to Local Broker...
+2025-10-27 14:07:10,674 - gateway2 - ERROR -  Failed to connect to Local Broker: [SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: IP address mismatch, certificate is not valid for '192.168.1.209'. (_ssl.c:1017)
+2025-10-27 14:07:12,686 - gateway2 - INFO -  Connecting to VPS Broker...
+2025-10-27 14:07:12,929 - gateway2 - INFO -  Connected to VPS Broker
+2025-10-27 14:07:12,995 - gateway2 - INFO -  VPS Broker Connected
+2025-10-27 14:07:12,996 - gateway2 - INFO -  Subscribed to: gateway/Gateway2/command/#
+2025-10-27 14:07:12,996 - gateway2 - INFO -  Published to VPS: gateway/Gateway2/status/gateway
+2025-10-27 14:07:14,931 - gateway2 - INFO - ============================================================
+2025-10-27 14:07:14,931 - gateway2 - INFO -  Published to VPS: gateway/Gateway2/status/gateway
+2025-10-27 14:07:14,932 - gateway2 - INFO -  Gateway 2 Running Successfully
+2025-10-27 14:07:14,932 - gateway2 - INFO -  Heartbeat sent
+2025-10-27 14:07:14,932 - gateway2 - INFO -  Local: Connected to 192.168.1.209
+2025-10-27 14:07:14,932 - gateway2 - INFO -   VPS: Connected to 159.223.63.61
+2025-10-27 14:07:14,933 - gateway2 - INFO - ============================================================
+2025-10-27 14:07:33,780 - gateway2 - INFO -  Shutting down Gateway 2...
+2025-10-27 14:07:38,194 - gateway2 - INFO - ============================================================
+2025-10-27 14:07:38,195 - gateway2 - INFO -  Starting Gateway 2 (User 2 - Passkey via MQTT)
+2025-10-27 14:07:38,195 - gateway2 - INFO - ============================================================
+2025-10-27 14:07:38,195 - gateway2 - INFO -  Connecting to Local Broker...
+2025-10-27 14:07:38,206 - gateway2 - ERROR -  Failed to connect to Local Broker: [SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: IP address mismatch, certificate is not valid for '192.168.1.209'. (_ssl.c:1017)
+2025-10-27 14:07:40,220 - gateway2 - INFO -  Connecting to VPS Broker...
+2025-10-27 14:07:40,479 - gateway2 - INFO -  Connected to VPS Broker
+2025-10-27 14:07:40,547 - gateway2 - INFO -  VPS Broker Connected
+2025-10-27 14:07:40,548 - gateway2 - INFO -  Subscribed to: gateway/Gateway2/command/#
+2025-10-27 14:07:40,548 - gateway2 - INFO -  Published to VPS: gateway/Gateway2/status/gateway
+2025-10-27 14:07:42,491 - gateway2 - INFO - ============================================================
+2025-10-27 14:07:42,491 - gateway2 - INFO -  Published to VPS: gateway/Gateway2/status/gateway
+2025-10-27 14:07:42,491 - gateway2 - INFO -  Gateway 2 Running Successfully
+2025-10-27 14:07:42,492 - gateway2 - INFO -  Heartbeat sent
+2025-10-27 14:07:42,492 - gateway2 - INFO -  Local: Connected to 192.168.1.209
+2025-10-27 14:07:42,492 - gateway2 - INFO -   VPS: Connected to 159.223.63.61
+2025-10-27 14:07:42,493 - gateway2 - INFO - ============================================================
+2025-10-27 14:08:42,506 - gateway2 - INFO -  Published to VPS: gateway/Gateway2/status/gateway
+2025-10-27 14:08:42,508 - gateway2 - INFO -  Heartbeat sent
+2025-10-27 14:09:42,524 - gateway2 - INFO -  Published to VPS: gateway/Gateway2/status/gateway
+2025-10-27 14:09:42,525 - gateway2 - INFO -  Heartbeat sent
+2025-10-27 14:10:42,539 - gateway2 - INFO -  Published to VPS: gateway/Gateway2/status/gateway
+2025-10-27 14:10:42,541 - gateway2 - INFO -  Heartbeat sent
+2025-10-27 14:10:55,764 - gateway2 - WARNING -  VPS Broker Disconnected
+2025-10-27 14:11:03,168 - gateway2 - INFO -  VPS Broker Connected
+2025-10-27 14:11:03,168 - gateway2 - INFO -  Subscribed to: gateway/Gateway2/command/#
+2025-10-27 14:11:03,169 - gateway2 - INFO -  Published to VPS: gateway/Gateway2/status/gateway
+2025-10-27 14:11:29,480 - gateway2 - INFO -  Shutting down Gateway 2...
+2025-10-27 14:11:29,566 - gateway2 - INFO -  Gateway 2 stopped
+2025-10-27 14:11:32,197 - gateway2 - INFO - ============================================================
+2025-10-27 14:11:32,197 - gateway2 - INFO -  Starting Gateway 2 (User 2 - Passkey via MQTT)
+2025-10-27 14:11:32,198 - gateway2 - INFO - ============================================================
+2025-10-27 14:11:32,198 - gateway2 - INFO -  Connecting to Local Broker...
+2025-10-27 14:11:46,438 - gateway2 - INFO - ============================================================
+2025-10-27 14:11:46,440 - gateway2 - INFO -  Starting Gateway 2 (User 2 - Passkey via MQTT)
+2025-10-27 14:11:46,440 - gateway2 - INFO - ============================================================
+2025-10-27 14:11:46,441 - gateway2 - INFO -  Connecting to Local Broker...
+2025-10-27 14:11:46,453 - gateway2 - INFO -  Connected to Local Broker
+2025-10-27 14:11:46,453 - gateway2 - INFO -  Local Broker Connected
+2025-10-27 14:11:46,454 - gateway2 - INFO -  Subscribed to: home/devices/passkey_01/request
+2025-10-27 14:11:46,454 - gateway2 - INFO -  Subscribed to: home/devices/passkey_01/status
+2025-10-27 14:11:48,459 - gateway2 - INFO -  Connecting to VPS Broker...
+2025-10-27 14:11:48,714 - gateway2 - INFO -  Connected to VPS Broker
+2025-10-27 14:11:48,785 - gateway2 - INFO -  VPS Broker Connected
+2025-10-27 14:11:48,785 - gateway2 - INFO -  Subscribed to: gateway/Gateway2/command/#
+2025-10-27 14:11:48,786 - gateway2 - INFO -  Published to VPS: gateway/Gateway2/status/gateway
+2025-10-27 14:11:50,718 - gateway2 - INFO - ============================================================
+2025-10-27 14:11:50,718 - gateway2 - INFO -  Published to VPS: gateway/Gateway2/status/gateway
+2025-10-27 14:11:50,719 - gateway2 - INFO -  Gateway 2 Running Successfully
+2025-10-27 14:11:50,719 - gateway2 - INFO -  Heartbeat sent
+2025-10-27 14:11:50,719 - gateway2 - INFO -  Local: Connected to 192.168.1.205
+2025-10-27 14:11:50,720 - gateway2 - INFO -   VPS: Connected to 159.223.63.61
+2025-10-27 14:11:50,720 - gateway2 - INFO - ============================================================
+2025-10-27 14:12:50,727 - gateway2 - INFO -  Published to VPS: gateway/Gateway2/status/gateway
+2025-10-27 14:12:50,728 - gateway2 - INFO -  Heartbeat sent
+2025-10-27 14:13:50,743 - gateway2 - INFO -  Published to VPS: gateway/Gateway2/status/gateway
+2025-10-27 14:13:50,744 - gateway2 - INFO -  Heartbeat sent
+2025-10-27 14:14:50,748 - gateway2 - INFO -  Published to VPS: gateway/Gateway2/status/gateway
+2025-10-27 14:14:50,749 - gateway2 - INFO -  Heartbeat sent
+2025-10-27 14:15:50,759 - gateway2 - INFO -  Published to VPS: gateway/Gateway2/status/gateway
+2025-10-27 14:15:50,760 - gateway2 - INFO -  Heartbeat sent
+2025-10-27 14:16:50,766 - gateway2 - INFO -  Published to VPS: gateway/Gateway2/status/gateway
+2025-10-27 14:16:50,767 - gateway2 - INFO -  Heartbeat sent
+2025-10-27 14:17:15,861 - gateway2 - WARNING -  VPS Broker Disconnected
+2025-10-27 14:17:24,054 - gateway2 - INFO -  VPS Broker Connected
+2025-10-27 14:17:24,055 - gateway2 - INFO -  Subscribed to: gateway/Gateway2/command/#
+2025-10-27 14:17:24,056 - gateway2 - INFO -  Published to VPS: gateway/Gateway2/status/gateway
+2025-10-27 14:17:50,778 - gateway2 - INFO -  Published to VPS: gateway/Gateway2/status/gateway
+2025-10-27 14:17:50,780 - gateway2 - INFO -  Heartbeat sent
+2025-10-27 14:17:50,854 - gateway2 - WARNING -  VPS Broker Disconnected
+2025-10-27 14:17:52,194 - gateway2 - INFO -  VPS Broker Connected
+2025-10-27 14:17:52,195 - gateway2 - INFO -  Subscribed to: gateway/Gateway2/command/#
+2025-10-27 14:17:52,195 - gateway2 - INFO -  Published to VPS: gateway/Gateway2/status/gateway
+2025-10-27 14:18:50,784 - gateway2 - INFO -  Published to VPS: gateway/Gateway2/status/gateway
+2025-10-27 14:18:50,784 - gateway2 - INFO -  Heartbeat sent
+2025-10-27 14:19:50,796 - gateway2 - INFO -  Published to VPS: gateway/Gateway2/status/gateway
+2025-10-27 14:19:50,797 - gateway2 - INFO -  Heartbeat sent
+2025-10-27 14:20:50,797 - gateway2 - INFO -  Published to VPS: gateway/Gateway2/status/gateway
+2025-10-27 14:20:50,798 - gateway2 - INFO -  Heartbeat sent
+2025-10-27 14:21:36,739 - gateway2 - WARNING -  VPS Broker Disconnected
+2025-10-27 14:21:49,726 - gateway2 - INFO -  VPS Broker Connected
+2025-10-27 14:21:49,727 - gateway2 - INFO -  Subscribed to: gateway/Gateway2/command/#
+2025-10-27 14:21:49,728 - gateway2 - INFO -  Published to VPS: gateway/Gateway2/status/gateway
+2025-10-27 14:21:50,804 - gateway2 - INFO -  Published to VPS: gateway/Gateway2/status/gateway
+2025-10-27 14:21:50,805 - gateway2 - INFO -  Heartbeat sent
+2025-10-27 14:22:49,461 - gateway2 - WARNING -  VPS Broker Disconnected
+2025-10-27 14:22:50,809 - gateway2 - INFO -  VPS Broker Connected
+2025-10-27 14:22:50,810 - gateway2 - INFO -  Subscribed to: gateway/Gateway2/command/#
+2025-10-27 14:22:50,810 - gateway2 - INFO -  Published to VPS: gateway/Gateway2/status/gateway
+2025-10-27 14:22:50,821 - gateway2 - INFO -  Published to VPS: gateway/Gateway2/status/gateway
+2025-10-27 14:22:50,822 - gateway2 - INFO -  Heartbeat sent
+2025-10-27 14:23:50,823 - gateway2 - INFO -  Published to VPS: gateway/Gateway2/status/gateway
+2025-10-27 14:23:50,824 - gateway2 - INFO -  Heartbeat sent
+2025-10-27 14:24:50,832 - gateway2 - INFO -  Published to VPS: gateway/Gateway2/status/gateway
+2025-10-27 14:24:50,832 - gateway2 - INFO -  Heartbeat sent
+2025-10-27 14:25:50,839 - gateway2 - INFO -  Published to VPS: gateway/Gateway2/status/gateway
+2025-10-27 14:25:50,840 - gateway2 - INFO -  Heartbeat sent
+2025-10-27 14:26:50,850 - gateway2 - INFO -  Published to VPS: gateway/Gateway2/status/gateway
+2025-10-27 14:26:50,851 - gateway2 - INFO -  Heartbeat sent
+2025-10-27 14:27:50,863 - gateway2 - INFO -  Published to VPS: gateway/Gateway2/status/gateway
+2025-10-27 14:27:50,863 - gateway2 - INFO -  Heartbeat sent
+2025-10-27 14:28:50,866 - gateway2 - INFO -  Published to VPS: gateway/Gateway2/status/gateway
+2025-10-27 14:28:50,867 - gateway2 - INFO -  Heartbeat sent
+2025-10-27 14:29:50,868 - gateway2 - INFO -  Published to VPS: gateway/Gateway2/status/gateway
+2025-10-27 14:29:50,869 - gateway2 - INFO -  Heartbeat sent
+2025-10-27 14:30:50,878 - gateway2 - INFO -  Published to VPS: gateway/Gateway2/status/gateway
+2025-10-27 14:30:50,879 - gateway2 - INFO -  Heartbeat sent
+2025-10-27 14:31:50,884 - gateway2 - INFO -  Published to VPS: gateway/Gateway2/status/gateway
+2025-10-27 14:31:50,885 - gateway2 - INFO -  Heartbeat sent
+2025-10-27 14:32:50,887 - gateway2 - INFO -  Published to VPS: gateway/Gateway2/status/gateway
+2025-10-27 14:32:50,888 - gateway2 - INFO -  Heartbeat sent
+2025-10-27 14:33:50,904 - gateway2 - INFO -  Published to VPS: gateway/Gateway2/status/gateway
+2025-10-27 14:33:50,905 - gateway2 - INFO -  Heartbeat sent
+2025-10-27 14:34:50,910 - gateway2 - INFO -  Published to VPS: gateway/Gateway2/status/gateway
+2025-10-27 14:34:50,911 - gateway2 - INFO -  Heartbeat sent
+2025-10-27 14:35:50,913 - gateway2 - INFO -  Published to VPS: gateway/Gateway2/status/gateway
+2025-10-27 14:35:50,913 - gateway2 - INFO -  Heartbeat sent
+2025-10-27 14:36:50,925 - gateway2 - INFO -  Published to VPS: gateway/Gateway2/status/gateway
+2025-10-27 14:36:50,926 - gateway2 - INFO -  Heartbeat sent
+2025-10-27 14:37:50,938 - gateway2 - INFO -  Published to VPS: gateway/Gateway2/status/gateway
+2025-10-27 14:37:50,938 - gateway2 - INFO -  Heartbeat sent
+2025-10-27 14:38:30,959 - gateway2 - WARNING -  VPS Broker Disconnected
+2025-10-27 14:38:38,519 - gateway2 - INFO -  VPS Broker Connected
+2025-10-27 14:38:38,519 - gateway2 - INFO -  Subscribed to: gateway/Gateway2/command/#
+2025-10-27 14:38:38,519 - gateway2 - INFO -  Published to VPS: gateway/Gateway2/status/gateway
+2025-10-27 14:38:50,945 - gateway2 - INFO -  Published to VPS: gateway/Gateway2/status/gateway
+2025-10-27 14:38:50,945 - gateway2 - INFO -  Heartbeat sent
+2025-10-27 14:38:51,029 - gateway2 - WARNING -  VPS Broker Disconnected
+2025-10-27 14:38:52,359 - gateway2 - INFO -  VPS Broker Connected
+2025-10-27 14:38:52,359 - gateway2 - INFO -  Subscribed to: gateway/Gateway2/command/#
+2025-10-27 14:38:52,359 - gateway2 - INFO -  Published to VPS: gateway/Gateway2/status/gateway
+2025-10-27 14:39:50,956 - gateway2 - INFO -  Published to VPS: gateway/Gateway2/status/gateway
+2025-10-27 14:39:50,957 - gateway2 - INFO -  Heartbeat sent
+2025-10-27 14:40:38,746 - gateway2 - INFO -  Shutting down Gateway 2...
+2025-10-27 14:40:39,534 - gateway2 - INFO -  Gateway 2 stopped
+2025-10-27 14:40:43,442 - gateway2 - INFO - ============================================================
+2025-10-27 14:40:43,442 - gateway2 - INFO -  Starting Gateway 2 (User 2 - Passkey via MQTT)
+2025-10-27 14:40:43,442 - gateway2 - INFO - ============================================================
+2025-10-27 14:40:43,442 - gateway2 - INFO -  Connecting to Local Broker...
+2025-10-27 14:40:43,456 - gateway2 - INFO -  Connected to Local Broker
+2025-10-27 14:40:43,456 - gateway2 - INFO -  Local Broker Connected
+2025-10-27 14:40:43,456 - gateway2 - INFO -  Subscribed to: home/devices/passkey_01/request
+2025-10-27 14:40:43,457 - gateway2 - INFO -  Subscribed to: home/devices/passkey_01/status
+2025-10-27 14:40:45,465 - gateway2 - INFO -  Connecting to VPS Broker...
+2025-10-27 14:40:45,738 - gateway2 - INFO -  Connected to VPS Broker
+2025-10-27 14:40:45,802 - gateway2 - INFO -  VPS Broker Connected
+2025-10-27 14:40:45,802 - gateway2 - INFO -  Subscribed to: gateway/Gateway2/command/#
+2025-10-27 14:40:45,802 - gateway2 - INFO -  Published to VPS: gateway/Gateway2/status/gateway
+2025-10-27 14:40:47,754 - gateway2 - INFO - ============================================================
+2025-10-27 14:40:47,754 - gateway2 - INFO -  Published to VPS: gateway/Gateway2/status/gateway
+2025-10-27 14:40:47,754 - gateway2 - INFO -  Gateway 2 Running Successfully
+2025-10-27 14:40:47,754 - gateway2 - INFO -  Heartbeat sent
+2025-10-27 14:40:47,754 - gateway2 - INFO -  Local: Connected to 192.168.1.205
+2025-10-27 14:40:47,756 - gateway2 - INFO -   VPS: Connected to 159.223.63.61
+2025-10-27 14:40:47,756 - gateway2 - INFO - ============================================================
+2025-10-27 14:41:47,764 - gateway2 - INFO -  Published to VPS: gateway/Gateway2/status/gateway
+2025-10-27 14:41:47,765 - gateway2 - INFO -  Heartbeat sent
+2025-10-27 14:42:47,772 - gateway2 - INFO -  Published to VPS: gateway/Gateway2/status/gateway
+2025-10-27 14:42:47,773 - gateway2 - INFO -  Heartbeat sent
+2025-10-27 14:43:47,783 - gateway2 - INFO -  Published to VPS: gateway/Gateway2/status/gateway
+2025-10-27 14:43:47,783 - gateway2 - INFO -  Heartbeat sent
+2025-10-27 14:44:47,797 - gateway2 - INFO -  Published to VPS: gateway/Gateway2/status/gateway
+2025-10-27 14:44:47,798 - gateway2 - INFO -  Heartbeat sent
+2025-10-27 14:45:47,802 - gateway2 - INFO -  Published to VPS: gateway/Gateway2/status/gateway
+2025-10-27 14:45:47,802 - gateway2 - INFO -  Heartbeat sent
+2025-10-27 14:46:47,813 - gateway2 - INFO -  Published to VPS: gateway/Gateway2/status/gateway
+2025-10-27 14:46:47,813 - gateway2 - INFO -  Heartbeat sent
+2025-10-27 14:47:47,828 - gateway2 - INFO -  Published to VPS: gateway/Gateway2/status/gateway
+2025-10-27 14:47:47,829 - gateway2 - INFO -  Heartbeat sent
+2025-10-27 14:48:47,836 - gateway2 - INFO -  Published to VPS: gateway/Gateway2/status/gateway
+2025-10-27 14:48:47,836 - gateway2 - INFO -  Heartbeat sent
+2025-10-27 14:49:47,843 - gateway2 - INFO -  Published to VPS: gateway/Gateway2/status/gateway
+2025-10-27 14:49:47,844 - gateway2 - INFO -  Heartbeat sent
+2025-10-27 14:50:47,849 - gateway2 - INFO -  Published to VPS: gateway/Gateway2/status/gateway
+2025-10-27 14:50:47,850 - gateway2 - INFO -  Heartbeat sent
+2025-10-27 14:51:47,863 - gateway2 - INFO -  Published to VPS: gateway/Gateway2/status/gateway
+2025-10-27 14:51:47,864 - gateway2 - INFO -  Heartbeat sent
+2025-10-27 14:52:47,874 - gateway2 - INFO -  Published to VPS: gateway/Gateway2/status/gateway
+2025-10-27 14:52:47,875 - gateway2 - INFO -  Heartbeat sent
+2025-10-27 14:53:47,880 - gateway2 - INFO -  Published to VPS: gateway/Gateway2/status/gateway
+2025-10-27 14:53:47,881 - gateway2 - INFO -  Heartbeat sent
+2025-10-27 14:54:47,888 - gateway2 - INFO -  Published to VPS: gateway/Gateway2/status/gateway
+2025-10-27 14:54:47,889 - gateway2 - INFO -  Heartbeat sent
+2025-10-27 14:55:47,903 - gateway2 - INFO -  Published to VPS: gateway/Gateway2/status/gateway
+2025-10-27 14:55:47,904 - gateway2 - INFO -  Heartbeat sent
+2025-10-27 14:56:47,909 - gateway2 - INFO -  Published to VPS: gateway/Gateway2/status/gateway
+2025-10-27 14:56:47,910 - gateway2 - INFO -  Heartbeat sent
+2025-10-27 14:57:47,928 - gateway2 - INFO -  Published to VPS: gateway/Gateway2/status/gateway
+2025-10-27 14:57:47,929 - gateway2 - INFO -  Heartbeat sent
+2025-10-27 14:58:47,943 - gateway2 - INFO -  Published to VPS: gateway/Gateway2/status/gateway
+2025-10-27 14:58:47,944 - gateway2 - INFO -  Heartbeat sent
+2025-10-27 14:59:47,946 - gateway2 - INFO -  Published to VPS: gateway/Gateway2/status/gateway
+2025-10-27 14:59:47,947 - gateway2 - INFO -  Heartbeat sent
+2025-10-27 15:00:47,952 - gateway2 - INFO -  Published to VPS: gateway/Gateway2/status/gateway
+2025-10-27 15:00:47,952 - gateway2 - INFO -  Heartbeat sent
+2025-10-27 15:01:47,956 - gateway2 - INFO -  Published to VPS: gateway/Gateway2/status/gateway
+2025-10-27 15:01:47,956 - gateway2 - INFO -  Heartbeat sent
+2025-10-27 15:02:42,556 - gateway2 - WARNING -  VPS Broker Disconnected
+2025-10-27 15:02:47,974 - gateway2 - WARNING -  VPS not connected, message buffered locally
+2025-10-27 15:02:47,974 - gateway2 - INFO -  Heartbeat sent
+2025-10-27 15:02:54,658 - gateway2 - INFO -  VPS Broker Connected
+2025-10-27 15:02:54,658 - gateway2 - INFO -  Subscribed to: gateway/Gateway2/command/#
+2025-10-27 15:02:54,658 - gateway2 - INFO -  Published to VPS: gateway/Gateway2/status/gateway
+2025-10-27 15:03:47,988 - gateway2 - INFO -  Published to VPS: gateway/Gateway2/status/gateway
+2025-10-27 15:03:47,988 - gateway2 - INFO -  Heartbeat sent
+2025-10-27 15:04:47,998 - gateway2 - INFO -  Published to VPS: gateway/Gateway2/status/gateway
+2025-10-27 15:04:47,999 - gateway2 - INFO -  Heartbeat sent
+2025-10-27 15:05:48,014 - gateway2 - INFO -  Published to VPS: gateway/Gateway2/status/gateway
+2025-10-27 15:05:48,014 - gateway2 - INFO -  Heartbeat sent
+2025-10-27 15:06:48,020 - gateway2 - INFO -  Published to VPS: gateway/Gateway2/status/gateway
+2025-10-27 15:06:48,021 - gateway2 - INFO -  Heartbeat sent
+2025-10-27 15:07:48,032 - gateway2 - INFO -  Published to VPS: gateway/Gateway2/status/gateway
+2025-10-27 15:07:48,032 - gateway2 - INFO -  Heartbeat sent
+2025-10-27 15:08:48,034 - gateway2 - INFO -  Published to VPS: gateway/Gateway2/status/gateway
+2025-10-27 15:08:48,035 - gateway2 - INFO -  Heartbeat sent
+2025-10-27 15:09:48,036 - gateway2 - INFO -  Published to VPS: gateway/Gateway2/status/gateway
+2025-10-27 15:09:48,036 - gateway2 - INFO -  Heartbeat sent
+2025-10-27 15:10:48,039 - gateway2 - INFO -  Published to VPS: gateway/Gateway2/status/gateway
+2025-10-27 15:10:48,040 - gateway2 - INFO -  Heartbeat sent
+2025-10-27 15:11:48,049 - gateway2 - INFO -  Published to VPS: gateway/Gateway2/status/gateway
+2025-10-27 15:11:48,050 - gateway2 - INFO -  Heartbeat sent
+2025-10-27 15:12:48,062 - gateway2 - INFO -  Published to VPS: gateway/Gateway2/status/gateway
+2025-10-27 15:12:48,063 - gateway2 - INFO -  Heartbeat sent
+2025-10-27 15:13:48,068 - gateway2 - INFO -  Published to VPS: gateway/Gateway2/status/gateway
+2025-10-27 15:13:48,069 - gateway2 - INFO -  Heartbeat sent
+2025-10-27 15:14:48,076 - gateway2 - INFO -  Published to VPS: gateway/Gateway2/status/gateway
+2025-10-27 15:14:48,077 - gateway2 - INFO -  Heartbeat sent
+2025-10-27 15:15:48,085 - gateway2 - INFO -  Published to VPS: gateway/Gateway2/status/gateway
+2025-10-27 15:15:48,086 - gateway2 - INFO -  Heartbeat sent
+2025-10-27 15:16:21,996 - gateway2 - INFO -  Shutting down Gateway 2...
+2025-10-27 15:16:22,592 - gateway2 - INFO -  Gateway 2 stopped
+2025-10-27 15:42:28,468 - gateway2 - INFO - ============================================================
+2025-10-27 15:42:28,473 - gateway2 - INFO -  Starting Gateway 2 (User 2 - Passkey via MQTT)
+2025-10-27 15:42:28,473 - gateway2 - INFO - ============================================================
+2025-10-27 15:42:28,473 - gateway2 - INFO -  Connecting to Local Broker...
+2025-10-27 15:42:28,504 - gateway2 - INFO -  Connected to Local Broker
+2025-10-27 15:42:28,504 - gateway2 - INFO -  Local Broker Connected
+2025-10-27 15:42:28,504 - gateway2 - INFO -  Subscribed to: home/devices/passkey_01/request
+2025-10-27 15:42:28,504 - gateway2 - INFO -  Subscribed to: home/devices/passkey_01/status
+2025-10-27 15:42:30,508 - gateway2 - INFO -  Connecting to VPS Broker...
+2025-10-27 15:42:30,768 - gateway2 - INFO -  Connected to VPS Broker
+2025-10-27 15:42:30,848 - gateway2 - INFO -  VPS Broker Connected
+2025-10-27 15:42:30,848 - gateway2 - INFO -  Subscribed to: gateway/Gateway2/command/#
+2025-10-27 15:42:30,848 - gateway2 - INFO -  Published to VPS: gateway/Gateway2/status/gateway
+2025-10-27 15:42:32,772 - gateway2 - INFO - ============================================================
+2025-10-27 15:42:32,772 - gateway2 - INFO -  Published to VPS: gateway/Gateway2/status/gateway
+2025-10-27 15:42:32,772 - gateway2 - INFO -  Gateway 2 Running Successfully
+2025-10-27 15:42:32,772 - gateway2 - INFO -  Heartbeat sent
+2025-10-27 15:42:32,772 - gateway2 - INFO -  Local: Connected to 192.168.1.205
+2025-10-27 15:42:32,775 - gateway2 - INFO -   VPS: Connected to 159.223.63.61
+2025-10-27 15:42:32,775 - gateway2 - INFO - ============================================================
+2025-10-27 15:43:32,782 - gateway2 - INFO -  Published to VPS: gateway/Gateway2/status/gateway
+2025-10-27 15:43:32,782 - gateway2 - INFO -  Heartbeat sent
+2025-10-27 15:44:32,791 - gateway2 - INFO -  Published to VPS: gateway/Gateway2/status/gateway
+2025-10-27 15:44:32,792 - gateway2 - INFO -  Heartbeat sent
+2025-10-27 15:45:32,806 - gateway2 - INFO -  Published to VPS: gateway/Gateway2/status/gateway
+2025-10-27 15:45:32,807 - gateway2 - INFO -  Heartbeat sent
+2025-10-27 15:46:32,808 - gateway2 - INFO -  Published to VPS: gateway/Gateway2/status/gateway
+2025-10-27 15:46:32,808 - gateway2 - INFO -  Heartbeat sent
+2025-10-27 15:47:32,818 - gateway2 - INFO -  Published to VPS: gateway/Gateway2/status/gateway
+2025-10-27 15:47:32,818 - gateway2 - INFO -  Heartbeat sent
+2025-10-27 15:48:32,831 - gateway2 - INFO -  Published to VPS: gateway/Gateway2/status/gateway
+2025-10-27 15:48:32,832 - gateway2 - INFO -  Heartbeat sent
+2025-10-27 15:49:32,835 - gateway2 - INFO -  Published to VPS: gateway/Gateway2/status/gateway
+2025-10-27 15:49:32,835 - gateway2 - INFO -  Heartbeat sent
+2025-10-27 15:50:32,842 - gateway2 - INFO -  Published to VPS: gateway/Gateway2/status/gateway
+2025-10-27 15:50:32,843 - gateway2 - INFO -  Heartbeat sent
+2025-10-27 15:51:32,856 - gateway2 - INFO -  Published to VPS: gateway/Gateway2/status/gateway
+2025-10-27 15:51:32,856 - gateway2 - INFO -  Heartbeat sent
+2025-10-27 15:52:32,860 - gateway2 - INFO -  Published to VPS: gateway/Gateway2/status/gateway
+2025-10-27 15:52:32,860 - gateway2 - INFO -  Heartbeat sent
+2025-10-27 15:52:55,276 - gateway2 - WARNING -  VPS Broker Disconnected
+2025-10-27 15:53:32,869 - gateway2 - WARNING -  VPS not connected, message buffered locally
+2025-10-27 15:53:32,869 - gateway2 - INFO -  Heartbeat sent
+2025-10-27 15:54:10,927 - gateway2 - INFO -  VPS Broker Connected
+2025-10-27 15:54:10,928 - gateway2 - INFO -  Subscribed to: gateway/Gateway2/command/#
+2025-10-27 15:54:10,928 - gateway2 - INFO -  Published to VPS: gateway/Gateway2/status/gateway
+2025-10-27 15:54:32,881 - gateway2 - INFO -  Published to VPS: gateway/Gateway2/status/gateway
+2025-10-27 15:54:32,882 - gateway2 - INFO -  Heartbeat sent
+2025-10-27 15:55:32,891 - gateway2 - INFO -  Published to VPS: gateway/Gateway2/status/gateway
+2025-10-27 15:55:32,892 - gateway2 - INFO -  Heartbeat sent
+2025-10-27 15:56:32,901 - gateway2 - INFO -  Published to VPS: gateway/Gateway2/status/gateway
+2025-10-27 15:56:32,901 - gateway2 - INFO -  Heartbeat sent
+2025-10-27 15:57:32,910 - gateway2 - INFO -  Published to VPS: gateway/Gateway2/status/gateway
+2025-10-27 15:57:32,911 - gateway2 - INFO -  Heartbeat sent
+2025-10-27 15:58:06,605 - gateway2 - WARNING -  VPS Broker Disconnected
+2025-10-27 15:58:08,531 - gateway2 - INFO -  VPS Broker Connected
+2025-10-27 15:58:08,532 - gateway2 - INFO -  Subscribed to: gateway/Gateway2/command/#
+2025-10-27 15:58:08,532 - gateway2 - INFO -  Published to VPS: gateway/Gateway2/status/gateway
+2025-10-27 15:58:32,917 - gateway2 - INFO -  Published to VPS: gateway/Gateway2/status/gateway
+2025-10-27 15:58:32,917 - gateway2 - INFO -  Heartbeat sent
+2025-10-27 15:58:32,996 - gateway2 - WARNING -  VPS Broker Disconnected
+2025-10-27 15:58:34,339 - gateway2 - INFO -  VPS Broker Connected
+2025-10-27 15:58:34,339 - gateway2 - INFO -  Subscribed to: gateway/Gateway2/command/#
+2025-10-27 15:58:34,345 - gateway2 - INFO -  Published to VPS: gateway/Gateway2/status/gateway
+2025-10-27 15:59:32,931 - gateway2 - INFO -  Published to VPS: gateway/Gateway2/status/gateway
+2025-10-27 15:59:32,931 - gateway2 - INFO -  Heartbeat sent
+2025-10-27 16:00:32,934 - gateway2 - INFO -  Published to VPS: gateway/Gateway2/status/gateway
+2025-10-27 16:00:32,935 - gateway2 - INFO -  Heartbeat sent
+2025-10-27 16:00:48,328 - gateway2 - WARNING -  VPS Broker Disconnected
+2025-10-27 16:00:56,347 - gateway2 - INFO -  VPS Broker Connected
+2025-10-27 16:00:56,348 - gateway2 - INFO -  Subscribed to: gateway/Gateway2/command/#
+2025-10-27 16:00:56,348 - gateway2 - INFO -  Published to VPS: gateway/Gateway2/status/gateway
+2025-10-27 16:01:32,950 - gateway2 - INFO -  Published to VPS: gateway/Gateway2/status/gateway
+2025-10-27 16:01:32,951 - gateway2 - INFO -  Heartbeat sent
+2025-10-27 16:01:33,030 - gateway2 - WARNING -  VPS Broker Disconnected
+2025-10-27 16:01:34,388 - gateway2 - INFO -  VPS Broker Connected
+2025-10-27 16:01:34,389 - gateway2 - INFO -  Subscribed to: gateway/Gateway2/command/#
+2025-10-27 16:01:34,390 - gateway2 - INFO -  Published to VPS: gateway/Gateway2/status/gateway
+2025-10-27 16:02:32,956 - gateway2 - INFO -  Published to VPS: gateway/Gateway2/status/gateway
+2025-10-27 16:02:32,956 - gateway2 - INFO -  Heartbeat sent
+2025-10-27 16:03:32,971 - gateway2 - INFO -  Published to VPS: gateway/Gateway2/status/gateway
+2025-10-27 16:03:32,972 - gateway2 - INFO -  Heartbeat sent
+2025-10-27 16:04:32,979 - gateway2 - INFO -  Published to VPS: gateway/Gateway2/status/gateway
+2025-10-27 16:04:32,980 - gateway2 - INFO -  Heartbeat sent
+2025-10-27 16:05:32,996 - gateway2 - INFO -  Published to VPS: gateway/Gateway2/status/gateway
+2025-10-27 16:05:32,997 - gateway2 - INFO -  Heartbeat sent
+2025-10-27 16:05:55,632 - gateway2 - INFO -  Shutting down Gateway 2...
+2025-10-27 16:05:56,332 - gateway2 - INFO -  Gateway 2 stopped
+2025-10-28 20:20:22,131 - gateway2 - INFO - ============================================================
+2025-10-28 20:20:22,131 - gateway2 - INFO -  Starting Gateway 2 (User 2 - Passkey via MQTT)
+2025-10-28 20:20:22,132 - gateway2 - INFO - ============================================================
+2025-10-28 20:20:22,134 - gateway2 - INFO -  Connecting to Local Broker...
+2025-10-28 20:20:22,148 - gateway2 - INFO -  Connected to Local Broker
+2025-10-28 20:20:22,149 - gateway2 - INFO -  Local Broker Connected
+2025-10-28 20:20:22,149 - gateway2 - INFO -  Subscribed to: home/devices/passkey_01/request
+2025-10-28 20:20:22,149 - gateway2 - INFO -  Subscribed to: home/devices/passkey_01/status
+2025-10-28 20:20:24,152 - gateway2 - INFO -  Connecting to VPS Broker...
+2025-10-28 20:20:24,555 - gateway2 - INFO -  Connected to VPS Broker
+2025-10-28 20:20:24,649 - gateway2 - INFO -  VPS Broker Connected
+2025-10-28 20:20:24,649 - gateway2 - INFO -  Subscribed to: gateway/Gateway2/command/#
+2025-10-28 20:20:24,651 - gateway2 - INFO -  Published to VPS: gateway/Gateway2/status/gateway
+2025-10-28 20:20:26,569 - gateway2 - INFO - ============================================================
+2025-10-28 20:20:26,569 - gateway2 - INFO -  Published to VPS: gateway/Gateway2/status/gateway
+2025-10-28 20:20:26,570 - gateway2 - INFO -  Gateway 2 Running Successfully
+2025-10-28 20:20:26,571 - gateway2 - INFO -  Heartbeat sent
+2025-10-28 20:20:26,571 - gateway2 - INFO -  Local: Connected to 192.168.1.205
+2025-10-28 20:20:26,572 - gateway2 - INFO -   VPS: Connected to 159.223.63.61
+2025-10-28 20:20:26,572 - gateway2 - INFO - ============================================================
+2025-10-28 20:21:26,582 - gateway2 - INFO -  Published to VPS: gateway/Gateway2/status/gateway
+2025-10-28 20:21:26,584 - gateway2 - INFO -  Heartbeat sent
+2025-10-28 20:22:26,599 - gateway2 - INFO -  Published to VPS: gateway/Gateway2/status/gateway
+2025-10-28 20:22:26,599 - gateway2 - INFO -  Heartbeat sent
+2025-10-28 20:23:26,611 - gateway2 - INFO -  Published to VPS: gateway/Gateway2/status/gateway
+2025-10-28 20:23:26,612 - gateway2 - INFO -  Heartbeat sent
+2025-10-28 20:24:26,622 - gateway2 - INFO -  Published to VPS: gateway/Gateway2/status/gateway
+2025-10-28 20:24:26,623 - gateway2 - INFO -  Heartbeat sent
+2025-10-28 20:25:26,629 - gateway2 - INFO -  Published to VPS: gateway/Gateway2/status/gateway
+2025-10-28 20:25:26,630 - gateway2 - INFO -  Heartbeat sent
+2025-10-28 20:26:26,631 - gateway2 - INFO -  Published to VPS: gateway/Gateway2/status/gateway
+2025-10-28 20:26:26,632 - gateway2 - INFO -  Heartbeat sent
+2025-10-28 20:27:26,639 - gateway2 - INFO -  Published to VPS: gateway/Gateway2/status/gateway
+2025-10-28 20:27:26,640 - gateway2 - INFO -  Heartbeat sent
+2025-10-28 20:28:26,649 - gateway2 - INFO -  Published to VPS: gateway/Gateway2/status/gateway
+2025-10-28 20:28:26,650 - gateway2 - INFO -  Heartbeat sent
+2025-10-28 20:29:26,656 - gateway2 - INFO -  Published to VPS: gateway/Gateway2/status/gateway
+2025-10-28 20:29:26,657 - gateway2 - INFO -  Heartbeat sent
+2025-10-28 20:30:26,658 - gateway2 - INFO -  Published to VPS: gateway/Gateway2/status/gateway
+2025-10-28 20:30:26,659 - gateway2 - INFO -  Heartbeat sent
+2025-10-28 20:30:49,189 - gateway2 - INFO -  Shutting down Gateway 2...
+2025-10-28 20:30:49,993 - gateway2 - WARNING -  Local Broker Disconnected
+2025-10-28 20:30:50,086 - gateway2 - INFO -  Gateway 2 stopped
