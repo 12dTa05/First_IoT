@@ -72,17 +72,20 @@ class Database:
             cursor = conn.cursor(cursor_factory=RealDictCursor)
             cursor.execute(query_text, params)
             
-            # Check if query returns data
+            # Fetch results if available
             if cursor.description:
                 result = cursor.fetchall()
             else:
-                conn.commit()
                 result = []
+            
+            # Commit for any non-SELECT query
+            query_upper = query_text.strip().upper()
+            if not query_upper.startswith('SELECT'):
+                conn.commit()
             
             cursor.close()
             
-            # Only log non-SELECT queries or errors
-            if not query_text.strip().upper().startswith('SELECT'):
+            if not query_upper.startswith('SELECT'):
                 logger.debug(f'Query executed: {query_text[:80]}...')
             
             return result

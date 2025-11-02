@@ -89,16 +89,16 @@ class DatabaseManager:
                 if not password_data.get('active', False):
                     return False, 'inactive_password', password_id
                 
-                expires_at = password_data.get('expires_at')
-                if expires_at:
-                    try:
-                        expire_time = datetime.fromisoformat(expires_at.replace('Z', '+00:00'))
-                        if datetime.now(expire_time.tzinfo) > expire_time:
-                            return False, 'expired_password', password_id
-                    except:
-                        pass
+                # expires_at = password_data.get('expires_at')
+                # if expires_at:
+                #     try:
+                #         expire_time = datetime.fromisoformat(expires_at.replace('Z', '+00:00'))
+                #         if datetime.now(expire_time.tzinfo) > expire_time:
+                #             return False, 'expired_password', password_id
+                #     except:
+                #         pass
                 
-                return True, None, password_id
+                # return True, None, password_id
         
         return False, 'invalid_password', None
 
