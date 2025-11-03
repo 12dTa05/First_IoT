@@ -56,6 +56,7 @@ export interface DashboardOverview {
     total_devices: number;
     online_devices: number;
     offline_devices: number;
+    recent_access_count: number;
   };
   gateways: {
     total_gateways: number;

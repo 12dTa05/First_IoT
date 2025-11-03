@@ -127,7 +127,7 @@ export default function DashboardPage() {
             prev
               ? {
                   ...prev,
-                  recent_access_count: (prev.recent_access_count || 0) + 1,
+                  recent_access_count: (prev.devices.recent_access_count || 0) + 1,
                 }
               : prev
           );
