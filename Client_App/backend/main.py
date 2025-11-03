@@ -32,7 +32,7 @@ app = FastAPI(
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=settings.CORS_ORIGINS,
+    allow_origins=['https://orange-doodle-5wx965q4p56cpp6j-3001.app.github.dev'],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],

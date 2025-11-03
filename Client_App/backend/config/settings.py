@@ -20,6 +20,7 @@ class Settings:
     # CORS settings
     FRONTEND_URL = os.getenv('FRONTEND_URL', 'http://localhost:3001')
     CORS_ORIGINS = [
+        'https://orange-doodle-5wx965q4p56cpp6j-3001.app.github.dev',
         'http://localhost:3001',
         'http://127.0.0.1:3001',
         'http://localhost:3000',  # Add if needed
