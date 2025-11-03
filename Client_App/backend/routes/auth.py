@@ -31,9 +31,10 @@ async def get_current_session(session_id: Optional[str] = Cookie(None, alias=set
 
 @router.post('/login')
 async def login(credentials: LoginRequest, response: Response):
+    logger.info(f"Login attempt for user: {credentials.username}")
     try:
         result = await api_client.post(
-            '/api/auth/login',
+            '/auth/login',
             json_data={
                 'username': credentials.username,
                 'password': credentials.password
@@ -65,7 +66,8 @@ async def login(credentials: LoginRequest, response: Response):
             'user': result.get('user')
         }
         
-    except HTTPException:
+    except HTTPException as e:
+        logger.error(f"Login failed from main API: {e.detail}")
         raise
     except Exception as e:
         logger.error(f"Login error: {e}")
