@@ -1,1359 +1,1683 @@
-/* ==== Tabs ==== */
+(() => {
+  let authToken = null;
+  let currentUser = null;
+  let devicesCache = [];
+  let passkeysCache = [];
+  let rfidCardsCache = [];
+  let latestReadings = [];
+  let currentSensorId = null;
+  let temperatureChart = null;
+  let toastTimer = null;
+  const passkeyContext = { deviceId: null, gatewayId: null };
+  let passkeyBuffer = '';
+  let passkeySubmitting = false;
+  const PASSKEY_CODE_LENGTH = 6;
+  const PASSKEY_PLACEHOLDER_CHAR = '·';
+  const PASSKEY_FILLED_CHAR = '•';
+  let editingRfidUid = null;
 
-document.querySelectorAll(".tab").forEach((tab) => {
-  tab.addEventListener("click", (e) => {
-    e.preventDefault();
-    const name = tab.dataset.tab;
+  const elements = {};
 
-    if (name === "logout") {
-      handleLogout();
-      return; // ⛔ Dừng, không chạy tiếp các dòng bên dưới
-    }
-    document
-      .querySelectorAll(".tab")
-      .forEach((t) => t.classList.remove("active"));
-    document
-      .querySelectorAll("section")
-      .forEach((s) => s.classList.remove("active"));
-
-    tab.classList.add("active");
-    document.getElementById("tab-" + name).classList.add("active");
-
-    if (name === "fan") loadFan();
-    else if (name === "notify") loadFeed();
-    else if (name === "rfid") loadRfidDevice();
-    else if (name === "dashboard") {
-      loadTemperatureChart();
-      // loadFanChart();
-    } else if (name === "history") {
-      console.log("[DEBUG] Tab 'Lịch sử vào/ra' được click → loadHistory()");
-      loadHistory();
-    } else if (name === "logout") {
-      handleLogout();
-    }
+  document.addEventListener('DOMContentLoaded', () => {
+    cacheElements();
+    bindEvents();
+    initFromStorage();
+    closeRfidModal(true);
+    closePasskeyModal(true);
+    resetPasskeyState(true);
+    setPasskeyInputsDisabled(true);
+    elements.passkeySection?.classList.add('no-device');
+    setPasskeyStatus('Chưa có thiết bị passkey', 'info');
   });
-});
 
-/* ==== USER ID ==== */
-function getCurrentUserId() {
-  return window.currentUserId || localStorage.getItem("currentUserId") || null;
-}
+  function cacheElements() {
+    elements.toast = document.getElementById('toast');
+    elements.loginModal = document.getElementById('login_modal');
+    elements.loginForm = document.getElementById('login_form');
+    elements.loginHint = document.getElementById('login_hint');
+    elements.loginBtn = document.getElementById('login_btn');
+    elements.loginUser = document.getElementById('login_user');
+    elements.loginPass = document.getElementById('login_pass');
 
-/* ==== Toast ==== */
-function showToast(ok, msg) {
-  const el = document.getElementById("toast");
-  el.classList.remove("show", "ok", "err");
-  el.offsetHeight; // ⚡️force reflow để reset animation
+    elements.appHeader = document.getElementById('app_header');
+    elements.appContent = document.getElementById('app_content');
+    elements.userName = document.getElementById('user_name');
+    elements.logoutBtn = document.getElementById('btn_logout');
 
-  el.classList.add(ok ? "ok" : "err");
-  el.textContent = msg;
+    elements.sensorSelect = document.getElementById('sensor_select');
+    elements.sensorPeriod = document.getElementById('sensor_period');
+    elements.temperatureEmpty = document.getElementById('temperature_empty');
+    elements.temperatureSubtitle = document.getElementById('temperature_subtitle');
+    elements.latestTemp = document.getElementById('latest_temp');
+    elements.latestHumidity = document.getElementById('latest_humidity');
+    elements.latestTime = document.getElementById('latest_time');
 
-  requestAnimationFrame(() => {
-    el.classList.add("show");
-    setTimeout(() => {
-      el.classList.remove("show");
-    }, 1600);
-  });
-}
-/* ==== INIT SAU LOGIN ==== */
+    elements.accessTable = document.getElementById('access_table_body');
+    elements.passkeyTable = document.getElementById('passkey_table_body');
+    elements.rfidTable = document.getElementById('rfid_table_body');
+    elements.devicesTable = document.getElementById('devices_table_body');
 
-async function initAfterLogin(user_id) {
-  console.log("🚀 InitAfterLogin:", user_id);
+    elements.refreshAccess = document.getElementById('refresh_access');
+    elements.refreshPasskey = document.getElementById('refresh_passkey');
+    elements.refreshRfid = document.getElementById('refresh_rfid');
+    elements.refreshDevices = document.getElementById('refresh_devices');
 
-  console.log("[DEBUG] 1 - Fetch thiết bị...");
-  const [fanRes, rfidRes, passRes] = await Promise.all([
-    fetch(`/access/get_device?user_id=${user_id}&device_type=fan controller`),
-    fetch(`/access/get_device?user_id=${user_id}&device_type=rfid_gate`),
-    fetch(`/access/get_device?user_id=${user_id}&device_type=passkey`),
-  ]);
+    elements.addPasskeyBtn = document.getElementById('add_passkey_btn');
+    elements.passkeyModal = document.getElementById('passkey_modal');
+    elements.passkeyForm = document.getElementById('passkey_form');
+    elements.passkeyId = document.getElementById('passkey_id');
+    elements.passkeyOwner = document.getElementById('passkey_owner');
+    elements.passkeyValue = document.getElementById('passkey_value');
+    elements.passkeyDesc = document.getElementById('passkey_desc');
+    elements.passkeyExpire = document.getElementById('passkey_expire');
+    elements.passkeyActive = document.getElementById('passkey_active');
+    elements.passkeyHint = document.getElementById('passkey_hint');
+    elements.passkeyCancel = document.getElementById('passkey_cancel');
+    elements.passkeySubmit = document.getElementById('passkey_submit');
+    elements.passkeyModalTitle = document.getElementById('passkey_modal_title');
+    elements.passkeyDisplay = document.getElementById('passkey_display');
+    elements.passkeyStatus = document.getElementById('passkey_status');
+    elements.passkeyKeypad = document.getElementById('passkey_keypad');
+    elements.passkeyEnterBtn = document.getElementById('passkey_enter_btn');
+    elements.passkeyClearBtn = document.getElementById('passkey_clear');
+    elements.passkeyDeviceLabel = document.getElementById('passkey_device_label');
+    elements.passkeySection = document.querySelector('.passkey-control');
+    elements.passkeyBody = document.querySelector('.passkey-body');
 
-  console.log("[DEBUG] 2 - Parse JSON...");
-  const [fanJs, rfidJs, passJs] = await Promise.all([
-    fanRes.json(),
-    rfidRes.json(),
-    passRes.json(),
-  ]);
+    elements.addRfidBtn = document.getElementById('add_rfid_btn');
+    elements.rfidModal = document.getElementById('rfid_modal');
+    elements.rfidForm = document.getElementById('rfid_form');
+    elements.rfidUid = document.getElementById('rfid_uid');
+    elements.rfidOwner = document.getElementById('rfid_owner');
+    elements.rfidType = document.getElementById('rfid_type');
+    elements.rfidDesc = document.getElementById('rfid_desc');
+    elements.rfidExpire = document.getElementById('rfid_expire');
+    elements.rfidActive = document.getElementById('rfid_active');
+    elements.rfidHint = document.getElementById('rfid_hint');
+    elements.rfidCancel = document.getElementById('rfid_cancel');
+    elements.rfidSubmit = document.getElementById('rfid_submit');
+    elements.rfidModalTitle = document.getElementById('rfid_modal_title');
 
-  console.log("[DEBUG] 3 - Gán biến thiết bị...");
-  if (fanJs.ok && fanJs.found) {
-    window.currentFanDevice = fanJs.device_id;
-    window.currentFanGateway = fanJs.gateway_id;
-    console.log("🌀 Fan:", fanJs.device_id);
-  }
-  if (rfidJs.ok && rfidJs.found) {
-    window.currentRfidDevice = rfidJs.device_id;
-    window.currentRfidGateway = rfidJs.gateway_id;
-    console.log("📡 RFID:", rfidJs.device_id);
-  }
-  if (passJs.ok && passJs.found) {
-    window.currentPassDevice = passJs.device_id;
-    window.currentPassGateway = passJs.gateway_id;
-    console.log("🔑 Passkey:", passJs.device_id);
-  }
-  // 🔹 Load các thành phần
-  try {
-    await Promise.all([loadFan(), loadRfidDevice(), loadPasskeyDevice()]);
-  } catch (e) {
-    console.error("[ERROR] Khi tải thiết bị:", e);
-  }
-
-  try {
-    console.log("[DEBUG] 4 - Gọi loadTemperature...");
-    // await loadTemperature();
-    await loadTemperatureChart();
-  } catch (e) {
-    console.error("[ERROR] loadTemperature:", e);
-  }
-
-  try {
-    console.log("[DEBUG] 5 - Gọi loadHistory...");
-    await loadHistory();
-  } catch (e) {
-    console.error("[ERROR] loadHistory:", e);
-  }
-
-  try {
-    console.log("[DEBUG] 6 - Gọi loadFeed...");
-    await loadFeed();
-  } catch (e) {
-    console.error("[ERROR] loadFeed:", e);
-  }
-}
-
-/* ==== HIỂN THỊ THÔNG BÁO TRẠNG THÁI THIẾT BỊ ==== */
-function showDeviceMessage(msgId, text, type = "error") {
-  const msg = document.getElementById(msgId);
-  if (!msg) {
-    console.warn(`⚠️ Element #${msgId} not found`);
-    return;
-  }
-  msg.textContent = text;
-  msg.style.background =
-    type === "error"
-      ? "rgba(220,0,0,0.85)"
-      : type === "success"
-      ? "rgba(0,150,0,0.85)"
-      : "rgba(0,0,0,0.85)";
-  msg.classList.remove("show");
-  void msg.offsetWidth;
-  msg.classList.add("show");
-}
-
-/* ==== LOGIN ==== */
-let LOGGED_USER = null;
-let USER_ROLE = null;
-
-async function submitLogin() {
-  const username = document.getElementById("login_user").value.trim();
-  const password = document.getElementById("login_pass").value.trim();
-  if (!username || !password) {
-    document.getElementById("login_hint").textContent = "Chưa nhập đầy đủ";
-    return;
+    elements.statDevicesTotal = document.getElementById('stat_devices_total');
+    elements.statDevicesOnline = document.getElementById('stat_devices_online');
+    elements.statGatewaysTotal = document.getElementById('stat_gateways_total');
+    elements.statGatewaysOnline = document.getElementById('stat_gateways_online');
+    elements.statAccessTotal = document.getElementById('stat_access_total');
+    elements.statAccessGranted = document.getElementById('stat_access_granted');
+    elements.statAlertsTotal = document.getElementById('stat_alerts_total');
+    elements.statAlertsDetail = document.getElementById('stat_alerts_detail');
   }
 
-  const rawApiUrl = window.API_URL;
-  const normalizedApiUrl = rawApiUrl ? rawApiUrl.trim().replace(/\/$/, "") : "";
-  const loginEndpoint = normalizedApiUrl
-    ? `${normalizedApiUrl}/api/auth/login`
-    : "/api/auth/login";
-  console.log("[DEBUG] Login endpoint:", loginEndpoint);
-  try {
-    const res = await fetch(loginEndpoint, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ username, password }),
+  function bindEvents() {
+    elements.loginForm.addEventListener('submit', handleLogin);
+    elements.logoutBtn.addEventListener('click', handleLogout);
+
+    elements.sensorSelect.addEventListener('change', () => {
+      currentSensorId = elements.sensorSelect.value || null;
+      const sensors = getSensorCandidates();
+      const selected = sensors.find((s) => s.device_id === currentSensorId);
+      if (selected?.reading) {
+        updateLatestReadingDisplay(selected.reading);
+      } else {
+        updateLatestReadingDisplay(null);
+      }
+      loadTemperatureHistory();
     });
-    const js = await res.json();
-    if (js.token && js.user) {
-      LOGGED_USER = js.user_id;
-      USER_ROLE = js.role;
-      document.getElementById("login_backdrop").classList.remove("show-modal");
-      window.currentUserId = js.user_id;
-      // updateUIByRole();
-      localStorage.setItem("currentUserId", js.user_id);
 
-      showToast(true, `Xin chào ${js.full_name || js.username}`);
-      await initAfterLogin(js.user_id);
-      // Load riêng Passkey và RFID cho UI (song song để không delay)
-      loadPasskeyDevice();
-      loadRfidDevice();
-    } else {
-      document.getElementById("login_hint").textContent =
-        "Sai tài khoản hoặc mật khẩu";
+    elements.sensorPeriod.addEventListener('change', () => {
+      if (!currentSensorId) return;
+      loadTemperatureHistory();
+    });
+
+    elements.refreshAccess.addEventListener('click', () => {
+      loadAccessLogs(true).catch(() => {});
+    });
+    if (elements.refreshPasskey) {
+      elements.refreshPasskey.addEventListener('click', () => {
+        loadPasskeys(true).catch(() => {});
+      });
     }
-  } catch (e) {
-    document.getElementById("login_hint").textContent = "Lỗi mạng";
-  }
-}
+    elements.refreshRfid.addEventListener('click', () => {
+      loadRfidCards(true).catch(() => {});
+    });
+    elements.refreshDevices.addEventListener('click', () => {
+      loadDevices(true).catch(() => {});
+    });
 
-/* ==== LOGOUT ==== */
-function handleLogout() {
-  // localStorage.removeItem("currentUserId");
-  window.location.reload(); // 🔥 reload toàn bộ, reset mọi listener
-}
+    if (elements.addRfidBtn) {
+      elements.addRfidBtn.addEventListener('click', () => openRfidModal());
+    }
+    if (elements.rfidCancel) {
+      elements.rfidCancel.addEventListener('click', () => closeRfidModal());
+    }
+    if (elements.rfidForm) {
+      elements.rfidForm.addEventListener('submit', (event) => {
+        event.preventDefault();
+        submitRfidForm().catch((err) => {
+          showToast('error', err.message || 'Không thể thêm thẻ');
+        });
+      });
+    }
 
-/* ==== KIỂM TRA QUYỀN TRUY CẬP THIẾT BỊ ==== */
+    if (elements.rfidTable) {
+      elements.rfidTable.addEventListener('click', async (event) => {
+        const button = event.target.closest('button[data-action]');
+        if (!button) return;
 
-async function checkDevicePermission(user_id, device_id, section_id) {
-  // 🔹 thêm dòng này để tránh undefined
-  window.userPermissions = window.userPermissions || {};
+        const action = button.dataset.action;
+        const uid = button.dataset.uid;
+        if (!action || !uid) return;
 
-  const cached = window.userPermissions?.[device_id];
-  if (cached === false) {
-    showDeviceMessage(
-      `${section_id}_msg`,
-      "🔒 Bạn không có quyền truy cập thiết bị này",
-      "error"
-    );
-    document
-      .querySelector(`#tab-${section_id}`)
-      .classList.add("device-disabled");
-    return false;
-  }
+        const role = (currentUser?.role || '').toLowerCase();
+        if (role !== 'admin' && role !== 'owner') {
+          showToast('error', 'Bạn không có quyền quản lý thẻ RFID');
+          return;
+        }
 
-  // sau đó mới fetch thật
-  try {
-    const r = await fetch(
-      `/access/check_permission?user_id=${user_id}&device_id=${device_id}`
-    );
-    const js = await r.json();
-    const ok = js.ok && js.granted;
-    window.userPermissions[device_id] = ok;
+        if (action === 'edit') {
+          const card = rfidCardsCache.find((item) => item.uid === uid);
+          if (card) {
+            openRfidModal(card);
+          }
+        } else if (action === 'delete') {
+          if (!confirm(`Bạn chắc muốn xoá thẻ "${uid}"?`)) return;
+          button.disabled = true;
+          try {
+            await deleteRfidCard(uid);
+            showToast('success', 'Đã xoá thẻ RFID');
+            await loadRfidCards();
+          } catch (err) {
+            showToast('error', err.message || 'Không thể xoá thẻ');
+          } finally {
+            button.disabled = false;
+          }
+        }
+      });
+    }
 
-    if (!ok)
-      showDeviceMessage(
-        `${section_id}_msg`,
-        "🔒 Bạn không có quyền truy cập thiết bị này",
-        "error"
-      );
-    return ok;
-  } catch {
-    showDeviceMessage(`${section_id}_msg`, "📡 Lỗi kiểm tra quyền", "error");
-    return false;
-  }
-}
-// /* ==== FAN CONTROL ==== -----------OLD*/
-// function setToggle(on) {
-//   const t = document.getElementById("toggler");
-//   const label = document.getElementById("fan_label");
-//   if (on) {
-//     t.classList.add("on");
-//     label.textContent = "On";
-//   } else {
-//     t.classList.remove("on");
-//     label.textContent = "Off";
-//   }
-// }
+    if (elements.addPasskeyBtn) {
+      elements.addPasskeyBtn.addEventListener('click', () => openPasskeyModal());
+    }
+    if (elements.passkeyCancel) {
+      elements.passkeyCancel.addEventListener('click', () => closePasskeyModal());
+    }
+    if (elements.passkeyForm) {
+      elements.passkeyForm.addEventListener('submit', (event) => {
+        event.preventDefault();
+        submitPasskeyForm().catch((err) => {
+          showToast('error', err.message || 'Không thể lưu passkey');
+        });
+      });
+    }
 
-// // 🔹 Load trạng thái ban đầu của quạt
-// async function loadFan() {
-//   const user_id = getCurrentUserId();
-//   const dev = window.currentFanDevice;
-//   const gw = window.currentFanGateway;
-//   const card = document.querySelector("#tab-fan .card");
+    if (elements.passkeyTable) {
+      elements.passkeyTable.addEventListener('click', async (event) => {
+        const button = event.target.closest('button[data-action]');
+        if (!button) return;
+        const action = button.dataset.action;
+        const passkeyId = button.dataset.passkeyId;
+        if (!action || !passkeyId) return;
 
-//   if (!dev || !gw) {
-//     card.classList.add("device-disabled");
-//     // showFanMessage("🔒 Bạn không có quyền truy cập thiết bị này", "error");
-//     showDeviceMessage("fan_msg", "🔒 Bạn không có quyền truy cập", "error");
-//     return;
-//   }
+        if (action === 'edit') {
+          const passkey = passkeysCache.find((item) => item.id === passkeyId);
+          if (passkey) {
+            openPasskeyModal(passkey);
+          }
+        } else if (action === 'delete') {
+          if (!confirm(`Bạn chắc muốn xoá passkey "${passkeyId}"?`)) return;
+          button.disabled = true;
+          try {
+            await modifyPasskey('delete', { id: passkeyId });
+            showToast('success', 'Đã xoá passkey');
+            await loadPasskeys();
+          } catch (err) {
+            showToast('error', err.message || 'Không thể xoá passkey');
+          } finally {
+            button.disabled = false;
+          }
+        }
+      });
+    }
 
-//   const granted = await checkDevicePermission(user_id, dev);
-//   if (!granted) {
-//     card.classList.add("device-disabled");
-//     // showFanMessage("🔒 Bạn không có quyền truy cập thiết bị này", "error");
-//     showDeviceMessage("fan_msg", "🔒 Bạn không có quyền truy cập", "error");
-//     return;
-//   }
+    if (elements.passkeyKeypad) {
+      elements.passkeyKeypad.addEventListener('click', handlePasskeyKeypadClick);
+    }
+    if (elements.passkeyClearBtn) {
+      elements.passkeyClearBtn.addEventListener('click', () => {
+        resetPasskeyState(true);
+        if (passkeyContext.deviceId) {
+          setPasskeyStatus('Nhập passkey để mở khoá', 'info');
+        }
+      });
+    }
+    if (elements.passkeyEnterBtn) {
+      elements.passkeyEnterBtn.addEventListener('click', () => {
+        submitPasskeyCode();
+      });
+    }
 
-//   try {
-//     const r = await fetch(`/fan/${gw}/${dev}/state`);
-//     const js = await r.json();
-//     if (!r.ok || !js.ok) throw new Error("state load failed");
+    document.addEventListener('keydown', handlePasskeyKeydown);
 
-//     setToggle(js.status === "on");
-//     card.classList.remove("device-disabled");
-//   } catch (err) {
-//     console.error(err);
-//     showDeviceMessage("fan_msg", "📡 Lỗi tải trạng thái quạt", "error");
-//   }
-// }
+    elements.devicesTable.addEventListener('click', async (event) => {
+      const btn = event.target.closest('button[data-action]');
+      if (!btn) return;
 
-// // 🔹 Bật / Tắt quạt
-// async function toggleFan() {
-//   const dev = window.currentFanDevice;
-//   const gateway = window.currentFanGateway;
-//   const user_id = getCurrentUserId();
+      const action = btn.dataset.action;
+      const deviceId = btn.dataset.deviceId;
+      const gatewayId = btn.dataset.gatewayId;
 
-//   if (!user_id) {
-//     showToast(false, "⚠️ Bạn chưa đăng nhập");
-//     return;
-//   }
-//   if (!dev || !gateway) {
-//     showToast(false, "⚙️ Không tìm thấy thiết bị hoặc gateway hiện tại");
-//     return;
-//   }
+      if (!action || !deviceId || !gatewayId) return;
 
-//   const isOn = document.getElementById("toggler").classList.contains("on");
-//   const next = !isOn;
-//   setToggle(next); // cập nhật giao diện trước cho mượt
-
-//   try {
-//     const res = await fetch(`/fan/${gateway}/${dev}/toggle`, {
-//       method: "POST",
-//       headers: { "Content-Type": "application/json" },
-//       body: JSON.stringify({ user_id }),
-//     });
-
-//     const js = await res.json();
-//     if (!js.ok) throw new Error(js.error);
-//     setToggle(js.state === "on");
-//     showToast(true, `💨 Quạt ${dev}: ${js.state.toUpperCase()}`);
-//   } catch (e) {
-//     // Nếu lỗi, revert lại trạng thái
-//     setToggle(isOn);
-//     console.error(e);
-//     showToast(false, "❌ Lỗi gửi lệnh bật/tắt quạt");
-//   }
-// }
-
-// /* ==== FAN CONTROL ==== -----------NEW*/
-// ==== ⚙️ Hàm setToggle giữ nguyên ====
-function setToggle(on) {
-  const t = document.getElementById("toggler");
-  const label = document.getElementById("fan_label");
-  if (on) {
-    t.classList.add("on");
-    label.textContent = "On";
-  } else {
-    t.classList.remove("on");
-    label.textContent = "Off";
-  }
-}
-
-// ==== 📡 Load trạng thái ban đầu của quạt ====
-async function loadFan() {
-  const user_id = getCurrentUserId();
-  const dev = window.currentFanDevice;
-  const gw = window.currentFanGateway;
-  const card = document.querySelector("#tab-fan .card");
-
-  if (!dev || !gw) {
-    card.classList.add("device-disabled");
-    showDeviceMessage("fan_msg", "⚙️ Không tìm thấy thiết bị", "error");
-    return;
-  }
-
-  const granted = await checkDevicePermission(user_id, dev);
-  if (!granted) {
-    card.classList.add("device-disabled");
-    showDeviceMessage("fan_msg", "🔒 Bạn không có quyền truy cập", "error");
-    return;
-  }
-
-  try {
-    // 🟢 Gọi trạng thái từ API server (FastAPI)
-    const res = await fetch(
-      `${window.API_URL}/api/devices/${gw}/${dev}/state`,
-      {
-        headers: { Authorization: `Bearer ${getAuthToken()}` },
+      btn.disabled = true;
+      try {
+        await sendCommand(gatewayId, deviceId, action);
+        showToast('success', 'Đã gửi lệnh tới thiết bị');
+      } catch (err) {
+        showToast('error', err.message || 'Không thể gửi lệnh');
+      } finally {
+        btn.disabled = false;
       }
-    );
-
-    const js = await res.json();
-    if (!js.success) throw new Error(js.detail || "state load failed");
-
-    setToggle(js.data.status === "on");
-    card.classList.remove("device-disabled");
-  } catch (err) {
-    console.error(err);
-    showDeviceMessage("fan_msg", "📡 Lỗi tải trạng thái quạt", "error");
-  }
-}
-
-// ==== 💨 Bật / Tắt quạt (FastAPI) ====
-async function toggleFan() {
-  const dev = window.currentFanDevice;
-  const gateway = window.currentFanGateway;
-
-  if (!dev || !gateway) {
-    showToast(false, "⚙️ Không tìm thấy thiết bị hoặc gateway");
-    return;
+    });
   }
 
-  const isOn = document.getElementById("toggler").classList.contains("on");
-  const next = !isOn;
-  setToggle(next); // cập nhật UI trước cho mượt
-
-  // Xác định command cần gửi
-  const command = next ? "fan_on" : "fan_off";
-
-  try {
-    const res = await fetch(
-      `${window.API_URL}/api/commands/${gateway}/${dev}/${command}`,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${getAuthToken()}`,
-        },
+  async function initFromStorage() {
+    const savedToken = localStorage.getItem('iot_auth_token');
+    if (savedToken) {
+      authToken = savedToken;
+      try {
+        const me = await apiFetch('/api/auth/me');
+        currentUser = me;
+        onLoginSuccess(false);
+        return;
+      } catch (err) {
+        localStorage.removeItem('iot_auth_token');
+        authToken = null;
+        showToast('error', 'Phiên đăng nhập đã hết hạn, vui lòng đăng nhập lại');
       }
-    );
+    }
 
-    const js = await res.json();
-    if (!js.success) throw new Error(js.detail || "Gửi lệnh thất bại");
-
-    // ✅ Cập nhật lại giao diện theo phản hồi thật
-    setToggle(command === "fan_on");
-    showToast(true, `💨 Quạt ${dev}: ${command === "fan_on" ? "ON" : "OFF"}`);
-  } catch (e) {
-    // Nếu lỗi, revert UI
-    setToggle(isOn);
-    console.error(e);
-    showToast(false, "❌ Lỗi gửi lệnh bật/tắt quạt");
+    toggleLoginModal(true);
+    elements.loginUser.focus();
   }
-}
 
-/* ==== TEMPERATURE DASHBOARD ==== */
-let tempChart, fanChart;
+  function toggleLoginModal(show) {
+    elements.loginModal.classList.toggle('show', show);
+    if (show) {
+      elements.loginHint.textContent = '';
+      elements.loginForm.reset();
+      elements.loginUser.focus();
+    }
+  }
 
-let tempChartObj = null;
+  async function handleLogin(event) {
+    event.preventDefault();
+    const username = elements.loginUser.value.trim();
+    const password = elements.loginPass.value.trim();
 
-async function loadTemperatureChart() {
-  const user_id = getCurrentUserId();
-  const tempDev = Object.keys(window.currentDevices || {}).find((k) =>
-    k.toLowerCase().includes("temp")
-  );
+    if (!username || !password) {
+      elements.loginHint.textContent = 'Vui lòng nhập đầy đủ tài khoản và mật khẩu';
+      return;
+    }
 
-  try {
-    const r = await fetch(`/dashboard/temperature?user_id=${user_id}`);
-    const js = await r.json();
-    if (!js.ok) return;
+    setLoginLoading(true);
+    try {
+      const payload = await apiFetch('/api/auth/login', {
+        method: 'POST',
+        body: { username, password },
+        auth: false
+      });
 
-    // 🌤️ Hiển thị thông tin hiện tại
-    const latest = js.latest;
-    document.getElementById("temp_value").textContent =
-      latest.temperature.toFixed(1) + "°C";
-    document.getElementById("hum_value").textContent =
-      latest.humidity.toFixed(1) + "%";
-    document.getElementById("temp_time").textContent =
-      "Lần đo: " + new Date(latest.time).toLocaleString("vi-VN");
-    document.getElementById("location_info").textContent =
-      "Thiết bị: " + js.device_id;
-    document.getElementById("weather_icon").textContent = latest.icon || "🌡️";
+      if (!payload?.token || !payload?.user) {
+        throw new Error('Phản hồi đăng nhập không hợp lệ');
+      }
 
-    // 📊 Chuẩn bị dữ liệu biểu đồ
-    const labels = js.chart.map((p) =>
-      new Date(p.time).toLocaleTimeString("vi-VN", {
-        hour: "2-digit",
-        minute: "2-digit",
+      authToken = payload.token;
+      currentUser = payload.user;
+      localStorage.setItem('iot_auth_token', authToken);
+      onLoginSuccess(true);
+    } catch (err) {
+      elements.loginHint.textContent = err.message || 'Đăng nhập thất bại';
+      showToast('error', elements.loginHint.textContent);
+    } finally {
+      setLoginLoading(false);
+    }
+  }
+
+  function setLoginLoading(loading) {
+    elements.loginBtn.disabled = loading;
+    elements.loginBtn.textContent = loading ? 'Đang đăng nhập...' : 'Đăng nhập';
+  }
+
+  function onLoginSuccess(showGreeting) {
+    toggleLoginModal(false);
+    elements.appHeader.classList.remove('hidden');
+    elements.appContent.classList.remove('hidden');
+
+    const displayName = currentUser.full_name || currentUser.username || currentUser.user_id;
+    elements.userName.textContent = displayName || 'Người dùng';
+
+    updatePasskeyControls();
+    updateRfidControls();
+
+    if (showGreeting) {
+      showToast('success', `Xin chào ${displayName}`);
+    }
+
+    loadAllData().catch((err) => {
+      showToast('error', err.message || 'Không thể tải dữ liệu ban đầu');
+    });
+  }
+
+  async function loadAllData() {
+    setTableMessage(elements.accessTable, 5, 'Đang tải dữ liệu...');
+    if (elements.passkeyTable) {
+      setTableMessage(elements.passkeyTable, 6, 'Đang tải dữ liệu...');
+    }
+    setTableMessage(elements.rfidTable, 5, 'Đang tải dữ liệu...');
+    setTableMessage(elements.devicesTable, 6, 'Đang tải dữ liệu...');
+
+    await Promise.all([
+      loadOverview(),
+      loadPasskeys(false),
+      loadDevices(false),
+      loadAccessLogs(false),
+      loadRfidCards(false)
+    ]);
+  }
+
+  async function loadOverview() {
+    try {
+      const res = await apiFetch('/api/dashboard/overview');
+      const data = res?.data || res || {};
+
+      updateStats(data);
+      updateTemperatureSensors(data.latest_readings || []);
+    } catch (err) {
+      updateStats();
+      updateTemperatureSensors([]);
+      throw err;
+    }
+  }
+
+  function updateStats(data = {}) {
+    const devices = data.devices || {};
+    const gateways = data.gateways || {};
+    const access = data.access || {};
+    const alerts = data.alerts || {};
+
+    elements.statDevicesTotal.textContent = formatNumber(devices.total_devices);
+    elements.statDevicesOnline.textContent = formatNumber(devices.online_devices);
+    elements.statGatewaysTotal.textContent = formatNumber(gateways.total_gateways);
+    elements.statGatewaysOnline.textContent = formatNumber(gateways.online_gateways);
+    elements.statAccessTotal.textContent = formatNumber(access.total_access);
+    elements.statAccessGranted.textContent = formatNumber(access.granted);
+    elements.statAlertsTotal.textContent = formatNumber(alerts.alert_count);
+    elements.statAlertsDetail.textContent =
+      alerts.alert_count > 0 ? 'Cần kiểm tra hệ thống' : 'Không có cảnh báo mới';
+  }
+
+  function updateTemperatureSensors(readings) {
+    latestReadings = Array.isArray(readings) ? readings : [];
+    refreshSensorOptions();
+  }
+
+  function getSensorCandidates() {
+    if (latestReadings.length) {
+      return latestReadings
+        .filter((reading) => reading && reading.device_id)
+        .map((reading) => ({
+          device_id: reading.device_id,
+          label: reading.device_id,
+          reading
+        }));
+    }
+
+    return devicesCache
+      .filter((device) => {
+        const type = String(device.device_type || '').toLowerCase();
+        return (
+          type.includes('temp') ||
+          type.includes('climate') ||
+          type.includes('environment') ||
+          type.includes('sensor')
+        );
       })
-    );
-    const temps = js.chart.map((p) => p.temp);
-    const hums = js.chart.map((p) => p.hum);
+      .map((device) => ({
+        device_id: device.device_id,
+        label: device.device_id || device.device_type || 'Sensor',
+        reading: null
+      }));
+  }
 
-    const ctx = document.getElementById("tempChart").getContext("2d");
-    if (tempChartObj) tempChartObj.destroy();
+  function refreshSensorOptions() {
+    if (!elements.sensorSelect) {
+      return;
+    }
 
-    tempChartObj = new Chart(ctx, {
-      type: "line",
+    const sensors = getSensorCandidates();
+    elements.sensorSelect.innerHTML = '';
+
+    if (!sensors.length) {
+      elements.sensorSelect.disabled = true;
+      currentSensorId = null;
+      updateLatestReadingDisplay(null);
+      destroyTemperatureChart();
+      elements.temperatureEmpty.classList.remove('hidden');
+      return;
+    }
+
+    elements.sensorSelect.disabled = false;
+    elements.temperatureEmpty.classList.add('hidden');
+
+    sensors.forEach((sensor) => {
+      const option = document.createElement('option');
+      option.value = sensor.device_id;
+      option.textContent = sensor.label;
+      elements.sensorSelect.appendChild(option);
+    });
+
+    if (!currentSensorId || !sensors.some((sensor) => sensor.device_id === currentSensorId)) {
+      currentSensorId = sensors[0].device_id;
+    }
+
+    elements.sensorSelect.value = currentSensorId;
+
+    const selectedSensor = sensors.find((sensor) => sensor.device_id === currentSensorId);
+    if (selectedSensor?.reading) {
+      updateLatestReadingDisplay(selectedSensor.reading);
+    }
+
+    loadTemperatureHistory();
+  }
+
+  function refreshPasskeyContext() {
+    const candidate = devicesCache.find((device) => {
+      const type = String(device.device_type || '').toLowerCase();
+      return type.includes('passkey') || type.includes('keypad') || type.includes('door');
+    });
+
+    const previousDeviceId = passkeyContext.deviceId;
+    const availableBefore = Boolean(previousDeviceId);
+    if (candidate) {
+      passkeyContext.deviceId = candidate.device_id;
+      passkeyContext.gatewayId = candidate.gateway_id;
+    } else {
+      passkeyContext.deviceId = null;
+      passkeyContext.gatewayId = null;
+    }
+
+    if (elements.passkeyDeviceLabel) {
+      elements.passkeyDeviceLabel.textContent = candidate
+        ? `Thiết bị: ${candidate.device_id}`
+        : 'Thiết bị: —';
+    }
+
+    if (!candidate) {
+      elements.passkeySection?.classList.add('no-device');
+      setPasskeyInputsDisabled(true);
+      resetPasskeyState(true);
+      setPasskeyStatus('Bạn không có quyền sử dụng passkey', 'error');
+      return;
+    }
+
+    elements.passkeySection?.classList.remove('no-device');
+
+    if (!passkeySubmitting) {
+      setPasskeyInputsDisabled(false);
+    }
+    if (!availableBefore || previousDeviceId !== passkeyContext.deviceId || !passkeyBuffer.length) {
+      resetPasskeyState(true);
+      setPasskeyStatus('Nhập passkey để mở khoá', 'info');
+    }
+  }
+
+  function setPasskeyInputsDisabled(disabled) {
+    if (elements.passkeyKeypad) {
+      elements.passkeyKeypad.querySelectorAll('button').forEach((btn) => {
+        btn.disabled = disabled;
+      });
+    }
+    if (elements.passkeyEnterBtn) {
+      elements.passkeyEnterBtn.disabled = disabled;
+    }
+    if (elements.passkeyClearBtn) {
+      elements.passkeyClearBtn.disabled = disabled;
+    }
+  }
+
+  function setPasskeyStatus(message, type = 'info') {
+    if (!elements.passkeyStatus) return;
+    const statusEl = elements.passkeyStatus;
+    statusEl.textContent = message || '';
+    statusEl.classList.remove('success', 'error', 'muted');
+    if (!message) {
+      statusEl.classList.add('muted');
+      return;
+    }
+    if (type === 'success') {
+      statusEl.classList.add('success');
+    } else if (type === 'error') {
+      statusEl.classList.add('error');
+    } else {
+      statusEl.classList.add('muted');
+    }
+  }
+
+  function updatePasskeyDisplay() {
+    if (!elements.passkeyDisplay) return;
+    const filled = PASSKEY_FILLED_CHAR.repeat(Math.min(passkeyBuffer.length, PASSKEY_CODE_LENGTH));
+    const remaining = Math.max(PASSKEY_CODE_LENGTH - passkeyBuffer.length, 0);
+    const placeholders = PASSKEY_PLACEHOLDER_CHAR.repeat(remaining);
+    const value = (filled + placeholders) || PASSKEY_PLACEHOLDER_CHAR.repeat(PASSKEY_CODE_LENGTH);
+    elements.passkeyDisplay.textContent = value;
+  }
+
+  function resetPasskeyState(clearStatus = false) {
+    passkeyBuffer = '';
+    updatePasskeyDisplay();
+    if (clearStatus) {
+      setPasskeyStatus('', 'info');
+    }
+  }
+
+  function appendPasskeyDigit(digit) {
+    if (passkeySubmitting || !passkeyContext.deviceId) return;
+    if (passkeyBuffer.length >= PASSKEY_CODE_LENGTH) return;
+    passkeyBuffer += digit;
+    updatePasskeyDisplay();
+    if (passkeyBuffer.length === PASSKEY_CODE_LENGTH) {
+      setPasskeyStatus('Nhấn "Gửi lệnh" để mở khoá', 'info');
+    } else {
+      setPasskeyStatus('', 'info');
+    }
+  }
+
+  function removePasskeyDigit() {
+    if (passkeySubmitting) return;
+    if (!passkeyBuffer.length) return;
+    passkeyBuffer = passkeyBuffer.slice(0, -1);
+    updatePasskeyDisplay();
+    if (!passkeyBuffer.length && passkeyContext.deviceId) {
+      setPasskeyStatus('Nhập passkey để mở khoá', 'info');
+    }
+  }
+
+  function handlePasskeyKeypadClick(event) {
+    const button = event.target.closest('button');
+    if (!button || button.disabled) return;
+
+    if (button.dataset.digit !== undefined) {
+      appendPasskeyDigit(button.dataset.digit);
+      return;
+    }
+
+    const action = button.dataset.action;
+    if (action === 'backspace') {
+      removePasskeyDigit();
+    } else if (action === 'clear') {
+      resetPasskeyState(true);
+      if (passkeyContext.deviceId) {
+        setPasskeyStatus('Nhập passkey để mở khoá', 'info');
+      }
+    }
+  }
+
+  function handlePasskeyKeydown(event) {
+    if (!passkeyContext.deviceId || passkeySubmitting) return;
+    if (!elements.appContent || elements.appContent.classList.contains('hidden')) return;
+    const targetTag = (event.target && event.target.tagName) || '';
+    if (['INPUT', 'TEXTAREA', 'SELECT'].includes(targetTag)) return;
+
+    if (/^\d$/.test(event.key)) {
+      event.preventDefault();
+      appendPasskeyDigit(event.key);
+    } else if (event.key === 'Backspace') {
+      event.preventDefault();
+      removePasskeyDigit();
+    } else if (event.key === 'Enter') {
+      event.preventDefault();
+      submitPasskeyCode();
+    } else if (event.key === 'Escape') {
+      resetPasskeyState(true);
+      if (passkeyContext.deviceId) {
+        setPasskeyStatus('Nhập passkey để mở khoá', 'info');
+      }
+    }
+  }
+
+  async function submitPasskeyCode() {
+    if (passkeySubmitting) return;
+
+    if (!passkeyContext.deviceId || !passkeyContext.gatewayId) {
+      setPasskeyStatus('Không tìm thấy thiết bị passkey', 'error');
+      return;
+    }
+
+    if (passkeyBuffer.length !== PASSKEY_CODE_LENGTH) {
+      setPasskeyStatus(`Passkey phải gồm ${PASSKEY_CODE_LENGTH} số.`, 'error');
+      return;
+    }
+
+    if (!currentUser?.user_id) {
+      setPasskeyStatus('Thiếu thông tin tài khoản hiện tại.', 'error');
+      return;
+    }
+
+    passkeySubmitting = true;
+    setPasskeyInputsDisabled(true);
+    setPasskeyStatus('Đang gửi lệnh...', 'info');
+
+    try {
+      const response = await fetch(
+        `/access/${encodeURIComponent(passkeyContext.gatewayId)}/${encodeURIComponent(
+          passkeyContext.deviceId
+        )}/passcode`,
+        {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            passcode: passkeyBuffer,
+            user_id: currentUser.user_id
+          })
+        }
+      );
+
+      const data = await response.json().catch(() => ({}));
+
+      if (!response.ok || data.ok === false) {
+        const message = data.deny_reason || data.error || data.detail || 'Không thể gửi passkey';
+        setPasskeyStatus(message, 'error');
+        showToast('error', message);
+        return;
+      }
+
+      if (data.result === 'granted') {
+        resetPasskeyState(false);
+        setPasskeyStatus('Mở khoá thành công', 'success');
+        showToast('success', 'Đã mở khoá thiết bị');
+        loadAccessLogs(true).catch(() => {});
+      } else {
+        const message = data.deny_reason || 'Passkey không hợp lệ';
+        setPasskeyStatus(message, 'error');
+        showToast('error', message);
+      }
+    } catch (err) {
+      setPasskeyStatus(err.message || 'Không thể gửi passkey', 'error');
+      showToast('error', err.message || 'Không thể gửi passkey');
+    } finally {
+      passkeySubmitting = false;
+      setPasskeyInputsDisabled(!passkeyContext.deviceId);
+    }
+  }
+
+  function updatePasskeyControls() {
+    refreshPasskeyContext();
+
+    if (!elements.addPasskeyBtn) return;
+
+    const role = (currentUser?.role || '').toLowerCase();
+    const allowed = role === 'admin' || role === 'owner';
+    elements.addPasskeyBtn.classList.toggle('hidden', !allowed);
+
+    if (!allowed) {
+      closePasskeyModal(true);
+      return;
+    }
+
+    if (elements.passkeyOwner && currentUser?.user_id) {
+      elements.passkeyOwner.value = currentUser.user_id;
+    }
+  }
+
+  async function loadPasskeys(isRefresh) {
+    if (!elements.passkeyTable) return;
+
+    if (isRefresh) {
+      setTableMessage(elements.passkeyTable, 6, 'Đang tải dữ liệu...');
+    }
+
+    try {
+      const response = await fetch('/access/manage_passkey', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'list' })
+      });
+
+      const data = await response.json().catch(() => ({}));
+      if (!response.ok || !data.ok) {
+        throw new Error(data.error || data.detail || 'Không thể tải passkey');
+      }
+
+      passkeysCache = Array.isArray(data.passwords) ? data.passwords : [];
+      const isAdmin = (currentUser?.role || '').toLowerCase() === 'admin';
+      const currentId = currentUser?.user_id;
+      const visiblePasskeys = isAdmin
+        ? passkeysCache
+        : passkeysCache.filter((item) => item.owner === currentId);
+
+      if (!visiblePasskeys.length) {
+        setTableMessage(
+          elements.passkeyTable,
+          6,
+          isAdmin ? 'Chưa có passkey nào' : 'Bạn chưa có passkey nào'
+        );
+        return;
+      }
+
+      elements.passkeyTable.innerHTML = visiblePasskeys
+        .map((item) => {
+          const active = Boolean(item.active);
+          const statusClass = active ? 'status-online' : 'status-offline';
+          const statusLabel = active ? 'HOẠT ĐỘNG' : 'NGỪNG';
+          const canManage = isAdmin || item.owner === currentId;
+          const actions = canManage
+            ? `<div class="action-buttons"><button data-action="edit" data-passkey-id="${escapeHtml(item.id)}">Sửa</button><button data-action="delete" data-passkey-id="${escapeHtml(item.id)}">Xoá</button></div>`
+            : '<span class="muted">Không có hành động</span>';
+
+          return `
+            <tr>
+              <td>${escapeHtml(item.id)}</td>
+              <td>${escapeHtml(item.owner)}</td>
+              <td><span class="status-pill ${statusClass}">${statusLabel}</span></td>
+              <td>${formatDateTime(item.expires_at)}</td>
+              <td>${escapeHtml(item.description || '')}</td>
+              <td>${actions}</td>
+            </tr>
+          `;
+        })
+        .join('');
+    } catch (err) {
+      setTableMessage(
+        elements.passkeyTable,
+        6,
+        err.message || 'Không thể tải passkey'
+      );
+      throw err;
+    }
+  }
+
+  async function modifyPasskey(action, payload) {
+    const response = await fetch('/access/manage_passkey', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ action, ...payload })
+    });
+
+    const data = await response.json().catch(() => ({}));
+    if (!response.ok || !data.ok) {
+      throw new Error(data.error || data.detail || 'Yêu cầu thất bại');
+    }
+
+    return data;
+  }
+
+  function openPasskeyModal(passkey) {
+    const role = (currentUser?.role || '').toLowerCase();
+    if (role !== 'admin' && role !== 'owner') return;
+    if (!elements.passkeyModal) return;
+
+    if (elements.passkeyForm) {
+      elements.passkeyForm.reset();
+    }
+    if (elements.passkeyHint) {
+      elements.passkeyHint.textContent = '';
+    }
+
+    const editing = Boolean(passkey);
+    if (elements.passkeyModalTitle) {
+      elements.passkeyModalTitle.textContent = editing ? 'Sửa passkey' : 'Thêm passkey';
+    }
+
+    if (elements.passkeyId) {
+      elements.passkeyId.value = editing ? passkey.id : '';
+    }
+
+    const isAdmin = (currentUser?.role || '').toLowerCase() === 'admin';
+
+    if (elements.passkeyOwner) {
+      elements.passkeyOwner.value =
+        passkey?.owner || currentUser?.user_id || '';
+      elements.passkeyOwner.readOnly = !isAdmin;
+    }
+
+    if (elements.passkeyValue) {
+      elements.passkeyValue.value = '';
+      elements.passkeyValue.disabled = editing;
+      elements.passkeyValue.placeholder = editing ? 'Không thể sửa passcode' : 'VD: 123456';
+    }
+
+    if (elements.passkeyDesc) {
+      elements.passkeyDesc.value = passkey?.description || '';
+    }
+
+    if (elements.passkeyExpire) {
+      if (passkey?.expires_at) {
+        try {
+          const date = new Date(passkey.expires_at);
+          if (!Number.isNaN(date.getTime())) {
+            elements.passkeyExpire.value = date.toISOString().slice(0, 16);
+          } else {
+            elements.passkeyExpire.value = '';
+          }
+        } catch {
+          elements.passkeyExpire.value = '';
+        }
+      } else {
+        elements.passkeyExpire.value = '';
+      }
+    }
+
+    if (elements.passkeyActive) {
+      elements.passkeyActive.checked = passkey ? Boolean(passkey.active) : true;
+    }
+
+    elements.passkeyModal.classList.add('show');
+    if (!editing && elements.passkeyValue) {
+      elements.passkeyValue.focus();
+    } else if (editing && elements.passkeyDesc) {
+      elements.passkeyDesc.focus();
+    }
+  }
+
+  function closePasskeyModal(force) {
+    if (!elements.passkeyModal) return;
+    elements.passkeyModal.classList.remove('show');
+    if (!force && elements.passkeyForm) {
+      elements.passkeyForm.reset();
+    }
+    if (elements.passkeyHint) {
+      elements.passkeyHint.textContent = '';
+    }
+    if (elements.passkeyValue) {
+      elements.passkeyValue.disabled = false;
+      elements.passkeyValue.placeholder = 'VD: 123456';
+    }
+    if (elements.passkeyOwner) {
+      elements.passkeyOwner.readOnly = false;
+    }
+  }
+
+  async function submitPasskeyForm() {
+    if (!elements.passkeyForm) return;
+
+    const role = (currentUser?.role || '').toLowerCase();
+    if (role !== 'admin' && role !== 'owner') {
+      throw new Error('Bạn không có quyền quản lý passkey');
+    }
+
+    const id = (elements.passkeyId?.value || '').trim();
+    let owner = (elements.passkeyOwner?.value || '').trim();
+    const passcode = (elements.passkeyValue?.value || '').trim();
+    const description = (elements.passkeyDesc?.value || '').trim();
+    const expiresRaw = elements.passkeyExpire?.value || '';
+    const active = Boolean(elements.passkeyActive?.checked);
+    const isAdmin = role === 'admin';
+
+    if (!isAdmin) {
+      owner = currentUser?.user_id || owner;
+    }
+
+    if (!owner) {
+      if (elements.passkeyHint) elements.passkeyHint.textContent = 'Vui lòng nhập user_id.';
+      throw new Error('Thiếu user_id');
+    }
+
+    let expiresAt = null;
+    if (expiresRaw) {
+      const parsed = new Date(expiresRaw);
+      if (Number.isNaN(parsed.getTime())) {
+        if (elements.passkeyHint) elements.passkeyHint.textContent = 'Thời gian hết hạn không hợp lệ.';
+        throw new Error('Thời gian hết hạn không hợp lệ');
+      }
+      expiresAt = parsed.toISOString();
+    }
+
+    const submitBtn = elements.passkeySubmit;
+    if (!isAdmin && id) {
+      const target = passkeysCache.find((item) => item.id === id);
+      if (target && target.owner !== owner) {
+        throw new Error('Bạn không có quyền chỉnh sửa passkey này');
+      }
+    }
+    const previousText = submitBtn ? submitBtn.textContent : '';
+    if (submitBtn) {
+      submitBtn.disabled = true;
+      submitBtn.textContent = 'Đang lưu...';
+    }
+
+    try {
+      if (id) {
+        await modifyPasskey('edit', {
+          id,
+          owner,
+          description: description || '',
+          active,
+          expires_at: expiresAt
+        });
+      } else {
+        if (!/^\d{6}$/.test(passcode)) {
+          if (elements.passkeyHint) {
+            elements.passkeyHint.textContent = 'Passcode phải gồm đúng 6 số.';
+          }
+          throw new Error('Passcode không hợp lệ');
+        }
+
+        await modifyPasskey('add', {
+          owner,
+          passcode,
+          description: description || '',
+          active,
+          expires_at: expiresAt
+        });
+      }
+
+      showToast('success', id ? 'Đã cập nhật passkey' : 'Đã thêm passkey');
+      closePasskeyModal();
+      await loadPasskeys();
+    } finally {
+      if (submitBtn) {
+        submitBtn.disabled = false;
+        submitBtn.textContent = previousText || 'Lưu';
+      }
+    }
+  }
+
+  function updateRfidControls() {
+    if (!elements.addRfidBtn) return;
+
+    const role = (currentUser?.role || '').toLowerCase();
+    const allowed = role === 'admin' || role === 'owner';
+
+    elements.addRfidBtn.classList.toggle('hidden', !allowed);
+
+    if (!allowed) {
+      closeRfidModal(true);
+      editingRfidUid = null;
+      return;
+    }
+
+    if (elements.rfidOwner && currentUser?.user_id) {
+      elements.rfidOwner.value = currentUser.user_id;
+    }
+  }
+
+  function openRfidModal(card) {
+    const role = (currentUser?.role || '').toLowerCase();
+    const allowed = role === 'admin' || role === 'owner';
+    if (!allowed || !elements.rfidModal) return;
+
+    if (elements.rfidForm) {
+      elements.rfidForm.reset();
+    }
+
+    const editing = Boolean(card);
+    editingRfidUid = editing ? card.uid : null;
+
+    if (elements.rfidModalTitle) {
+      elements.rfidModalTitle.textContent = editing ? 'Sửa thẻ RFID' : 'Thêm thẻ RFID';
+    }
+
+    if (elements.rfidHint) elements.rfidHint.textContent = '';
+
+    if (elements.rfidUid) {
+      elements.rfidUid.value = editing ? card.uid : '';
+      elements.rfidUid.readOnly = editing;
+      elements.rfidUid.placeholder = editing ? 'Không thể sửa UID' : 'VD: A1B2C3D4';
+    }
+
+    if (elements.rfidOwner) {
+      elements.rfidOwner.value = editing
+        ? card.user_id || ''
+        : currentUser?.user_id || '';
+    }
+
+    if (elements.rfidType) {
+      elements.rfidType.value = editing
+        ? card.card_type || 'MIFARE Classic'
+        : 'MIFARE Classic';
+    }
+
+    if (elements.rfidDesc) {
+      elements.rfidDesc.value = editing ? card.description || '' : '';
+    }
+
+    if (elements.rfidExpire) {
+      if (editing && card.expires_at) {
+        try {
+          const date = new Date(card.expires_at);
+          elements.rfidExpire.value = Number.isNaN(date.getTime())
+            ? ''
+            : date.toISOString().slice(0, 16);
+        } catch {
+          elements.rfidExpire.value = '';
+        }
+      } else {
+        elements.rfidExpire.value = '';
+      }
+    }
+
+    if (elements.rfidActive) {
+      elements.rfidActive.checked = editing ? Boolean(card.active) : true;
+    }
+
+    elements.rfidModal.classList.add('show');
+    if (!editing && elements.rfidUid) {
+      elements.rfidUid.focus();
+    } else if (editing && elements.rfidDesc) {
+      elements.rfidDesc.focus();
+    }
+  }
+
+  function closeRfidModal(force) {
+    if (!elements.rfidModal) return;
+    elements.rfidModal.classList.remove('show');
+    if (!force && elements.rfidForm) {
+      elements.rfidForm.reset();
+    }
+    if (elements.rfidHint) {
+      elements.rfidHint.textContent = '';
+    }
+    if (elements.rfidUid) {
+      elements.rfidUid.readOnly = false;
+      elements.rfidUid.placeholder = 'VD: A1B2C3D4';
+    }
+    editingRfidUid = null;
+  }
+
+  async function submitRfidForm() {
+    if (!elements.rfidForm) return;
+
+    const role = (currentUser?.role || '').toLowerCase();
+    if (role !== 'admin' && role !== 'owner') {
+      throw new Error('Bạn không có quyền thêm thẻ RFID');
+    }
+
+    const uid = (elements.rfidUid?.value || '').trim().toUpperCase();
+    const userId = (elements.rfidOwner?.value || '').trim();
+    const cardType = (elements.rfidType?.value || 'MIFARE Classic').trim();
+    const description = (elements.rfidDesc?.value || '').trim();
+    const expiresRaw = elements.rfidExpire?.value || '';
+    const active = Boolean(elements.rfidActive?.checked);
+
+    if (!uid && !editingRfidUid) {
+      if (elements.rfidHint) elements.rfidHint.textContent = 'Vui lòng nhập UID thẻ.';
+      throw new Error('Thiếu UID thẻ');
+    }
+
+    if (!userId) {
+      if (elements.rfidHint) elements.rfidHint.textContent = 'Vui lòng nhập user_id của chủ thẻ.';
+      throw new Error('Thiếu user_id');
+    }
+
+    let expiresAt = null;
+    if (expiresRaw) {
+      const parsed = new Date(expiresRaw);
+      if (Number.isNaN(parsed.getTime())) {
+        if (elements.rfidHint) elements.rfidHint.textContent = 'Thời gian hết hạn không hợp lệ.';
+        throw new Error('Thời gian hết hạn không hợp lệ');
+      }
+      expiresAt = parsed.toISOString();
+    }
+
+    const payload = {
+      user_id: userId,
+      card_type: cardType || 'MIFARE Classic',
+      description: description || null,
+      expires_at: expiresAt,
+      active
+    };
+
+    const submitBtn = elements.rfidSubmit;
+    const previousText = submitBtn ? submitBtn.textContent : '';
+    if (submitBtn) {
+      submitBtn.disabled = true;
+      submitBtn.textContent = 'Đang lưu...';
+    }
+
+    try {
+      if (editingRfidUid) {
+        const response = await fetch(`/rfid/cards/${encodeURIComponent(editingRfidUid)}`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+
+        const data = await response.json().catch(() => ({}));
+
+        if (!response.ok || !data.ok) {
+          const message = data.error || data.detail || 'Không thể cập nhật thẻ';
+          if (elements.rfidHint) elements.rfidHint.textContent = message;
+          throw new Error(message);
+        }
+        showToast('success', data.msg || 'Đã cập nhật thẻ RFID');
+      } else {
+        const response = await fetch('/rfid/cards', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ uid, ...payload })
+        });
+
+        const data = await response.json().catch(() => ({}));
+
+        if (!response.ok || !data.ok) {
+          const message = data.error || data.detail || 'Không thể thêm thẻ';
+          if (elements.rfidHint) elements.rfidHint.textContent = message;
+          throw new Error(message);
+        }
+        showToast('success', data.msg || 'Đã thêm thẻ RFID');
+      }
+
+      closeRfidModal();
+      await loadRfidCards();
+    } finally {
+      if (submitBtn) {
+        submitBtn.disabled = false;
+        submitBtn.textContent = previousText || 'Thêm thẻ';
+      }
+    }
+  }
+
+  async function deleteRfidCard(uid) {
+    const response = await fetch(`/rfid/cards/${encodeURIComponent(uid)}`, {
+      method: 'DELETE'
+    });
+    const data = await response.json().catch(() => ({}));
+    if (!response.ok || !data.ok) {
+      throw new Error(data.error || data.detail || 'Không thể xoá thẻ');
+    }
+    return data;
+  }
+
+  function updateLatestReadingDisplay(reading) {
+    if (!reading) {
+      elements.temperatureSubtitle.textContent = 'Chưa có dữ liệu cảm biến';
+      elements.latestTemp.textContent = '--';
+      elements.latestHumidity.textContent = '--';
+      elements.latestTime.textContent = '--';
+      return;
+    }
+
+    elements.temperatureSubtitle.textContent = `Cảm biến: ${reading.device_id || ''}`;
+    elements.latestTemp.textContent =
+      reading.temperature !== undefined && reading.temperature !== null
+        ? `${Number(reading.temperature).toFixed(1)}°C`
+        : '--';
+    elements.latestHumidity.textContent =
+      reading.humidity !== undefined && reading.humidity !== null
+        ? `${Number(reading.humidity).toFixed(1)}%`
+        : '--';
+    elements.latestTime.textContent = formatDateTime(reading.time);
+  }
+
+  async function loadTemperatureHistory() {
+    if (!currentSensorId) {
+      destroyTemperatureChart();
+      elements.temperatureEmpty.classList.remove('hidden');
+      return;
+    }
+
+    const hours = parseInt(elements.sensorPeriod.value, 10) || 24;
+    const params = new URLSearchParams({
+      device_id: currentSensorId,
+      hours: String(hours)
+    });
+
+    try {
+      const res = await apiFetch(`/api/dashboard/temperature-history?${params.toString()}`);
+      const history = res?.data || res || [];
+
+      if (history.length) {
+        const latestPoint = history[history.length - 1];
+        updateLatestReadingDisplay({
+          device_id: currentSensorId,
+          temperature: latestPoint.temperature,
+          humidity: latestPoint.humidity,
+          time: latestPoint.time
+        });
+      } else if (!latestReadings.some((reading) => reading.device_id === currentSensorId)) {
+        updateLatestReadingDisplay(null);
+      }
+
+      renderTemperatureChart(history);
+    } catch (err) {
+      showToast('error', err.message || 'Không thể tải biểu đồ nhiệt độ');
+    }
+  }
+
+  function renderTemperatureChart(data) {
+    const rows = Array.isArray(data) ? data : [];
+
+    if (!rows.length) {
+      destroyTemperatureChart();
+      elements.temperatureEmpty.classList.remove('hidden');
+      return;
+    }
+
+    elements.temperatureEmpty.classList.add('hidden');
+
+    const labels = rows.map((row) => formatTime(row.time));
+    const temperatures = rows.map((row) => Number(row.temperature));
+    const humidities = rows.map((row) => Number(row.humidity));
+
+    const ctx = document.getElementById('temperature_chart').getContext('2d');
+
+    if (temperatureChart) {
+      temperatureChart.data.labels = labels;
+      temperatureChart.data.datasets[0].data = temperatures;
+      temperatureChart.data.datasets[1].data = humidities;
+      temperatureChart.update();
+      return;
+    }
+
+    temperatureChart = new Chart(ctx, {
+      type: 'line',
       data: {
-        labels: labels,
+        labels,
         datasets: [
           {
-            label: "🌡️ Nhiệt độ (°C)",
-            data: temps,
-            borderColor: "rgba(255, 99, 132, 1)",
-            backgroundColor: "rgba(255, 99, 132, 0.2)",
-            fill: true,
-            tension: 0.4,
+            label: 'Nhiệt độ (°C)',
+            data: temperatures,
+            borderColor: 'rgba(239, 68, 68, 0.9)',
+            backgroundColor: 'rgba(254, 202, 202, 0.35)',
+            tension: 0.35,
+            fill: true
           },
           {
-            label: "💧 Độ ẩm (%)",
-            data: hums,
-            borderColor: "rgba(54, 162, 235, 1)",
-            backgroundColor: "rgba(54, 162, 235, 0.2)",
-            fill: true,
-            tension: 0.4,
-          },
-        ],
+            label: 'Độ ẩm (%)',
+            data: humidities,
+            borderColor: 'rgba(37, 99, 235, 0.9)',
+            backgroundColor: 'rgba(191, 219, 254, 0.35)',
+            tension: 0.35,
+            fill: true
+          }
+        ]
       },
       options: {
         responsive: true,
-        plugins: { legend: { position: "bottom" } },
-        scales: {
-          x: { ticks: { maxTicksLimit: 8 } },
-          y: { beginAtZero: false },
+        maintainAspectRatio: false,
+        plugins: {
+          legend: {
+            position: 'bottom'
+          }
         },
-      },
-    });
-  } catch (err) {
-    console.error("Lỗi tải biểu đồ:", err);
-  }
-}
-
-/* ==== PASSKEY ==== */
-let passBuf = "";
-const placeholderChar = "•";
-
-function renderScreen() {
-  const screen = document.getElementById("screen");
-  if (passBuf.length) {
-    screen.textContent = "•".repeat(passBuf.length).padEnd(6, "·");
-  } else {
-    screen.textContent = "·".repeat(6);
-  }
-}
-
-function tap(d) {
-  if (passBuf.length < 6) {
-    // ✅ chỉ cho phép tối đa 6 số
-    passBuf += d;
-    renderScreen();
-  }
-}
-
-function delKey() {
-  passBuf = passBuf.slice(0, -1);
-  renderScreen();
-}
-
-function clearKey() {
-  passBuf = "";
-  renderScreen();
-}
-
-async function submitPasscode() {
-  const dev = window.currentPassDevice;
-  const gw = window.currentPassGateway;
-  const user_id = getCurrentUserId(); // 🧩 thêm dòng này
-  const inline = document.getElementById("pass_inline");
-
-  if (!dev || !gw) {
-    showToast(false, "Không tìm thấy thiết bị hiện tại");
-    return;
-  }
-
-  if (passBuf.length !== 6) {
-    showToast(false, "Passkey phải đủ 6 chữ số");
-    return;
-  }
-
-  const toSend = passBuf;
-  console.log(`[DEBUG] Send to /access/${gw}/${dev}/passcode`);
-
-  try {
-    const r = await fetch(`/access/${gw}/${dev}/passcode`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ passcode: toSend, user_id }), // ✅ gửi kèm user_id
-    });
-    const js = await r.json();
-
-    if (js.ok && js.result === "granted") {
-      showToast(true, "✅ Mở cửa: GRANTED");
-      inline.className = "inline-status ok";
-      inline.textContent = "GRANTED";
-    } else {
-      showToast(false, "❌ Từ chối: DENIED");
-      inline.className = "inline-status err";
-      inline.textContent = "DENIED";
-    }
-  } catch (e) {
-    console.error(e);
-    showToast(false, "Lỗi mạng");
-    inline.className = "inline-status err";
-    inline.textContent = "NETWORK";
-  }
-
-  passBuf = "";
-  renderScreen();
-}
-
-/* ==== PASSKEY MANAGEMENT ==== */
-function openManageModal() {
-  document.getElementById("manage_full").classList.add("show-modal");
-  loadPasskeyList();
-}
-
-function closeManageModal() {
-  document.getElementById("manage_full").classList.remove("show-modal");
-}
-
-async function loadPasskeyList() {
-  try {
-    const r = await fetch("/access/manage_passkey", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ action: "list" }),
-    });
-    const js = await r.json();
-    const box = document.getElementById("passkey_list");
-    box.innerHTML = "";
-
-    if (!js.ok || !Array.isArray(js.passwords)) {
-      box.innerHTML = '<div class="muted">Không tải được danh sách</div>';
-      return;
-    }
-
-    if (js.passwords.length === 0) {
-      box.innerHTML = '<div class="muted">Chưa có passkey</div>';
-      return;
-    }
-
-    for (const p of js.passwords) {
-      const row = document.createElement("div");
-      row.className = "listrow";
-      row.innerHTML = `
-        <div class="rowleft">
-          <b>${p.id}</b> 
-          <span class="muted" style="font-size:12px">${p.owner || "-"}</span>
-        </div>
-        <div class="rowright">
-          <button class="btn-mini" onclick="editPasskey('${p.id}')">Sửa</button>
-          <button class="btn-mini alt" onclick="confirmDeletePasskey('${
-            p.id
-          }')">Xoá</button>
-        </div>`;
-      box.appendChild(row);
-    }
-  } catch (e) {
-    showToast(false, "Lỗi tải danh sách passkey");
-  }
-}
-
-/* Modal thêm/sửa passkey */
-/* ==== MODAL THÊM / SỬA PASSKEY ==== */
-function openAddPassModal() {
-  const modal = document.getElementById("pass_edit_full");
-  if (!modal)
-    return console.error("❌ Không tìm thấy #pass_edit_full trong DOM");
-
-  document.getElementById("pass_edit_title").textContent = "Thêm Passkey";
-  document.getElementById("edit_pass_id").value = "";
-  document.getElementById("edit_pass_value").value = "";
-  document.getElementById("edit_login_pass").value = "";
-  document.getElementById("edit_owner").value = "00002";
-  document.getElementById("edit_role").value = "user";
-  document.getElementById("edit_desc").value = "";
-  document.getElementById("edit_active").checked = true;
-  document.getElementById("edit_expires").value = "";
-
-  modal.classList.add("show-modal");
-}
-
-async function editPasskey(pid) {
-  try {
-    const r = await fetch("/access/manage_passkey", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ action: "list" }),
-    });
-    if (!r.ok) throw new Error("Phản hồi không hợp lệ");
-
-    const js = await r.json();
-    const p = (js.passwords || []).find((x) => x.id === pid);
-    if (!p) {
-      showToast(false, "Không tìm thấy passkey");
-      return;
-    }
-
-    const modal = document.getElementById("pass_edit_full");
-    if (!modal)
-      return console.error("❌ Không tìm thấy #pass_edit_full trong DOM");
-
-    document.getElementById("pass_edit_title").textContent =
-      "Sửa Passkey " + pid;
-    document.getElementById("edit_pass_id").value = pid;
-    document.getElementById("edit_pass_value").value = "";
-    document.getElementById("edit_owner").value = p.owner || "";
-    document.getElementById("edit_desc").value = p.description || "";
-    document.getElementById("edit_active").checked = !!p.active;
-    document.getElementById("edit_expires").value = p.expires_at
-      ? new Date(p.expires_at).toISOString().slice(0, 16)
-      : "";
-
-    modal.classList.add("show-modal");
-    console.log("🟢 Opened edit modal for", pid);
-  } catch (e) {
-    console.error("Lỗi khi tải passkey:", e);
-    showToast(false, "Lỗi khi tải dữ liệu passkey");
-  }
-}
-
-function closePassEditFull() {
-  const modal = document.getElementById("pass_edit_full");
-  modal.classList.remove("show-modal");
-  modal.style.display = "none";
-
-  // Mở lại danh sách
-  document.getElementById("manage_full").classList.add("show-modal");
-}
-
-/* ==== LƯU PASSKEY ==== */
-async function savePasskey() {
-  const pid = document.getElementById("edit_pass_id").value.trim();
-  const pass = document.getElementById("edit_pass_value").value.trim();
-  const owner = document.getElementById("edit_owner").value.trim();
-  const desc = document.getElementById("edit_desc").value.trim();
-  const active = document.getElementById("edit_active").checked;
-  const expires_at = document.getElementById("edit_expires").value || null;
-
-  const action = pid ? "edit" : "add";
-
-  if (!pid && (!pass || pass.length !== 6 || !/^\d+$/.test(pass))) {
-    showToast(false, "Passkey phải gồm 6 chữ số");
-    return;
-  }
-
-  const payload = {
-    action,
-    id: pid || null,
-    passcode: pass,
-    owner,
-    description: desc,
-    active,
-    expires_at,
-  };
-
-  console.log("[DEBUG SAVE PAYLOAD]", payload);
-
-  try {
-    const r = await fetch("/access/manage_passkey", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(payload),
-    });
-    const js = await r.json();
-
-    if (js.ok) {
-      showToast(true, js.message || "Đã lưu");
-      closePassEditFull();
-      openManageFull();
-      loadPasskeyList();
-    } else {
-      showToast(false, js.error || "Lưu thất bại");
-    }
-  } catch (e) {
-    console.error(e);
-    showToast(false, "Lỗi mạng");
-  }
-}
-
-/* ==== QUẢN LÝ DANH SÁCH PASSKEY ==== */
-function openManageFull() {
-  const modal = document.getElementById("manage_full");
-  if (!modal) return;
-  modal.classList.add("show-modal");
-  loadPasskeyList();
-}
-
-function closeManageFull() {
-  const modal = document.getElementById("manage_full");
-  if (modal) modal.classList.remove("show-modal");
-}
-
-function openAddPassFull() {
-  // Ẩn danh sách
-  document.getElementById("manage_full").classList.remove("show-modal");
-
-  // Hiện popup thêm mới
-  const modal = document.getElementById("pass_edit_full");
-  document.getElementById("pass_edit_title").textContent = "Thêm Passkey";
-
-  // Reset toàn bộ form
-  document.getElementById("edit_pass_id").value = "";
-  document.getElementById("edit_pass_value").value = "";
-  document.getElementById("edit_owner").value = "";
-  document.getElementById("edit_desc").value = "";
-  document.getElementById("edit_expires").value = "";
-  document.getElementById("edit_active").checked = true;
-
-  modal.style.display = "block";
-  modal.classList.add("show-modal");
-}
-
-/* ==== XOÁ PASSKEY ==== */
-let deletePasskeyId = null;
-
-function confirmDeletePasskey(pid) {
-  deletePasskeyId = pid;
-  const confirmBox = document.getElementById("confirm_backdrop_passkey");
-
-  document.getElementById(
-    "confirm_text_passkey"
-  ).textContent = `Bạn có chắc muốn xoá passkey "${pid}"?`;
-  confirmBox.classList.add("show-modal");
-}
-
-function closeConfirmPasskey() {
-  document
-    .getElementById("confirm_backdrop_passkey")
-    .classList.remove("show-modal");
-}
-
-async function doDeletePasskey() {
-  if (!deletePasskeyId) return;
-  try {
-    const r = await fetch("/access/manage_passkey", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ action: "delete", id: deletePasskeyId }),
-    });
-    const js = await r.json();
-    if (js.ok) {
-      showToast(true, js.message || "Đã xoá passkey");
-      closeConfirmPasskey();
-      openManageFull(); // 🔹 đảm bảo danh sách bật lại
-      loadPasskeyList();
-    } else {
-      showToast(false, js.error || "Xoá thất bại");
-    }
-  } catch (e) {
-    showToast(false, "Lỗi mạng");
-  }
-}
-
-/* ==== NOTIFY ==== */
-// async function loadFeed() {
-//   try {
-//     const user_id = getCurrentUserId(); // 🆕 lấy user hiện tại
-//     const r = await fetch(`/notify/logs?user_id=${user_id}`); // 🆕 truyền user_id vào query
-//     const js = await r.json();
-//     const box = document.getElementById("feed");
-//     box.innerHTML = "";
-
-//     if (!js.ok || !js.logs.length) {
-//       box.innerHTML = '<div class="item i-gray">Không có log nào</div>';
-//       return;
-//     }
-
-//     for (const it of js.logs) {
-//       const div = document.createElement("div");
-//       div.className = "item";
-//       div.style.borderLeft =
-//         it.status === "completed" ? "4px solid #16a34a" : "4px solid #f59e0b";
-//       div.textContent = `[${new Date(it.time).toLocaleString()}] ${
-//         it.device_id
-//       } → ${it.command_type}`;
-//       box.appendChild(div);
-//     }
-//   } catch (e) {
-//     showToast(false, "📡 Lỗi tải lịch sử lệnh");
-//   }
-// }
-async function loadFeed() {
-  try {
-    const user_id = getCurrentUserId();
-    const r = await fetch(`/notify/logs?user_id=${user_id}`);
-    const js = await r.json();
-    const tbody = document.getElementById("feed-body");
-    tbody.innerHTML = "";
-
-    if (!js.ok || !js.logs.length) {
-      tbody.innerHTML = `<tr><td colspan="4" class="muted">Không có log nào</td></tr>`;
-      return;
-    }
-
-    for (const it of js.logs) {
-      let params = {};
-      let result = {};
-
-      try {
-        params =
-          typeof it.params === "object"
-            ? it.params
-            : JSON.parse(it.params || "{}");
-        result =
-          typeof it.result === "object"
-            ? it.result
-            : JSON.parse(it.result || "{}");
-      } catch (err) {
-        console.warn("Parse JSON error:", err);
-      }
-
-      let resultText = "-";
-      let color = "#e2e8f0";
-
-      if (it.device_id.startsWith("fan_")) {
-        // quạt → hiển thị trạng thái ON/OFF
-        if (params.state) {
-          const state = params.state.toLowerCase();
-          resultText = state === "on" ? "ON" : "OFF";
-          color = state === "on" ? "#16a34a" : "#dc2626";
-        }
-      } else if (
-        it.device_id.startsWith("passkey_") ||
-        it.device_id.startsWith("rfid_")
-      ) {
-        // passkey / rfid → GRANTED / DENIED
-        if (result.success === true) {
-          resultText = "GRANTED";
-          color = "#16a34a";
-        } else if (result.success === false) {
-          resultText = "DENIED";
-          color = "#dc2626";
+        scales: {
+          y: {
+            beginAtZero: false
+          }
         }
       }
-
-      const tr = document.createElement("tr");
-      tr.innerHTML = `
-        <td>${it.device_id}</td>
-        <td style="color:${color};font-weight:600">${resultText}</td>
-        <td>${new Date(it.time).toLocaleString("vi-VN")}</td>
-      `;
-      tbody.appendChild(tr);
-    }
-  } catch (e) {
-    console.error(e);
-    showToast(false, "📡 Lỗi tải thông báo");
-  }
-}
-
-async function loadHistory() {
-  const user_id = getCurrentUserId();
-  console.log("[DEBUG] loadHistory start, user =", user_id);
-
-  const r = await fetch(`/notify/history?user_id=${user_id}`);
-  console.log("[DEBUG] Fetch history response:", r.status);
-  const text = await r.text();
-  console.log("[DEBUG] Raw response text:", text);
-
-  try {
-    const r = await fetch(`/notify/history?user_id=${user_id}`);
-    console.log("[DEBUG] Fetch history response:", r.status);
-    const js = await r.json();
-    console.log("[DEBUG] Lịch sử vào/ra:", js);
-
-    const tbody = document.getElementById("history_table");
-    tbody.innerHTML = "";
-
-    if (!js.ok || !js.logs || !js.logs.length) {
-      tbody.innerHTML = `<tr><td colspan="5" class="table-empty">Không có lịch sử nào</td></tr>`;
-      return;
-    }
-
-    for (const log of js.logs) {
-      const tr = document.createElement("tr");
-      tr.innerHTML = `
-        <td>${log.device_id}</td>
-        <td style="color:${log.result === "granted" ? "#16a34a" : "#dc2626"}">
-          ${log.result.toUpperCase()}
-        </td>
-        <td>${new Date(log.time).toLocaleString("vi-VN")}</td>
-      `;
-      tbody.appendChild(tr);
-    }
-  } catch (e) {
-    console.error("[DEBUG] loadHistory error:", e);
-    showToast(false, "📡 Lỗi tải lịch sử vào/ra");
-  }
-}
-
-/* ==== RFID ==== */
-let RFID_ALL = [];
-let RFID_SELECTED = null;
-let RFID_IS_ADDING = false; // safe default
-let ENROLL_SUPPRESS_DETAIL = false; // đang enroll / thêm -> chặn detail
-/*let RECENTLY_ADDED_UID = null;*/ // UID vừa thêm thành công
-/*let RECENTLY_ADDED_UNTIL = 0;   */ // timestamp (ms) hết hiệu lực chặn
-let ENROLL_STARTED_AT = 0; // timestamp ms: thời điểm bấm "Thêm thẻ"
-/* Enroll mode (KHÔNG dùng scan/latest nữa) */
-let ENROLL_SESSION = null;
-let ENROLL_TIMER = null;
-// Ẩn DENIED cho UID này kể từ ENROLL_STARTED_AT đến khi có GRANTED
-let HIDE_DENIED_UNTIL_GRANTED_UID = null;
-
-/* Modals */
-function openEditModal(title = "Thông tin thẻ") {
-  document.getElementById("rfid_modal_title").textContent = title;
-  document.getElementById("rfid_modal").classList.add("show-modal");
-}
-// function closeEditModal() {
-//   document.getElementById("rfid_modal").classList.remove("show-modal");
-// }
-function openLogModal(it) {
-  // ❶ đang enroll/add: chặn toàn bộ
-  if (ENROLL_SUPPRESS_DETAIL) return;
-
-  document.getElementById("lg_uid").textContent = it.uid || "-";
-  document.getElementById("lg_owner").textContent = it.owner || "-";
-  document.getElementById("lg_device").textContent = it.device || "-";
-  document.getElementById("lg_result").textContent = (
-    it.result || "-"
-  ).toUpperCase();
-  const t = new Date(it.timestamp);
-  document.getElementById("lg_time").textContent = t.toLocaleString();
-  document.getElementById("log_backdrop").classList.add("show-modal");
-}
-function closeLogModal() {
-  document.getElementById("log_backdrop").classList.remove("show-modal");
-}
-
-/* Confirm delete modal */
-function openLogModal(it) {
-  document.getElementById("lg_uid").textContent = it.rfid_uid || "-";
-  document.getElementById("lg_owner").textContent = it.user_id || "-";
-  document.getElementById("lg_device").textContent = it.device_id || "-";
-  document.getElementById("lg_result").textContent = it.result || "-";
-  document.getElementById("lg_time").textContent = new Date(
-    it.time
-  ).toLocaleString();
-  document.getElementById("log_backdrop").classList.add("show-modal");
-}
-function closeLogModal() {
-  document.getElementById("log_backdrop").classList.remove("show-modal");
-}
-
-async function loadRfidDevice() {
-  const user_id = getCurrentUserId();
-  const card = document.querySelector("#tab-rfid .card");
-
-  try {
-    const r = await fetch(
-      `/access/get_device?user_id=${user_id}&device_type=rfid_gate`
-    );
-    const js = await r.json();
-
-    if (!js.ok || !js.found) {
-      card.classList.add("device-disabled");
-      // showRfidMessage("🔒 Bạn không có quyền truy cập thiết bị này", "error");
-      showDeviceMessage("rfid_msg", "🔒 Bạn không có quyền truy cập", "error");
-      return;
-    }
-
-    window.currentRfidDevice = js.device_id;
-    window.currentRfidGateway = js.gateway_id;
-    card.classList.remove("device-disabled");
-    // showRfidMessage(`RFID: ${js.device_id}`, "success");
-  } catch (e) {
-    console.error(e);
-  }
-}
-
-// 🔹 Hiển thị thông báo nhỏ
-
-// 🔹 Lấy danh sách log RFID
-async function loadRfidCards() {
-  try {
-    const r = await fetch("/rfid/cards");
-    const js = await r.json();
-    const tbody = document.getElementById("rfid_card_table");
-    tbody.innerHTML = "";
-
-    if (!js.ok || !js.cards?.length) {
-      tbody.innerHTML = `<tr><td colspan="7" style="text-align:center;color:#94a3b8">Không có thẻ RFID nào</td></tr>`;
-      window.RFID_ALL = []; // <- thêm dòng này
-      return;
-    }
-
-    // ✅ Lưu toàn bộ mảng vào biến toàn cục
-    window.RFID_ALL = js.cards;
-
-    js.cards.forEach((c) => {
-      const tr = document.createElement("tr");
-      tr.innerHTML = `
-        <td>${c.uid}</td>
-        <td>${c.user_id}</td>
-        <td>${c.card_type || "-"}</td>
-        <td>${c.description || "-"}</td>
-        <td style="text-align:center;">${c.active ? "✅" : "❌"}</td>
-        <td>${new Date(c.registered_at).toLocaleString("vi-VN")}</td>
-        <td class="table-actions">
-          <button onclick="editRfid('${c.uid}')">✏️</button>
-          <button class="delete" onclick="deleteRfid('${c.uid}')">🗑️</button>
-        </td>
-      `;
-      tbody.appendChild(tr);
     });
-  } catch (err) {
-    console.error("Lỗi tải danh sách thẻ:", err);
-    document.getElementById("rfid_card_table").innerHTML = `
-      <tr><td colspan="7" style="text-align:center;color:red">⚠️ Lỗi tải dữ liệu</td></tr>`;
-  }
-}
-
-// 🔹 Gọi khi vào tab RFID
-document.addEventListener("DOMContentLoaded", () => {
-  loadRfidCards();
-});
-
-// 🔹 Khi quét RFID xong (gửi request RESTful chuẩn)
-async function handleRfidScan(uid) {
-  const user_id = getCurrentUserId();
-  const dev = window.currentRfidDevice;
-  const gateway = window.currentRfidGateway;
-
-  if (!dev || !gateway) {
-    showToast(false, "⚠️ Thiếu thông tin thiết bị hoặc gateway");
-    return;
   }
 
-  try {
-    // ✅ Đúng format RESTful Flask mới: /rfid/<gateway>/<device>
-    const resp = await fetch(`/rfid/${gateway}/${dev}`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ uid }),
-    });
+  function destroyTemperatureChart() {
+    if (temperatureChart) {
+      temperatureChart.destroy();
+      temperatureChart = null;
+    }
+  }
 
-    const js = await resp.json();
-
-    if (!js.ok || js.result !== "granted") {
-      showToast(false, "🔒 Thẻ không hợp lệ hoặc không có quyền");
-      return;
+  async function loadDevices(isRefresh) {
+    if (isRefresh) {
+      setTableMessage(elements.devicesTable, 6, 'Đang tải dữ liệu...');
     }
 
-    showToast(true, "✅ Thẻ hợp lệ, mở cửa thành công!");
-    loadRfidLogs();
-  } catch (err) {
-    console.error(err);
-    showToast(false, "📡 RFID lỗi mạng");
-  }
-}
-
-function generateUID() {
-  return Array.from({ length: 8 }, () =>
-    Math.floor(Math.random() * 16)
-      .toString(16)
-      .toUpperCase()
-  ).join("");
-}
-
-function openAddRfid() {
-  // hiển thị modal chờ quét
-  document.getElementById("scan_backdrop").classList.add("show-modal");
-  document.getElementById("scan_status").innerHTML =
-    '<span class="spinner"></span> Đang chờ bạn quét thẻ...';
-
-  // bắt đầu polling backend để chờ UID
-  startEnrollPolling();
-}
-let enrollTimer = null;
-
-async function startEnrollPolling() {
-  const start = Date.now();
-
-  enrollTimer = setInterval(async () => {
     try {
-      const r = await fetch("/rfid/latest");
-      const js = await r.json();
-
-      if (js.ok && js.uid) {
-        clearInterval(enrollTimer);
-        closeScanModal();
-
-        // mở form thêm + tự điền UID
-        openEditModal("Thêm thẻ RFID");
-        document.getElementById("f_uid").value = js.uid;
-        document.getElementById("rfid_hint").textContent =
-          "✅ Thẻ đã được quét thành công!";
-      } else if (Date.now() - start > 15000) {
-        clearInterval(enrollTimer);
-        document.getElementById("scan_status").textContent =
-          "⏱️ Hết thời gian chờ, vui lòng thử lại.";
+      const res = await apiFetch('/api/devices/');
+      const list = Array.isArray(res) ? res : res?.data || [];
+      devicesCache = list;
+      renderDevices(list);
+      refreshPasskeyContext();
+      if (!latestReadings.length) {
+        refreshSensorOptions();
       }
-    } catch (e) {
-      console.error("Polling error:", e);
+    } catch (err) {
+      setTableMessage(elements.devicesTable, 6, 'Không thể tải danh sách thiết bị');
+      refreshPasskeyContext();
+      throw err;
     }
-  }, 1000); // check mỗi 1 giây
-}
-
-function editRfid(uid) {
-  RFID_SELECTED = uid; // ✅ thêm dòng này để biết đang sửa thẻ nào
-
-  const card = window.RFID_ALL.find((c) => c.uid === uid);
-  if (!card) return;
-
-  document.getElementById("rfid_modal_title").textContent =
-    "✏️ Sửa thông tin thẻ";
-  document.getElementById("f_uid").value = card.uid;
-  document.getElementById("f_owner").value = card.user_id || "";
-  document.getElementById("f_type").value = card.card_type || "MIFARE Classic";
-  document.getElementById("f_desc").value = card.description || "";
-  document.getElementById("f_expires").value = card.expires_at || "";
-  document.getElementById("f_active").checked = !!card.active;
-
-  document.getElementById("rfid_modal").classList.add("show-modal");
-}
-
-async function saveRfid() {
-  const uid = document.getElementById("f_uid").value.trim().toUpperCase();
-  const owner = document.getElementById("f_owner").value.trim();
-
-  if (!owner) {
-    document.getElementById("rfid_hint").textContent = "⚠️ Chủ thẻ là bắt buộc";
-    return;
   }
 
-  const expiresInput = document.getElementById("f_expires").value;
-  const expires_at = expiresInput ? new Date(expiresInput).toISOString() : null;
+  function renderDevices(devices) {
+    if (!devices.length) {
+      setTableMessage(elements.devicesTable, 6, 'Không có thiết bị nào');
+      return;
+    }
 
-  const data = {
-    uid,
-    user_id: owner,
-    card_type: document.getElementById("f_type").value.trim(),
-    description: document.getElementById("f_desc").value.trim(),
-    expires_at,
-    active: document.getElementById("f_active").checked,
-  };
+    elements.devicesTable.innerHTML = devices
+      .map((device) => {
+        const status = (device.status || '').toLowerCase();
+        const statusClass = status === 'online' ? 'status-online' : 'status-offline';
+        const actions = buildDeviceActions(device);
 
-  const url = "/rfid/cards" + (RFID_SELECTED ? `/${RFID_SELECTED}` : "");
-  const method = RFID_SELECTED ? "PUT" : "POST";
+        return `
+          <tr>
+            <td>${escapeHtml(device.device_id)}</td>
+            <td>${escapeHtml(device.gateway_id)}</td>
+            <td>${escapeHtml(device.device_type)}</td>
+            <td><span class="status-pill ${statusClass}">${status || 'unknown'}</span></td>
+            <td>${formatDateTime(device.last_seen)}</td>
+            <td>
+              ${
+                actions.length
+                  ? `<div class="action-buttons">${actions.join('')}</div>`
+                  : '<span class="muted">Không có hành động</span>'
+              }
+            </td>
+          </tr>
+        `;
+      })
+      .join('');
+  }
 
-  try {
-    const resp = await fetch(url, {
-      method,
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(data),
+  function buildDeviceActions(device) {
+    const actions = [];
+    const type = String(device.device_type || '').toLowerCase();
+
+    if (type.includes('fan')) {
+      actions.push(createActionButton('Bật', 'fan_on', device));
+      actions.push(createActionButton('Tắt', 'fan_off', device));
+    }
+
+    if (type.includes('door') || type.includes('lock') || type.includes('gate')) {
+      actions.push(createActionButton('Mở khóa', 'unlock', device));
+      actions.push(createActionButton('Khóa', 'lock', device));
+    }
+
+    return actions;
+  }
+
+  function createActionButton(label, action, device) {
+    return `<button data-action="${action}" data-device-id="${escapeHtml(
+      device.device_id
+    )}" data-gateway-id="${escapeHtml(device.gateway_id)}">${label}</button>`;
+  }
+
+  async function loadAccessLogs(isRefresh) {
+    if (isRefresh) {
+      setTableMessage(elements.accessTable, 5, 'Đang tải dữ liệu...');
+    }
+
+    try {
+      const res = await apiFetch('/api/access/logs?limit=25');
+      const rows = Array.isArray(res) ? res : res?.data || [];
+
+      if (!rows.length) {
+        setTableMessage(elements.accessTable, 5, 'Chưa có lượt vào/ra');
+        return;
+      }
+
+      elements.accessTable.innerHTML = rows
+        .map((row) => {
+          const result = String(row.result || '').toLowerCase();
+          const success = result === 'granted' || result === 'success';
+          const method = formatMethod(row.method);
+          const statusClass = success ? 'status-online' : 'status-offline';
+          const statusLabel = success ? 'GRANTED' : 'DENIED';
+
+          return `
+            <tr>
+              <td>${formatDateTime(row.time)}</td>
+              <td>${escapeHtml(row.device_id)}</td>
+              <td>${method}</td>
+              <td><span class="status-pill ${statusClass}">${statusLabel}</span></td>
+              <td>${escapeHtml(row.user_id)}</td>
+            </tr>
+          `;
+        })
+        .join('');
+    } catch (err) {
+      setTableMessage(elements.accessTable, 5, 'Không thể tải lịch sử vào/ra');
+      throw err;
+    }
+  }
+
+  async function loadRfidCards(isRefresh) {
+    if (isRefresh) {
+      setTableMessage(elements.rfidTable, 5, 'Đang tải dữ liệu...');
+    }
+
+    try {
+      const res = await apiFetch('/api/access/rfid');
+      const rows = Array.isArray(res) ? res : res?.data || [];
+      rfidCardsCache = rows;
+
+      if (!rows.length) {
+        setTableMessage(elements.rfidTable, 5, 'Chưa có thẻ RFID nào');
+        return;
+      }
+
+      const role = (currentUser?.role || '').toLowerCase();
+      const canManage = role === 'admin' || role === 'owner';
+
+      elements.rfidTable.innerHTML = rows
+        .map((card) => {
+          const active = Boolean(card.active);
+          const statusClass = active ? 'status-online' : 'status-offline';
+          const statusLabel = active ? 'ĐANG HOẠT ĐỘNG' : 'NGỪNG';
+          const actions = canManage
+            ? `<div class="action-buttons">
+                 <button data-action="edit" data-uid="${escapeHtml(card.uid)}">Sửa</button>
+                 <button data-action="delete" data-uid="${escapeHtml(card.uid)}">Xoá</button>
+               </div>`
+            : '<span class="muted">Không có hành động</span>';
+
+          return `
+            <tr>
+              <td>${escapeHtml(card.uid)}</td>
+              <td>${escapeHtml(card.user_id)}</td>
+              <td><span class="status-pill ${statusClass}">${statusLabel}</span></td>
+              <td>${formatDateTime(card.updated_at || card.registered_at)}</td>
+              <td>${actions}</td>
+            </tr>
+          `;
+        })
+        .join('');
+    } catch (err) {
+      setTableMessage(elements.rfidTable, 5, 'Không thể tải thẻ RFID');
+      throw err;
+    }
+  }
+
+  async function sendCommand(gatewayId, deviceId, action) {
+    let endpoint = `/api/commands/${encodeURIComponent(
+      gatewayId
+    )}/${encodeURIComponent(deviceId)}`;
+
+    const supportedActions = ['fan_on', 'fan_off', 'unlock', 'lock'];
+    if (supportedActions.includes(action)) {
+      endpoint += `/${action}`;
+      const res = await apiFetch(endpoint, { method: 'POST' });
+      if (res?.success === false) {
+        throw new Error(res.detail || res.message || 'Thiết bị phản hồi thất bại');
+      }
+      return res;
+    }
+
+    const res = await apiFetch(endpoint, {
+      method: 'POST',
+      body: { command: action }
     });
-    const js = await resp.json();
 
-    if (!js.ok) {
-      document.getElementById("rfid_hint").textContent =
-        "⚠️ Lỗi: " + (js.error || "Không rõ");
-      return;
+    if (res?.success === false) {
+      throw new Error(res.detail || res.message || 'Thiết bị phản hồi thất bại');
     }
 
-    closeEditModal();
-    showToast(true, RFID_SELECTED ? "Đã cập nhật thẻ" : "Đã thêm thẻ mới");
-    loadRfidCards();
-    if (!RFID_SELECTED) {
-      document.getElementById("f_desc").value = "";
-      document.getElementById("f_expires").value = "";
+    return res;
+  }
+
+  function setTableMessage(tbody, colSpan, message) {
+    tbody.innerHTML = `<tr><td colspan="${colSpan}" class="empty-cell">${message}</td></tr>`;
+  }
+
+  function formatNumber(value) {
+    if (value === null || value === undefined || Number.isNaN(Number(value))) return '--';
+    return Number(value).toLocaleString('vi-VN');
+  }
+
+  function formatDateTime(value) {
+    if (!value) return '--';
+    const date = new Date(value);
+    if (Number.isNaN(date.getTime())) return '--';
+    return date.toLocaleString('vi-VN', {
+      hour12: false
+    });
+  }
+
+  function formatTime(value) {
+    if (!value) return '';
+    const date = new Date(value);
+    if (Number.isNaN(date.getTime())) return '';
+    return date.toLocaleString('vi-VN', {
+      hour: '2-digit',
+      minute: '2-digit',
+      day: '2-digit',
+      month: '2-digit'
+    });
+  }
+
+  function formatMethod(method) {
+    if (!method) return '--';
+    const normalized = String(method).toLowerCase();
+    switch (normalized) {
+      case 'rfid':
+        return 'RFID';
+      case 'passkey':
+        return 'Passkey';
+      case 'remote':
+        return 'Remote';
+      default:
+        return normalized.charAt(0).toUpperCase() + normalized.slice(1);
     }
-  } catch (err) {
-    console.error("Lỗi lưu RFID:", err);
-    document.getElementById("rfid_hint").textContent = "⚠️ Lỗi kết nối máy chủ";
   }
-}
 
-let DELETE_UID = null;
-
-function deleteRfid(uid) {
-  DELETE_UID = uid;
-  document.getElementById(
-    "confirm_text"
-  ).textContent = `Bạn có chắc muốn xoá thẻ UID ${uid}?`;
-  document.getElementById("confirm_backdrop").classList.add("show-modal");
-}
-
-function closeConfirm() {
-  document.getElementById("confirm_backdrop").classList.remove("show-modal");
-}
-
-async function confirmDelete() {
-  if (!DELETE_UID) return;
-  try {
-    const r = await fetch(`/rfid/cards/${DELETE_UID}`, { method: "DELETE" });
-    const js = await r.json();
-    if (!js.ok) throw new Error(js.error || "Lỗi xoá");
-
-    closeConfirm();
-    showToast(true, "🗑️ Đã xoá thẻ");
-    loadRfidCards();
-  } catch (e) {
-    showToast(false, "⚠️ Lỗi xoá thẻ");
+  function escapeHtml(value) {
+    if (value === null || value === undefined) return '';
+    return String(value).replace(/[&<>"']/g, (char) => {
+      switch (char) {
+        case '&':
+          return '&amp;';
+        case '<':
+          return '&lt;';
+        case '>':
+          return '&gt;';
+        case '"':
+          return '&quot;';
+        case "'":
+          return '&#39;';
+        default:
+          return char;
+      }
+    });
   }
-}
-function closeEditModal() {
-  RFID_SELECTED = null; // ✅ reset
-  document.getElementById("rfid_modal").classList.remove("show-modal");
-}
 
-function closeScanModal() {
-  document.getElementById("scan_backdrop").classList.remove("show-modal");
-  if (enrollTimer) clearInterval(enrollTimer);
-}
+  function showToast(type, message) {
+    if (!elements.toast) return;
 
-//////////////////////////
-//Passkey login
-async function loadPasskeyDevice() {
-  const user_id = getCurrentUserId();
-  const card = document.querySelector("#tab-passkey .card");
-  const msg = document.getElementById("pass_inline");
-  const input = document.getElementById("device_id");
-  const label = document.getElementById("device_label");
-
-  try {
-    const r = await fetch(
-      `/access/get_device?user_id=${user_id}&device_type=passkey`
-    );
-    const js = await r.json();
-
-    if (!js.ok || !js.found) {
-      input.value = "";
-      input.disabled = true;
-      card.classList.add("device-disabled");
-      showDeviceMessage(
-        "passkey_msg",
-        "🔒 Bạn không có quyền truy cập",
-        "error"
-      );
-      msg.style.color = "#d33";
-      label.textContent = "Thiết bị: —";
-      return;
+    if (toastTimer) {
+      clearTimeout(toastTimer);
+      toastTimer = null;
     }
 
-    // ✅ Lưu biến từ JSON
-    const dev = js.device_id;
-    const gw = js.gateway_id;
+    elements.toast.textContent = message;
+    elements.toast.classList.remove('hidden', 'success', 'error', 'show');
+    elements.toast.classList.add(type === 'error' ? 'error' : 'success');
 
-    // ✅ Gán vào hidden input & label
-    input.value = dev;
-    input.disabled = false;
-    input.dataset.gateway_id = gw;
+    requestAnimationFrame(() => {
+      elements.toast.classList.add('show');
+    });
 
-    label.textContent = `Thiết bị: ${dev}`;
-    msg.textContent = "";
-    msg.style.color = "#555";
-    card.classList.remove("device-disabled");
-
-    console.log(`[PASSKEY DEVICE] ${dev} (${gw})`);
-  } catch (e) {
-    console.error("[loadPasskeyDevice error]", e);
-    showDeviceMessage("passkey_msg", "📡 Lỗi tải thiết bị Passkey", "error");
-  }
-}
-
-/* init */
-
-// DASHBOARD
-
-// window.addEventListener("load", loadTemperatureChart);
-
-// QUYEN SU DUNG
-
-async function loadUserDevices(userId) {
-  const r = await fetch(`/devices/for_user/${userId}`);
-  const js = await r.json();
-  if (!js.ok) {
-    alert(js.message || "Không có quyền sử dụng thiết bị nào.");
-    disableAllDeviceButtons(); // 🔒 vô hiệu hóa UI
-    return;
-  }
-  renderDevices(js.devices);
-}
-
-async function loadFanStatus() {
-  const res = await fetch("/fan/status");
-  const data = await res.json();
-
-  if (!data.ok) {
-    showToast(data.message || "Bạn không thể truy cập thiết bị này", "warning");
-    const fanSection = document.getElementById("tab-fan");
-    fanSection.classList.add("disabled-device");
-    return;
+    toastTimer = setTimeout(() => {
+      elements.toast.classList.remove('show');
+    }, 3200);
   }
 
-  // Nếu có quyền -> hiển thị thông tin quạt
-  console.log("✅ Danh sách quạt:", data.fans);
-  // ... (cập nhật label trạng thái, toggle, v.v.)
-}
-// Lưu user_id vào biến toàn cục khi load trang
-window.addEventListener("load", () => {
-  const uid = localStorage.getItem("currentUserId");
-  if (uid) window.currentUserId = uid;
-  document.querySelector('[data-tab="dashboard"]').click();
-});
+  function handleLogout() {
+    authToken = null;
+    currentUser = null;
+    devicesCache = [];
+    passkeysCache = [];
+    rfidCardsCache = [];
+    latestReadings = [];
+    currentSensorId = null;
+    destroyTemperatureChart();
+    passkeyContext.deviceId = null;
+    passkeyContext.gatewayId = null;
+    passkeyBuffer = '';
+    passkeySubmitting = false;
+    resetPasskeyState(true);
+    setPasskeyInputsDisabled(true);
+    elements.passkeySection?.classList.add('no-device');
+    setPasskeyStatus('Chưa có thiết bị passkey', 'info');
+
+    localStorage.removeItem('iot_auth_token');
+
+    elements.appHeader.classList.add('hidden');
+    elements.appContent.classList.add('hidden');
+    toggleLoginModal(true);
+    updatePasskeyControls();
+    updateRfidControls();
+  }
+
+  async function apiFetch(path, options = {}) {
+    const baseUrl = String(window.API_URL || 'http://127.0.0.1:3000').replace(/\/$/, '');
+    const url = `${baseUrl}${path}`;
+
+    const headers = new Headers(options.headers || {});
+    const init = {
+      method: options.method || 'GET',
+      headers,
+      body: null
+    };
+
+    const shouldAttachAuth = options.auth !== false && authToken;
+    if (shouldAttachAuth) {
+      headers.set('Authorization', `Bearer ${authToken}`);
+    }
+
+    if (options.body !== undefined && options.body !== null) {
+      if (options.body instanceof FormData) {
+        init.body = options.body;
+      } else if (typeof options.body === 'string') {
+        init.body = options.body;
+        if (!headers.has('Content-Type')) {
+          headers.set('Content-Type', 'application/json');
+        }
+      } else {
+        init.body = JSON.stringify(options.body);
+        headers.set('Content-Type', 'application/json');
+      }
+    }
+
+    const response = await fetch(url, init);
+    const contentType = response.headers.get('content-type') || '';
+    let payload = null;
+
+    if (contentType.includes('application/json')) {
+      payload = await response.json().catch(() => null);
+    } else {
+      const text = await response.text();
+      if (text) {
+        try {
+          payload = JSON.parse(text);
+        } catch {
+          payload = text;
+        }
+      }
+    }
+
+    if (!response.ok) {
+      if (response.status === 401 && shouldAttachAuth) {
+        handleLogout();
+      }
+      const message =
+        (payload && (payload.detail || payload.message)) ||
+        `Yêu cầu thất bại (${response.status})`;
+      const error = new Error(message);
+      error.status = response.status;
+      error.payload = payload;
+      throw error;
+    }
+
+    return payload;
+  }
+})();

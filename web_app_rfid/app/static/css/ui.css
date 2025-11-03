@@ -1,1669 +1,582 @@
-/* === 🎨 MÀU CHỦ ĐỀ CHÍNH === */
 :root {
-  --bg: #0b1020;
-  --card: #0f172a;
-  --bd: #1f2a44;
-  --txt: #e2e8f0;
-  --muted: #94a3b8;
-
-  --green: #22c55e;
-  --orange: #f59e0b;
-  --red: #ef4444;
-  --blue: #38bdf8;
+  --bg: #f1f5f9;
+  --surface: #ffffff;
+  --border: #e2e8f0;
+  --text: #0f172a;
+  --text-muted: #64748b;
+  --primary: #2563eb;
+  --primary-hover: #1d4ed8;
+  --success: #059669;
+  --danger: #dc2626;
+  --shadow: 0 12px 24px rgba(15, 23, 42, 0.06);
+  font-family: "Inter", system-ui, -apple-system, sans-serif;
 }
 
-/* === 🌐 TOÀN TRANG === */
-* {
+*,
+*::before,
+*::after {
   box-sizing: border-box;
-  min-width: 0;
 }
 
 html,
 body {
   margin: 0;
-  overflow-x: hidden;
+  padding: 0;
+  min-height: 100%;
   background: var(--bg);
-  color: var(--txt);
-  font-family: system-ui, -apple-system, "Segoe UI", Roboto;
+  color: var(--text);
 }
 
-img,
-video,
-canvas,
-svg {
-  max-width: 100%;
-  height: auto;
-  display: block;
+body {
+  line-height: 1.6;
 }
 
-/* === 📱 KHUNG ĐIỆN THOẠI GIẢ LẬP === */
-.phone {
-  width: 390px;
-  height: 844px;
-  margin: 16px auto;
-  border: 12px solid #111827;
-  border-radius: 36px;
-  overflow: auto;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
-  background: #0a0f1f;
-  position: relative;
+.hidden {
+  display: none !important;
 }
 
-@media (max-width: 420px) {
-  .phone {
-    width: 100%;
-    height: 100vh;
-    border: none;
-    border-radius: 0;
-  }
-}
-@media (max-width: 768px) {
-  .table-rfid th:nth-child(3),
-  .table-rfid td:nth-child(3),
-  .table-rfid th:nth-child(4),
-  .table-rfid td:nth-child(4) {
-    display: none; /* Ẩn 2 cột Loại thẻ + Mô tả trên màn hình nhỏ */
-  }
+a {
+  color: inherit;
+  text-decoration: none;
 }
 
-/* === 🧭 THANH HEADER & TAB === */
-header {
-  background: linear-gradient(90deg, #0ea5e9, #38bdf8);
+button {
+  font: inherit;
+  cursor: pointer;
+  border: none;
+  border-radius: 10px;
+  padding: 10px 18px;
+  background: var(--primary);
   color: #fff;
-  padding: 14px 16px;
-  font-weight: 700;
+  transition: background 0.2s ease, transform 0.15s ease;
 }
 
-.tabs {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 6px;
-  padding: 10px 12px;
-  background: #0b1226;
+button.primary-btn {
+  background: var(--primary);
+  color: #fff;
+}
+
+button:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+button:not(:disabled):hover {
+  background: var(--primary-hover);
+  transform: translateY(-1px);
+}
+
+.secondary-btn {
+  background: transparent;
+  color: var(--text-muted);
+  border: 1px solid var(--border);
+}
+
+.secondary-btn:hover {
+  background: rgba(37, 99, 235, 0.08);
+  color: var(--primary);
+}
+
+.app-header {
   position: sticky;
   top: 0;
-  z-index: 5;
-  border-bottom: 1px solid var(--bd);
-}
-
-.tab {
-  padding: 10px 0;
-  text-align: center;
-  border: 1px solid var(--bd);
-  border-radius: 10px;
-  cursor: pointer;
-  color: #cbd5e1;
-  background: #0f172a;
-  font-weight: 600;
-}
-
-.tab.active {
-  background: #0ea5e9;
-  color: #fff;
-  border-color: transparent;
-}
-
-.topbar {
-  position: relative;
+  z-index: 10;
+  background: rgba(241, 245, 249, 0.88);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--border);
   display: flex;
   align-items: center;
   justify-content: space-between;
-  background: var(--card);
-  padding: 10px 16px;
-  color: var(--txt);
-  font-size: 18px;
-  border-bottom: 1px solid var(--bd);
-  z-index: 1000;
+  padding: 18px 32px;
 }
 
-.menu-icon {
-  font-size: 24px;
-  cursor: pointer;
-  user-select: none;
-}
-
-/* MENU xổ xuống theo chiều dọc */
-.menu-dropdown {
-  position: absolute;
-  top: 100%;
-  left: 0;
-  right: 0;
-  background: var(--card);
-  display: none;
-  flex-direction: column;
-  border-top: 1px solid var(--bd);
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
-  z-index: 1000;
-}
-
-.menu-dropdown.show {
+.brand {
   display: flex;
-  animation: dropdownFade 0.25s ease;
-}
-
-@keyframes dropdownFade {
-  from {
-    opacity: 0;
-    transform: translateY(-8px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-.tab {
-  padding: 12px 16px;
-  cursor: pointer;
-  border-bottom: 1px solid var(--bd);
-  background: var(--card);
-  text-align: left;
-}
-
-.tab:hover {
-  background: var(--bd);
-}
-
-.tab.active {
-  background: var(--blue);
-  color: #fff;
-}
-
-/* === 📄 BỐ CỤC SECTION / CARD === */
-section {
-  display: none;
-  padding: 16px;
-}
-
-section.active {
-  display: block;
-}
-
-/* .card {
-  background: var(--card);
-  border: 1px solid var(--bd);
-  padding: 16px;
-  border-radius: 16px;
-} */
-
-h2 {
-  margin: 0 0 10px;
-  font-size: 16px;
-}
-
-.row {
-  display: flex;
-  gap: 8px;
-  margin: 8px 0;
   align-items: center;
-  flex-wrap: wrap;
-}
-
-.muted {
-  color: var(--muted);
-  font-size: 12px;
-}
-
-input,
-select,
-button {
-  padding: 10px 12px;
-  border: 1px solid var(--bd);
-  border-radius: 10px;
-  background: #0b1226;
-  color: var(--txt);
-}
-
-button {
-  background: #0ea5e9;
-  color: #fff;
-  border: none;
-  cursor: pointer;
-}
-
-button.secondary {
-  background: #1f2937;
-}
-.card {
-  background: var(--card);
-  border: 1px solid var(--bd);
-  padding: 16px;
-  border-radius: 16px;
-  max-height: 668px; /* Giới hạn chiều cao khung */
-  overflow-y: auto; /* Cuộn dọc nếu dài quá */
-  overflow-x: hidden; /* Ẩn tràn ngang */
-}
-
-/* Làm cho bảng gọn gàng hơn */
-.table {
-  width: 100%;
-  border-collapse: collapse;
-  table-layout: fixed; /* Mỗi cột có độ rộng tự co đều */
-}
-
-.table th,
-.table td {
-  padding: 1px 12px;
-  text-align: left;
-  border-bottom: 1px solid var(--bd);
-  word-break: break-word;
-  white-space: normal; /* Cho phép xuống dòng trong ô */
-  vertical-align: middle; /* Canh giữa theo trục dọc */
-}
-
-.table td:last-child {
-  width: 120px;
-  /* width: 41px;  */
-  text-align: right; /* Cho nó gọn về bên phải */
-  white-space: normal; /* Xuống dòng nếu quá dài */
-}
-
-.table thead {
-  position: sticky;
-  top: 0;
-  background: var(--card);
-  z-index: 1;
-}
-.card table {
-  min-height: 668px; /* 👈 card không bị xẹp */
-  display: block;
-  width: 100%;
-}
-
-.table-empty {
-  text-align: center;
-  color: var(--muted);
-  font-style: italic;
-  height: 60px;
-  width: 100%;
-  padding: 6px 8px;
-}
-.feed {
-  display: flex;
-  flex-direction: column;
-  gap: 10px; /* cách giữa các log */
-  margin-top: 10px;
-  width: 100%;
-}
-
-.feed-table {
-  width: 100%;
-  border-collapse: collapse;
-  font-size: 14px;
-  margin-top: 10px;
-}
-
-.feed-table th,
-.feed-table td {
-  border-bottom: 1px solid var(--bd);
-  padding: 8px 10px;
-  text-align: left;
-  white-space: nowrap;
-}
-
-.feed-table th {
-  background: #0f172a;
-  color: #e2e8f0;
-  font-weight: 600;
-}
-
-.feed-table tr:hover {
-  background: #1e293b;
-}
-
-.muted {
-  text-align: center;
-  color: var(--muted);
-}
-
-.feed-sub b {
-  color: #22c55e; /* highlight GRANTED hoặc trạng thái */
-}
-
-.feed-sub .denied {
-  color: #dc2626; /* highlight DENIED */
-}
-
-/* === 🔢 PASSCODE KEYPAD === */
-.screen {
-  font-size: 26px;
-  letter-spacing: 6px;
-  background: #0b1226;
-  padding: 12px 14px;
-  border-radius: 12px;
-  border: 1px solid var(--bd);
-  text-align: center;
-}
-
-.keys {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 10px;
-  margin-top: 10px;
-}
-
-.key {
-  padding: 16px 0;
-  background: #0b1226;
-  border: 1px solid var(--bd);
-  border-radius: 12px;
-  text-align: center;
+  gap: 12px;
   font-size: 20px;
-  cursor: pointer;
-  user-select: none;
-}
-
-.key:active {
-  filter: brightness(1.2);
-}
-
-.inline-status {
-  min-height: 22px;
-  margin-left: 10px;
-  font-weight: 700;
-  font-size: 13px;
-  opacity: 0.95;
-}
-
-.inline-status.ok {
-  color: #86efac;
-}
-.inline-status.err {
-  color: #fca5a5;
-}
-
-/* === 🌬️ TOGGLE FAN === */
-.toggle {
-  position: relative;
-  width: 60px;
-  height: 32px;
-  background: #1f2937;
-  border-radius: 999px;
-  cursor: pointer;
-  border: 1px solid var(--bd);
-  flex: 0 0 auto;
-}
-
-.knob {
-  position: absolute;
-  top: 3px;
-  left: 3px;
-  width: 26px;
-  height: 26px;
-  background: #fff;
-  border-radius: 50%;
-  transition: all 0.2s ease;
-}
-
-.toggle.on {
-  background: #065f46;
-}
-
-.toggle.on .knob {
-  left: 31px;
-  background: #d1fae5;
-}
-
-.state-label {
-  margin-left: 8px;
   font-weight: 600;
 }
 
-/* === 🔔 FEED / THÔNG BÁO === */
-.feed {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  margin-top: 10px;
-  padding: 10px;
-  height: 320px;
-  overflow-y: auto;
-  overscroll-behavior: contain;
-  -webkit-overflow-scrolling: touch;
-  background: #0b1226;
-  border: 1px solid var(--bd);
-  border-radius: 12px;
+.brand-icon {
+  font-size: 24px;
 }
 
-.feed::-webkit-scrollbar {
-  width: 8px;
-}
-
-.feed::-webkit-scrollbar-thumb {
-  background: #334155;
-  border-radius: 8px;
-}
-
-.item {
-  display: block;
-  line-height: 0.05;
-  padding: 10px;
-  border-radius: 10px;
-  border: 1px solid var(--bd);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  font-size: 13px;
-}
-
-/* === MÀU CỦA FEED ITEM === */
-.i-green {
-  background: rgba(34, 197, 94, 0.1);
-  color: #86efac;
-}
-.i-orange {
-  background: rgba(245, 158, 11, 0.08);
-  color: #fcd34d;
-}
-.i-red {
-  background: rgba(239, 68, 68, 0.1);
-  color: #fca5a5;
-}
-.i-gray {
-  background: rgba(148, 163, 184, 0.08);
-  color: #cbd5e1;
-}
-.i-blue {
-  background: rgba(56, 189, 248, 0.12);
-  color: #bae6fd;
-}
-
-/* === 💳 DANH SÁCH RFID === */
-.listbox {
-  height: 340px;
-  overflow-y: auto;
-  border: 1px solid var(--bd);
-  border-radius: 12px;
-  background: #0b1226;
-  padding: 6px;
-}
-
-.listrow {
+.user-section {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  gap: 8px;
-  padding: 8px 10px;
-  border-radius: 10px;
-  border: 1px solid var(--bd);
-  margin-bottom: 6px;
+  gap: 16px;
 }
 
-.rowleft {
+.user-name {
+  font-weight: 600;
+  color: var(--text-muted);
+}
+
+.app-content {
+  max-width: 1120px;
+  margin: 48px auto 64px;
+  padding: 0 24px;
   display: flex;
   flex-direction: column;
-  min-width: 0;
-  cursor: pointer;
+  gap: 32px;
 }
 
-.rowleft > div {
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+.card-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 20px;
 }
 
-.rowright {
-  display: flex;
-  gap: 6px;
-  flex: 0 0 auto;
+.stat-card {
+  background: var(--surface);
+  border-radius: 18px;
+  padding: 20px 24px;
+  box-shadow: var(--shadow);
+  border: 1px solid transparent;
+  transition: border-color 0.2s ease, transform 0.2s ease;
 }
 
-.badge {
-  font-size: 11px;
-  padding: 3px 8px;
-  border-radius: 999px;
-  border: 1px solid var(--bd);
+.stat-card:hover {
+  border-color: rgba(37, 99, 235, 0.18);
+  transform: translateY(-2px);
 }
 
-.badge.on {
-  background: rgba(34, 197, 94, 0.12);
-  color: #86efac;
-}
-.badge.off {
-  background: rgba(239, 68, 68, 0.12);
-  color: #fca5a5;
-}
-
-.btn-mini {
-  padding: 6px 8px;
-  font-size: 12px;
-  border: none;
-  border-radius: 8px;
-  cursor: pointer;
-  background: #0ea5e9;
-  color: #fff;
-}
-
-.btn-mini.alt {
-  background: #1f2937;
-}
-
-/* === 🔔 TOAST THÔNG BÁO === */
-.toast {
-  position: absolute;
-  bottom: 12%;
-  left: 50%;
-  transform: translateX(-50%) scale(0.9);
-  background: rgba(0, 0, 0, 0.85);
-  color: #fff;
-  padding: 8px 16px;
-  border-radius: 16px;
+.stat-title {
+  color: var(--text-muted);
   font-size: 14px;
-  max-width: 85vw;
-  text-align: center;
-  opacity: 0;
-  pointer-events: none;
-  transition: all 0.3s ease;
-  z-index: 9999;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
 }
 
-.toast.show {
-  opacity: 1;
-  pointer-events: auto;
-  transform: translateX(-50%) scale(1);
+.stat-value {
+  font-size: 32px;
+  font-weight: 700;
+  margin: 10px 0;
 }
 
-.toast.ok {
-  background: rgba(0, 160, 0, 0.9);
+.stat-meta {
+  color: var(--text-muted);
+  font-size: 14px;
 }
-.toast.err {
-  background: rgba(200, 0, 0, 0.9);
-}
-/* .toast {
-  position: fixed;
-  bottom: 20px;
-  right: 20px;
-  background: #333;
-  color: #fff;
-  padding: 10px 15px;
-  border-radius: 8px;
-  z-index: 1000;
-  opacity: 0.95;
-  transition: opacity 0.3s ease-in-out;
-}
-.toast.warning {
-  background: #f0ad4e;
-} */
 
-/* .toast {
-  position: fixed;
-  left: 50%;
-  bottom: 24px;
-  transform: translateX(-50%) translateY(40px);
-  padding: 12px 18px;
-  border-radius: 12px;
-  border: 1px solid var(--bd);
-  background: rgba(15, 23, 42, .92);
-  color: #e2e8f0;
+.panel {
+  background: var(--surface);
+  border-radius: 22px;
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow);
+  display: flex;
+  flex-direction: column;
+}
+
+.panel.grid-2 {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 24px;
+  background: transparent;
+  border: none;
+  box-shadow: none;
+}
+
+.device-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border-radius: 999px;
+  background: rgba(37, 99, 235, 0.12);
+  color: var(--primary);
   font-weight: 600;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, .5);
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity .3s ease, transform .3s ease;
-  z-index: 9999;
+  font-size: 14px;
 }
-.toast.show {
-  opacity: 1;
-  transform: translateX(-50%) translateY(0);
-}
-.toast.ok {
-  border-color: #14532d;
-  background: rgba(22, 163, 74, .9);
-  color: #d1fae5;
-}
-.toast.err {
-  border-color: #7f1d1d;
-  background: rgba(127, 29, 29, .9);
-  color: #fecaca;
-} */
 
-/* === 🪟 MODALS CHUNG === */
+.passkey-body {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 24px;
+  align-items: stretch;
+}
+
+.passkey-display-wrapper {
+  flex: 1 1 220px;
+  min-width: 200px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.passkey-display {
+  font-size: 36px;
+  letter-spacing: 12px;
+  text-align: center;
+  padding: 18px 20px;
+  border-radius: 16px;
+  background: linear-gradient(135deg, rgba(37, 99, 235, 0.08), rgba(37, 99, 235, 0.02));
+  border: 1px solid rgba(37, 99, 235, 0.15);
+  font-family: 'SFMono-Regular', 'Consolas', 'Liberation Mono', monospace;
+}
+
+.passkey-status {
+  min-height: 20px;
+  font-size: 14px;
+  color: var(--text-muted);
+}
+
+.passkey-status.success {
+  color: var(--success);
+  font-weight: 600;
+}
+
+.passkey-status.error {
+  color: var(--danger);
+  font-weight: 600;
+}
+
+.passkey-keypad {
+  flex: 1 1 260px;
+  min-width: 220px;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(64px, 1fr));
+  gap: 14px;
+}
+
+.passkey-keypad button {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 16px 0;
+  font-size: 22px;
+  font-weight: 600;
+  color: var(--text);
+  box-shadow: var(--shadow);
+  transition: transform 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
+}
+
+.passkey-keypad button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 16px 24px rgba(37, 99, 235, 0.18);
+  background: rgba(37, 99, 235, 0.12);
+}
+
+.passkey-keypad button[data-action='backspace'],
+.passkey-keypad button[data-action='clear'] {
+  font-size: 18px;
+}
+
+.passkey-footer {
+  flex: 1 1 100%;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: center;
+}
+
+.passkey-footer button {
+  flex: 1 1 160px;
+}
+
+.passkey-header-actions {
+  gap: 12px;
+}
+
+.passkey-control.no-device .passkey-keypad button,
+.passkey-control.no-device .passkey-footer button {
+  pointer-events: none;
+  opacity: 0.4;
+}
+
+.passkey-control.no-device .passkey-display {
+  opacity: 0.6;
+}
+
+.panel-header {
+  padding: 24px 28px 12px;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  border-bottom: 1px solid var(--border);
+}
+
+.panel-title {
+  margin: 0;
+  font-size: 20px;
+}
+
+.panel-subtitle {
+  margin: 4px 0 0;
+  font-size: 14px;
+  color: var(--text-muted);
+}
+
+.panel-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.panel-actions select {
+  padding: 8px 12px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: #fff;
+  font: inherit;
+  color: var(--text);
+}
+
+.panel-body {
+  padding: 20px 28px 28px;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.latest-reading {
+  display: flex;
+  gap: 34px;
+  flex-wrap: wrap;
+  color: var(--text-muted);
+  font-size: 15px;
+}
+
+.latest-reading span {
+  color: var(--text);
+  font-weight: 600;
+}
+
+.chart-wrapper {
+  position: relative;
+  width: 100%;
+  min-height: 220px;
+}
+
+.panel-empty {
+  padding: 18px;
+  background: #f8fafc;
+  border-radius: 12px;
+  text-align: center;
+  color: var(--text-muted);
+  border: 1px dashed var(--border);
+}
+
+.data-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+}
+
+.data-table thead {
+  background: #f8fafc;
+}
+
+.data-table th,
+.data-table td {
+  padding: 12px 16px;
+  text-align: left;
+  border-bottom: 1px solid var(--border);
+}
+
+.data-table tbody tr:hover {
+  background: rgba(37, 99, 235, 0.04);
+}
+
+.data-table .empty-cell {
+  text-align: center;
+  color: var(--text-muted);
+  padding: 36px 16px;
+}
+
+.status-pill {
+  display: inline-block;
+  padding: 4px 10px;
+  border-radius: 14px;
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.status-online {
+  background: rgba(5, 150, 105, 0.12);
+  color: var(--success);
+}
+
+.status-offline {
+  background: rgba(220, 38, 38, 0.12);
+  color: var(--danger);
+}
+
+.action-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.action-buttons button {
+  padding: 6px 12px;
+  font-size: 12px;
+  border-radius: 8px;
+}
+
 .modal-backdrop {
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.55);
-  display: none;
+  background: rgba(15, 23, 42, 0.7);
+  display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 90;
+  padding: 24px;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s ease;
 }
-.modal-backdrop.show-modal {
-  display: flex !important; /* 🔹 hiển thị popup khi được mở */
+
+.modal-backdrop.show {
+  opacity: 1;
+  pointer-events: auto;
 }
 
 .modal {
-  width: min(92vw, 420px);
-  background: #0f172a;
-  border: 1px solid var(--bd);
-  border-radius: 14px;
-  padding: 16px;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+  width: min(420px, 100%);
+  background: var(--surface);
+  border-radius: 20px;
+  padding: 32px;
+  box-shadow: 0 24px 64px rgba(15, 23, 42, 0.22);
 }
 
-.modal h3 {
-  margin: 0 0 10px;
-  font-size: 16px;
+.modal h2 {
+  margin-top: 0;
+  margin-bottom: 18px;
+  font-size: 22px;
 }
 
-.modal .muted {
-  font-size: 12px;
+.modal form label {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 14px;
+  color: var(--text-muted);
+}
+
+form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 16px;
+}
+
+.checkbox-field {
+  flex-direction: row !important;
+  align-items: center;
+  gap: 10px !important;
+}
+
+.checkbox-field input[type='checkbox'] {
+  width: auto;
+  height: auto;
 }
 
 .modal-actions {
   display: flex;
   justify-content: flex-end;
-  gap: 8px;
-  margin-top: 12px;
-}
-
-.show-modal {
-  display: flex;
-}
-
-/* === 🔄 LOADING SPINNER === */
-.spinner {
-  width: 18px;
-  height: 18px;
-  border: 3px solid #334155;
-  border-top-color: #38bdf8;
-  border-radius: 50%;
-  display: inline-block;
-  animation: spin 0.9s linear infinite;
-  vertical-align: middle;
-  margin-right: 8px;
-}
-
-@keyframes spin {
-  to {
-    transform: rotate(360deg);
-  }
-}
-
-/* ==== ADMIN / PASSKEY MANAGEMENT ==== */
-#admin_backdrop .modal input,
-#manage_backdrop .modal input,
-#pass_edit_backdrop .modal input {
-  width: 100%;
-}
-
-#passkey_list {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-}
-
-#passkey_list .listrow {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  background: var(--card);
-  border: 1px solid var(--bd);
-  padding: 8px 10px;
-  border-radius: 10px;
-  transition: background 0.15s ease;
-}
-
-#passkey_list .listrow:hover {
-  background: #1e293b;
-}
-
-#passkey_list .rowleft {
-  display: flex;
-  flex-direction: column;
-  min-width: 0;
-}
-
-#passkey_list .rowleft b {
-  font-size: 14px;
-}
-
-#passkey_list .muted {
-  font-size: 12px;
-  opacity: 0.9;
-}
-
-#passkey_list .rowright {
-  display: flex;
-  gap: 6px;
-}
-
-#manage_backdrop .modal {
-  max-height: 80vh;
-  overflow-y: auto;
-}
-
-/* modal title spacing */
-#manage_backdrop .modal h3,
-#pass_edit_backdrop .modal h3 {
-  margin-bottom: 10px;
-}
-
-/* ==== Modal danh sách Passkey ==== */
-#manage_backdrop {
-  position: fixed;
-  inset: 0;
-  background: rgba(0, 0, 0, 0.6);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  opacity: 0;
-  visibility: hidden;
-  transition: opacity 0.25s ease;
-  z-index: 3000;
-}
-
-#manage_backdrop.show-modal {
-  opacity: 1;
-  visibility: visible;
-}
-
-#manage_backdrop .modal {
-  background: var(--card, #0f172a);
-  color: var(--txt, #e2e8f0);
-  width: 92%;
-  max-width: 400px; /* ✅ Giới hạn vừa với giao diện điện thoại */
-  max-height: 80vh;
-  overflow-y: auto;
-  padding: 20px 22px;
-  border-radius: 16px;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.45);
-  animation: fadeUp 0.25s ease-out forwards;
-}
-
-#manage_backdrop .modal h3 {
-  text-align: center;
-  font-size: 1.1rem;
-  color: var(--blue, #38bdf8);
-  margin-bottom: 12px;
-}
-
-#manage_backdrop .modal .row {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 10px;
-}
-
-#manage_backdrop .modal .listrow {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  background: #1e293b;
-  padding: 8px 10px;
-  border-radius: 8px;
-  margin-bottom: 6px;
-  border: 1px solid var(--bd, #2a3b55);
-}
-
-#manage_backdrop .modal .rowleft b {
-  color: var(--txt);
-}
-
-#manage_backdrop .modal .muted {
-  color: var(--muted, #94a3b8);
-  font-size: 12px;
-}
-
-#manage_backdrop .modal .btn-mini {
-  font-size: 12px;
-  padding: 4px 8px;
-  border: none;
-  border-radius: 6px;
-  cursor: pointer;
-  transition: 0.2s;
-}
-#manage_backdrop .modal .btn-mini:hover {
-  opacity: 0.85;
-}
-#manage_backdrop .modal .btn-mini.alt {
-  background: #1e293b;
-  border: 1px solid var(--bd, #2a3b55);
-  color: var(--muted);
-}
-
-#manage_backdrop .modal-actions {
-  display: flex;
-  justify-content: center;
-  margin-top: 10px;
-}
-#manage_backdrop .modal-actions button {
-  background: var(--blue, #38bdf8);
-  color: #fff;
-  border: none;
-  padding: 8px 16px;
-  border-radius: 8px;
-  cursor: pointer;
-}
-#manage_backdrop .modal-actions button.secondary {
-  background: #1e293b;
-  color: var(--muted, #94a3b8);
-  border: 1px solid var(--bd, #2a3b55);
-}
-#manage_backdrop .modal-actions button.secondary:hover {
-  background: #273449;
-}
-
-/* Đăng nhập và phân quyền */
-/* ==== LOGIN MODAL ==== */
-#login_backdrop {
-  position: fixed;
-  inset: 0;
-  background: rgba(0, 0, 0, 0.88); /* làm tối toàn màn hình */
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 9999; /* cao nhất, che toàn bộ */
-  visibility: hidden;
-  opacity: 0;
-  transition: opacity 0.2s ease;
-  display: none;
-}
-
-/* Khi có class show-modal thì hiện ra */
-#login_backdrop.show-modal {
-  display: flex;
-  visibility: visible;
-  opacity: 1;
-}
-
-#login_backdrop .modal {
-  background: var(--card);
-  border: 1px solid var(--bd);
-  border-radius: 16px;
-  box-shadow: 0 0 20px rgba(0, 0, 0, 0.4);
-  padding: 24px;
-  width: 90%;
-  max-width: 380px;
-  color: var(--txt);
-}
-
-#login_backdrop .modal h3 {
-  text-align: center;
-  margin-bottom: 18px;
-}
-
-#login_backdrop input {
-  width: 100%;
-  margin-bottom: 12px;
-  padding: 8px 10px;
-  border: 1px solid var(--bd);
-  border-radius: 8px;
-  background: var(--bg);
-  color: var(--txt);
-}
-
-#login_backdrop button {
-  width: 100%;
-  background: var(--green);
-  border: none;
-  color: white;
-  font-weight: 600;
-  border-radius: 8px;
-  padding: 10px 0;
-  cursor: pointer;
-  transition: background 0.2s;
-}
-
-#login_backdrop button:hover {
-  background: #16a34a;
-}
-
-/* ==== Modal Passkey (có expires_at) ==== */
-#pass_edit_backdrop.show-modal {
-  opacity: 1;
-  visibility: visible;
-}
-#pass_edit_backdrop {
-  position: fixed;
-  inset: 0;
-  background: rgba(0, 0, 0, 0.55);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  opacity: 0;
-  visibility: hidden;
-  transition: 0.2s ease-in-out;
-  z-index: 1000;
-}
-
-#pass_edit_backdrop .modal {
-  background: var(--card, #0f172a);
-  color: var(--txt, #e2e8f0);
-  padding: 24px 28px;
-  border-radius: 16px;
-  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.4);
-  width: 440px;
-  max-width: 95%;
-  display: flex;
-  flex-direction: column;
   gap: 12px;
-  transform: translateY(20px);
-  animation: fadeUp 0.25s ease-out forwards;
-}
-@keyframes fadeUp {
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+  margin-top: 8px;
 }
 
-#pass_edit_backdrop h3 {
-  font-size: 1.25rem;
-  font-weight: 600;
-  text-align: center;
-  color: var(--blue, #38bdf8);
-  margin-bottom: 6px;
-}
-
-/* Inputs */
-#pass_edit_backdrop input,
-#pass_edit_backdrop select,
-#pass_edit_backdrop textarea {
-  width: 100%;
-  padding: 10px 12px;
-  border: 1px solid var(--bd, #1f2a44);
-  border-radius: 8px;
-  background: #1e293b;
-  color: var(--txt, #e2e8f0);
+.input-label {
   font-size: 14px;
+  color: var(--text-muted);
+}
+
+input {
+  padding: 12px 14px;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  font: inherit;
+  transition: border 0.2s ease, box-shadow 0.2s ease;
+}
+
+input:focus {
   outline: none;
-  transition: 0.15s border-color;
-  resize: none;
-}
-#pass_edit_backdrop input:focus,
-#pass_edit_backdrop select:focus,
-#pass_edit_backdrop textarea:focus {
-  border-color: var(--blue, #38bdf8);
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.18);
 }
 
-/* Row split: role + checkbox */
-.row-split {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-}
-.row-split select {
-  flex: 1;
-}
-.row-checkbox {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  flex-shrink: 0;
-}
-.row-checkbox input[type="checkbox"] {
-  width: 18px;
-  height: 18px;
-  accent-color: var(--blue, #38bdf8);
-  cursor: pointer;
-}
-.row-checkbox label {
-  color: var(--muted, #94a3b8);
-  font-size: 14px;
-  cursor: pointer;
-}
-
-/* Expires line */
-.expires-line {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-  margin-top: 4px;
-}
-.expires-line label {
+.muted {
+  color: var(--text-muted);
   font-size: 13px;
-  color: var(--muted, #94a3b8);
-}
-.expires-line .hint {
-  font-size: 12px;
-  color: #64748b;
-  margin-left: 2px;
+  min-height: 18px;
 }
 
-/* Buttons */
-#pass_edit_backdrop .modal-actions {
-  display: flex;
-  justify-content: flex-end;
-  gap: 10px;
-  margin-top: 10px;
-}
-#pass_edit_backdrop .modal-actions button {
-  padding: 8px 16px;
-  border: none;
-  border-radius: 8px;
-  cursor: pointer;
-  font-weight: 500;
-  font-size: 14px;
-  transition: 0.15s background, 0.15s transform;
-}
-#pass_edit_backdrop .modal-actions button:hover {
-  transform: translateY(-1px);
-}
-#pass_edit_backdrop .modal-actions button:not(.alt) {
-  background: var(--blue, #38bdf8);
-  color: #fff;
-}
-#pass_edit_backdrop .modal-actions button.alt {
-  background: #1e293b;
-  color: var(--muted, #94a3b8);
-  border: 1px solid var(--bd, #2a3b55);
-}
-#pass_edit_backdrop .modal-actions button.alt:hover {
-  background: #273449;
-  color: #cbd5e1;
-}
-
-/* ==== Confirm Delete Modal ==== */
-#confirm_delete_backdrop {
+.toast {
   position: fixed;
-  inset: 0;
-  background: rgba(0, 0, 0, 0.6);
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  top: 24px;
+  right: 24px;
+  min-width: 240px;
+  padding: 14px 18px;
+  border-radius: 12px;
+  background: var(--text);
+  color: #fff;
+  box-shadow: 0 18px 36px rgba(15, 23, 42, 0.18);
   opacity: 0;
-  visibility: hidden;
-  transition: opacity 0.25s ease;
-  z-index: 9999 !important; /* 🔥 vì bây giờ modal này đã nằm ngoài mọi stacking context */
-}
-
-#confirm_delete_backdrop.show-modal {
-  opacity: 1;
-  visibility: visible;
-}
-
-#confirm_delete_backdrop .modal.small {
-  width: 320px;
-  background: var(--card, #0f172a);
-  padding: 22px 24px;
-  border-radius: 14px;
-  text-align: center;
-  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.45);
-}
-
-#confirm_delete_backdrop h3 {
-  color: var(--red, #ef4444);
-  font-size: 1.1rem;
-  margin-bottom: 6px;
-}
-#confirm_delete_backdrop p {
-  color: var(--muted, #94a3b8);
-  font-size: 14px;
-  margin-bottom: 16px;
-}
-#confirm_delete_backdrop .modal-actions.center {
-  display: flex;
-  justify-content: center;
-  gap: 12px;
-}
-#confirm_delete_backdrop .modal-actions button {
-  padding: 8px 16px;
-  border: none;
-  border-radius: 8px;
-  font-weight: 500;
-  cursor: pointer;
-  transition: 0.15s background;
-}
-#confirm_delete_backdrop .modal-actions button.danger {
-  background: var(--red, #ef4444);
-  color: #fff;
-}
-#confirm_delete_backdrop .modal-actions button.danger:hover {
-  background: #f87171;
-}
-#confirm_delete_backdrop .modal-actions button.alt {
-  background: #1e293b;
-  color: var(--muted, #94a3b8);
-  border: 1px solid var(--bd, #2a3b55);
-}
-#confirm_delete_backdrop .modal-actions button.alt:hover {
-  background: #273449;
-}
-
-/* ==== MOBILE FULLSCREEN MODAL ==== */
-/* ===== FULLSCREEN MODAL STYLE (mobile overlay) ===== */
-.modal-full {
-  position: absolute; /* 👈 đổi fixed → absolute */
-  inset: 0;
-  background: var(--bg);
-  color: var(--txt);
-  display: flex;
-  flex-direction: column;
-  z-index: 10001; /* nằm trên nội dung, nhưng vẫn trong .phone */
-  opacity: 0;
-  visibility: hidden;
-  transition: opacity 0.25s ease;
-}
-
-.phone .modal-full {
-  /* 👈 đảm bảo chỉ hoạt động trong phone */
-  border-radius: 0;
-  height: 100%;
-  width: 100%;
-}
-.modal-full.show-modal {
-  opacity: 1;
-  visibility: visible;
-  display: flex !important;
-}
-
-/* Header (có nút quay lại) */
-.modal-full header {
-  background: linear-gradient(90deg, #0ea5e9, #38bdf8);
-  color: #fff;
-  padding: 4px 16px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-.modal-full header h3 {
-  margin: 0;
-  font-size: 16px;
-}
-.modal-full header button.back {
-  background: none;
-  border: none;
-  color: #fff;
-  font-size: 20px;
-  cursor: pointer;
-}
-
-/* Nội dung chính */
-.modal-full .content {
-  flex: 1;
-  overflow-y: auto;
-  padding: 16px;
-}
-
-/* Form inputs */
-.modal-full input,
-.modal-full select,
-.modal-full textarea {
-  width: 100%;
-  padding: 10px 12px;
-  border-radius: 10px;
-  border: 1px solid var(--bd);
-  background: #0b1226;
-  color: var(--txt);
-  margin-bottom: 10px;
-}
-
-/* Footer actions */
-.modal-full .actions {
-  display: flex;
-  justify-content: space-between;
-  padding: 14px;
-  border-top: 1px solid var(--bd);
-}
-.modal-full .actions button {
-  flex: 1;
-  margin: 0 4px;
-  border: none;
-  border-radius: 10px;
-  padding: 10px;
-  font-weight: 600;
-  cursor: pointer;
-}
-.modal-full .actions .save {
-  background: var(--blue);
-  color: #fff;
-}
-.modal-full .actions .cancel {
-  background: #1f2937;
-  color: var(--muted);
-}
-.modal-full .actions .danger {
-  background: var(--red);
-  color: #fff;
-}
-
-.modal.small {
-  width: min(85vw, 300px);
-  padding: 16px;
-  border-radius: 14px;
-  background: #0f172a;
-  border: 1px solid var(--bd);
-  text-align: center;
-}
-.modal-actions.center {
-  justify-content: center;
-}
-
-/* Lớp mờ nền xác nhận xóa */
-#confirm_backdrop_passkey {
-  position: fixed;
-  inset: 0;
-  display: none;
-  align-items: center;
-  justify-content: center;
-  background: rgba(0, 0, 0, 0.55);
-  z-index: 9999; /* 🟢 cao hơn cả manage_full */
-}
-
-/* Khi bật */
-#confirm_backdrop_passkey.show-modal {
-  display: flex;
-}
-
-/* Hộp confirm nhỏ gọn giữa màn hình */
-#confirm_backdrop_passkey .modal {
-  width: min(85vw, 300px);
-  background: #0f172a;
-  border: 1px solid var(--bd);
-  border-radius: 14px;
-  padding: 16px;
-  text-align: center;
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
-  z-index: 10000; /* đảm bảo nổi hẳn */
-}
-
-/* Thiết bị không sử dụng */
-
-.disabled-device {
-  opacity: 0.5;
-  pointer-events: none; /* chặn click */
-  filter: grayscale(70%);
-}
-
-/* Tin nhắn trạng thái quạt */
-/* Toast mini ngay giữa card */
-/* Khung hiển thị thông báo quyền thiết bị */
-.fan-message {
-  position: absolute;
-  top: 45%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  min-width: 260px;
-  background: rgba(0, 0, 0, 0.7); /* nền xám tối nhẹ */
-  color: #fff;
-  font-size: 15px;
-  padding: 14px 20px;
-  border-radius: 8px;
-  opacity: 0;
-  text-align: center;
-  transition: opacity 0.2s ease;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.4);
   pointer-events: none;
+  transform: translateY(-10px);
+  transition: opacity 0.2s ease, transform 0.2s ease;
   z-index: 20;
 }
 
-/* Khi hiển thị */
-.fan-message.show {
+.toast.show {
   opacity: 1;
-  pointer-events: auto;
-}
-.rfid-message {
-  position: absolute;
-  top: 45%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  min-width: 260px;
-  background: rgba(0, 0, 0, 0.7); /* nền xám tối nhẹ */
-  color: #fff;
-  font-size: 15px;
-  padding: 14px 20px;
-  border-radius: 8px;
-  opacity: 0;
-  text-align: center;
-  transition: opacity 0.2s ease;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.4);
-  pointer-events: none;
-  z-index: 20;
-}
-
-/* Khi hiển thị */
-.rfid-message.show {
-  opacity: 1;
+  transform: translateY(0);
   pointer-events: auto;
 }
 
-.passkey-message {
-  position: absolute;
-  top: 45%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  min-width: 260px;
-  background: rgba(0, 0, 0, 0.7); /* nền xám tối nhẹ */
-  color: #fff;
-  font-size: 15px;
-  padding: 14px 20px;
-  border-radius: 8px;
-  opacity: 0;
-  text-align: center;
-  transition: opacity 0.2s ease;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.4);
-  pointer-events: none;
-  z-index: 20;
+.toast.success {
+  background: var(--success);
 }
 
-/* Khi hiển thị */
-.passkey-message.show {
-  opacity: 1;
-  pointer-events: auto;
-}
-/* Làm mờ toàn card khi bị khóa */
-.device-disabled {
-  opacity: 0.45;
-  pointer-events: none;
-  position: relative;
+.toast.error {
+  background: var(--danger);
 }
 
-.device-disabled::after {
-  content: "🔒";
-  position: absolute;
-  top: 8px;
-  right: 12px;
-  font-size: 18px;
-  color: #f87171;
-  opacity: 0.8;
-}
+@media (max-width: 768px) {
+  .app-header {
+    padding: 16px 20px;
+  }
 
-/* weather */
-.weather-box {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  background: linear-gradient(145deg, #4fc3f7, #0288d1);
-  color: #fff;
-  border-radius: 14px;
-  padding: 20px;
-  margin: 10px 0 25px;
-  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.15);
-}
+  .app-content {
+    margin-top: 32px;
+    padding: 0 16px;
+  }
 
-.weather-left {
-  display: flex;
-  align-items: center;
-}
+  .panel-header {
+    flex-direction: column;
+    align-items: stretch;
+  }
 
-.weather-icon {
-  font-size: 56px;
-  margin-right: 15px;
-}
+  .panel-actions {
+    justify-content: flex-start;
+  }
 
-.weather-temp {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-}
+  .latest-reading {
+    gap: 18px;
+  }
 
-.temp-value {
-  font-size: 32px;
-  font-weight: 700;
-}
+  .passkey-display {
+    font-size: 28px;
+    letter-spacing: 8px;
+  }
 
-.hum-value {
-  font-size: 18px;
-  font-weight: 500;
-  opacity: 0.9;
-}
+  .passkey-keypad {
+    grid-template-columns: repeat(3, minmax(56px, 1fr));
+    gap: 12px;
+  }
 
-.weather-info {
-  text-align: right;
-  font-size: 13px;
-}
-
-.temp-time {
-  margin: 0;
-  font-size: 13px;
-}
-
-.location-info {
-  margin: 0;
-  font-size: 12px;
-  opacity: 0.8;
-}
-
-.chart-section {
-  margin-top: 10px;
-}
-
-.chart-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 8px;
-}
-
-#tempChart {
-  background: #fafafa;
-  border-radius: 10px;
-  padding: 8px;
-  box-shadow: 0 0 8px rgba(0, 0, 0, 0.05);
-}
-
-#passkey_msg {
-  z-index: 999;
-}
-#fan_msg {
-  z-index: 999;
-}
-#rfid_msg {
-  z-index: 999;
-}
-/* history */
-
-/* #tab-history .card {
-  max-width: 600px;
-  margin: 0 auto;
-  padding: 16px;
-  border-radius: 12px;
-  background: var(--card);
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
-}
-
-#tab-history table {
-  width: 100%;
-  border-collapse: collapse;
-  margin-top: 12px;
-  font-size: 0.9rem;
-}
-
-#tab-history th,
-#tab-history td {
-  text-align: center;
-  padding: 6px 8px;
-  border-bottom: 1px solid var(--bd);
-}
-
-#tab-history th {
-  color: var(--muted);
-  font-weight: 600;
-  text-transform: uppercase;
-}
-
-#tab-history td {
-  color: var(--txt);
-  white-space: nowrap;
-}
-
-#tab-history td:nth-child(2) {
-  font-weight: 600;
-}
-
-#tab-history .muted {
-  color: var(--muted);
-  text-align: center;
-  padding: 8px;
-} */
-#tab-history .card {
-  max-height: 668px; /* Giới hạn chiều cao */
-  overflow-y: auto; /* Cho phép cuộn dọc */
-  padding: 1rem;
-}
-
-#tab-history table {
-  width: 100%;
-  border-collapse: collapse;
-  font-size: 14px;
-  margin-top: 10px;
-}
-
-#tab-history th,
-#tab-history td {
-  padding: 6px 18px;
-  text-align: left;
-  border-bottom: 1px solid #2d3748;
-}
-
-#tab-history th {
-  background: #1e293b;
-  position: sticky;
-  top: 0;
-}
-
-#tab-feed .card {
-  max-width: 700px;
-  margin: 0 auto;
-  padding: 16px;
-  border-radius: 12px;
-  background: var(--card);
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25);
-}
-
-#tab-feed table {
-  width: 100%;
-  border-collapse: collapse;
-  font-size: 0.9rem;
-  margin-top: 12px;
-}
-
-#tab-feed th,
-#tab-feed td {
-  padding: 6px 8px;
-  text-align: center;
-  border-bottom: 1px solid var(--bd);
-}
-
-#tab-feed th {
-  color: var(--muted);
-  font-weight: 600;
-  text-transform: uppercase;
-}
-
-#tab-feed .muted {
-  color: var(--muted);
-  text-align: center;
-  padding: 8px;
-}
-
-.table-rfid {
-  width: 100%;
-  border-collapse: collapse;
-  table-layout: fixed;
-  min-height: 350px;
-}
-
-.table-rfid th,
-.table-rfid td {
-  padding: 0px;
-  text-align: center;
-}
-
-.table-actions button {
-  background: #1f2937;
-  color: #fff;
-  border: none;
-  border-radius: 6px;
-  padding: 4px 8px;
-  font-size: 13px;
-  cursor: pointer;
-  margin: 0 3px;
-  transition: background 0.2s ease;
-}
-
-.table-actions button:hover {
-  background: #0ea5e9;
-}
-
-.table-actions button.delete {
-  background: #dc2626;
-}
-
-.table-actions button.delete:hover {
-  background: #b91c1c;
-}
-
-button.small-action {
-  padding: 6px 10px;
-  font-size: 13px;
-  border-radius: 8px;
-  background: #0ea5e9;
-  color: white;
-  border: none;
-  cursor: pointer;
-  margin-bottom: 10px;
-}
-
-button.small-action:hover {
-  background: #0284c7;
-}
-.modal .row {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start; /* căn trái toàn bộ */
-  margin-bottom: 10px;
-}
-
-.date-row label {
-  font-size: 0.95em;
-  color: var(--txt, #e2e8f0);
-  margin-bottom: 4px;
-}
-
-.date-input {
-  position: relative;
-  display: flex;
-  align-items: center;
-  width: 100%;
-}
-
-.date-input input[type="datetime-local"] {
-  width: 100%;
-  padding: 8px 32px 8px 8px;
-  border: 1px solid var(--bd, #334155);
-  border-radius: 8px;
-  background-color: var(--card, #0f172a);
-  color: var(--txt, #e2e8f0);
-}
-
-.date-input .icon {
-  position: absolute;
-  right: 10px;
-  pointer-events: none;
-  opacity: 0.6;
-  font-size: 1.1em;
-}
-.table-actions {
-  width: 40px;
-}
-.table-rfid td:last-child {
-  width: 86px;
-}
-/* ==== modal passkey quản lý thiết bị ==== */
-
-.modal-backdrop-passkey {
-  display: none;
-  position: fixed;
-  inset: 0;
-  background: rgba(0, 0, 0, 0.45);
-  align-items: center;
-  justify-content: center;
-  z-index: 99999 !important; /* 🔥 Ưu tiên cao nhất để nổi lên trên tất cả */
-}
-
-.modal-backdrop-passkey.show-modal {
-  display: flex !important;
-}
-
-.modal-backdrop-passkey .modal.small {
-  background: var(--card, #0f172a);
-  color: var(--txt, #e2e8f0);
-  padding: 16px 20px;
-  border-radius: 12px;
-  width: 90%;
-  max-width: 320px;
-  text-align: center;
-  z-index: 100000 !important; /* đảm bảo hộp nằm trên lớp nền */
+  .passkey-footer button {
+    flex: 1 1 120px;
+  }
 }
