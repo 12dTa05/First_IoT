@@ -52,7 +52,6 @@ async def get_device(
             'success': True,
             'data': result[0]
         }
-    except HTT
     except HTTPException:
         raise
     except Exception as e:
