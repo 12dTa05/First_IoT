@@ -22,7 +22,11 @@ async def get_devices(current_user: dict = Depends(get_current_user)):
                ORDER BY d.created_at DESC""",
             (user_id,)
         )
-        return result
+        return {
+            'success': True,
+            'data': result if result else [],
+            'count': len(result) if result else 0
+        }
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
@@ -44,7 +48,11 @@ async def get_device(
         if not result:
             raise HTTPException(status_code=404, detail='Device not found')
         
-        return result[0]
+        return {
+            'success': True,
+            'data': result[0]
+        }
+    except HTT
     except HTTPException:
         raise
     except Exception as e:
@@ -161,7 +169,7 @@ async def get_device_status_history(
             FROM system_logs
             WHERE device_id = %s
               AND event IN ('device_offline', 'device_online', 'device_status_change')
-              AND time > NOW() - INTERVAL '%s hours'
+              AND time > NOW() - INTERVAL '1 hour' * %s
             ORDER BY time DESC
         """
         
@@ -175,7 +183,7 @@ async def get_device_status_history(
                 COUNT(*) FILTER (WHERE event = 'device_status_change') as status_change_count
             FROM system_logs
             WHERE device_id = %s
-              AND time > NOW() - INTERVAL '%s hours'
+              AND time > NOW() - INTERVAL '1 hour' * %s
         """
         
         stats = db.query_one(stats_query, (device_id, hours))

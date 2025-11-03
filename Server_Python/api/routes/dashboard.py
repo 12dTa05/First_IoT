@@ -2,6 +2,9 @@ from fastapi import APIRouter, HTTPException, Depends, Query
 from datetime import datetime, timedelta
 from services.database import db
 from middleware.auth import get_current_user
+import logging
+
+logger = logging.getLogger(__name__)
 
 router = APIRouter(prefix='/api/dashboard', tags=['dashboard'])
 
@@ -16,7 +19,7 @@ async def get_overview(current_user: dict = Depends(get_current_user)):
             SELECT 
                 COUNT(*) as total_devices,
                 COUNT(*) FILTER (WHERE status = 'online') as online_devices,
-                COUNT(*) FILTER (WHERE statu= 'offline') as offline_devices
+                COUNT(*) FILTER (WHERE status= 'offline') as offline_devices
             FROM devices
             WHERE user_id = %s
         """
@@ -80,6 +83,44 @@ async def get_overview(current_user: dict = Depends(get_current_user)):
         logger.error(f'Dashboard overview error: {e}')
         raise HTTPException(status_code=500, detail=str(e))
 
+@router.get('/recent-activities')
+async def get_recent_activities(
+    current_user: dict = Depends(get_current_user),
+    hours: int = Query(24, ge=1, le=168)
+):
+    """Get recent activities (access logs) for dashboard"""
+    try:
+        user_id = current_user['user_id']
+        
+        # Get recent access logs
+        query = """
+            SELECT 
+                time,
+                device_id,
+                gateway_id,
+                method,
+                result,
+                password_id,
+                rfid_uid,
+                deny_reason
+            FROM access_logs
+            WHERE user_id = %s
+              AND time > NOW() - INTERVAL '1 hour' * %s
+            ORDER BY time DESC
+            LIMIT 100
+        """
+        
+        activities = db.query(query, (user_id, hours))
+        
+        return {
+            'success': True,
+            'data': activities if activities else []
+        }
+        
+    except Exception as e:
+        logger.error(f'Error fetching recent activities: {e}', exc_info=True)
+        raise HTTPException(status_code=500, detail=str(e))
+
 @router.get('/activity')
 async def get_activity(
     current_user: dict = Depends(get_current_user),
@@ -96,7 +137,7 @@ async def get_activity(
                 'access' as event_type
             FROM access_logs
             WHERE user_id = %s
-              AND time > NOW() - INTERVAL '%s hours'
+              AND time > NOW() - INTERVAL '%s hours' * %s
             ORDER BY time DESC
             LIMIT 50
         """
@@ -108,8 +149,8 @@ async def get_activity(
                 'alert' as event_type, message
             FROM system_logs
             WHERE user_id = %s
-              AND log_type = 'alert'
-              AND time > NOW() - INTERVAL '%s hours'
+            AND log_type = 'alert'
+            AND time > NOW() - INTERVAL '1 hour' * %s
             ORDER BY time DESC
             LIMIT 50
         """
@@ -142,8 +183,8 @@ async def get_temperature_history(
             SELECT time, temperature, humidity
             FROM telemetry
             WHERE user_id = %s
-              AND device_id = %s
-              AND time > NOW() - INTERVAL '%s hours'
+            AND device_id = %s
+            AND time > NOW() - INTERVAL '1 hour' * %s
             ORDER BY time ASC
         """
         
@@ -182,4 +223,65 @@ async def get_alerts(
         }
         
     except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@router.get('/stats')
+async def get_dashboard_stats(current_user: dict = Depends(get_current_user)):
+    """Get dashboard statistics for charts and analytics"""
+    try:
+        user_id = current_user['user_id']
+        
+        # Device stats by type
+        devices_query = """
+            SELECT 
+                device_type,
+                COUNT(*) as count,
+                COUNT(*) FILTER (WHERE status = 'online') as online_count,
+                COUNT(*) FILTER (WHERE status = 'offline') as offline_count
+            FROM devices
+            WHERE user_id = %s
+            GROUP BY device_type
+        """
+        devices_stats = db.query(devices_query, (user_id,))
+        
+        # Access stats (last 7 days)
+        access_query = """
+            SELECT 
+                DATE(time) as date,
+                COUNT(*) as total,
+                COUNT(*) FILTER (WHERE result = 'granted') as granted,
+                COUNT(*) FILTER (WHERE result = 'denied') as denied
+            FROM access_logs
+            WHERE user_id = %s 
+              AND time > NOW() - INTERVAL '7 days'
+            GROUP BY DATE(time)
+            ORDER BY date DESC
+        """
+        access_stats = db.query(access_query, (user_id,))
+        
+        # Alert stats (last 30 days)
+        alerts_query = """
+            SELECT 
+                event as alert_type,
+                severity,
+                COUNT(*) as count
+            FROM system_logs
+            WHERE user_id = %s 
+              AND log_type = 'alert' 
+              AND time > NOW() - INTERVAL '30 days'
+            GROUP BY event, severity
+        """
+        alerts_stats = db.query(alerts_query, (user_id,))
+        
+        return {
+            'success': True,
+            'data': {
+                'devices_by_type': devices_stats if devices_stats else [],
+                'access_by_day': access_stats if access_stats else [],
+                'alerts_by_type': alerts_stats if alerts_stats else []
+            }
+        }
+        
+    except Exception as e:
+        logger.error(f'Error fetching dashboard stats: {e}', exc_info=True)
         raise HTTPException(status_code=500, detail=str(e))

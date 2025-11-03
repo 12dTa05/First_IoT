@@ -22,7 +22,12 @@ class Settings:
     CORS_ORIGINS = [
         'http://localhost:3001',
         'http://127.0.0.1:3001',
+        'http://localhost:3000',  # Add if needed
+        'http://127.0.0.1:3000',
     ]
+    
+    # Add CORS credentials
+    CORS_ALLOW_CREDENTIALS = True
     
     # Request timeout
     API_TIMEOUT = int(os.getenv('API_TIMEOUT', 30))

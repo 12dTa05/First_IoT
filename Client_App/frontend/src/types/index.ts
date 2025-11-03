@@ -52,13 +52,24 @@ export interface AccessLog {
 }
 
 export interface DashboardOverview {
-  total_devices: number;
-  online_devices: number;
-  offline_devices: number;
-  total_gateways: number;
-  online_gateways: number;
-  recent_access_count: number;
-  recent_alerts?: any[];
+  devices: {
+    total_devices: number;
+    online_devices: number;
+    offline_devices: number;
+  };
+  gateways: {
+    total_gateways: number;
+    online_gateways: number;
+  };
+  access: {
+    total_access: number;
+    granted: number;
+    denied: number;
+  };
+  alerts: {
+    alert_count: number;
+  };
+  latest_readings?: TelemetryData[];
 }
 
 export interface WebSocketMessage {
@@ -74,4 +85,5 @@ export interface ApiResponse<T = any> {
   data?: T;
   error?: string;
   message?: string;
+  authenticated?: boolean;
 }

@@ -89,3 +89,47 @@ async def get_access_logs(
         raise HTTPException(status_code=500, detail=result.get('error', 'Failed to fetch logs'))
     
     return result
+
+@router.get('/{device_id}/telemetry')
+async def get_device_telemetry(
+    device_id: str,
+    hours: int = 24,
+    session: dict = Depends(get_current_session)
+):
+    """Get telemetry data for a device"""
+    token = session.get('token')
+    result = await api_client.get(
+        f'/api/telemetry/{device_id}',
+        token=token,
+        params={'hours': hours}
+    )
+    
+    if not result.get('success'):
+        raise HTTPException(
+            status_code=result.get('status_code', 500),
+            detail=result.get('error', 'Failed to fetch telemetry')
+        )
+    
+    return result
+
+@router.get('/{device_id}/access-logs')
+async def get_device_access_logs(
+    device_id: str,
+    hours: int = 24,
+    session: dict = Depends(get_current_session)
+):
+    """Get access logs for a device"""
+    token = session.get('token')
+    result = await api_client.get(
+        f'/api/access/{device_id}/logs',
+        token=token,
+        params={'hours': hours}
+    )
+    
+    if not result.get('success'):
+        raise HTTPException(
+            status_code=result.get('status_code', 500),
+            detail=result.get('error', 'Failed to fetch access logs')
+        )
+    
+    return result

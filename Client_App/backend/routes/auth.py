@@ -48,13 +48,16 @@ async def login(credentials: LoginRequest, response: Response):
             token=result['token']
         )
         
+        is_production = settings.ENVIRONMENT == 'production'
+
         response.set_cookie(
             key=settings.SESSION_COOKIE_NAME,
             value=session_id,
             max_age=settings.SESSION_MAX_AGE,
             httponly=True,
-            secure=settings.ENVIRONMENT == 'production',
-            samesite='lax'
+            secure=is_production,  # Only secure in production
+            samesite='none' if not is_production else 'lax',  # 'none' for cross-origin in dev
+            domain=None  # Allow cookie on localhost
         )
         
         return {

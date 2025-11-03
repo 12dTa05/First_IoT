@@ -16,14 +16,14 @@ async def get_dashboard_overview(session: dict = Depends(get_current_session)):
     
     return result
 
-@router.get('/recent-activities')
+@router.get('/activitiy')
 async def get_recent_activities(
     hours: int = 24,
     session: dict = Depends(get_current_session)
 ):
     token = session.get('token')
     result = await api_client.get(
-        '/api/dashboard/recent-activities',
+        '/api/dashboard/activity',
         token=token,
         params={'hours': hours}
     )
