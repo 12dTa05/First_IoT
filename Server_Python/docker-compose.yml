@@ -55,7 +55,7 @@ services:
     container_name: iot-api-python
     restart: unless-stopped
     environment:
-      DB_HOST: postgres
+      DB_HOST: iot-postgres
       DB_PORT: 5432
       DB_NAME: iot_db
       DB_USER: iot
