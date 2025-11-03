@@ -11,12 +11,14 @@ services:
     environment:
       - BFF_HOST=0.0.0.0
       - BFF_PORT=8090
-      - VPS_API_URL=http://159.223.63.61:3000
+      - VPS_API_URL=http://host.docker.internal:3000 
       - VPS_WS_URL=ws://159.223.63.61:3000
       - FRONTEND_URL=http://localhost:3001
       - SESSION_SECRET=ThaiVuongMinhThaoLinhTu@2003
       - ENVIRONMENT=production
       - DEBUG=false
+    extra_hosts:
+      - "host.docker.internal:host-gateway" 
     networks:
       - iot_network
     restart: unless-stopped

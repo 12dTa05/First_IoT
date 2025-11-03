@@ -1,8 +1,11 @@
-from fastapi import APIRouter, HTTPException, Depends
+from fastapi import APIRouter, HTTPException, Depends, Query
 from pydantic import BaseModel
 from typing import Optional
+import logging
 from services.database import db
 from middleware.auth import get_current_user, check_device_ownership
+
+logger = logging.getLogger(__name__)
 
 router = APIRouter(prefix='/api/devices', tags=['devices'])
 
