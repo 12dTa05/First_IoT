@@ -151,14 +151,20 @@ async function submitLogin() {
     return;
   }
 
+  const rawApiUrl = window.API_URL;
+  const normalizedApiUrl = rawApiUrl ? rawApiUrl.trim().replace(/\/$/, "") : "";
+  const loginEndpoint = normalizedApiUrl
+    ? `${normalizedApiUrl}/api/auth/login`
+    : "/api/auth/login";
+  console.log("[DEBUG] Login endpoint:", loginEndpoint);
   try {
-    const res = await fetch("/access/login", {
+    const res = await fetch(loginEndpoint, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ username, password }),
     });
     const js = await res.json();
-    if (js.ok) {
+    if (js.token && js.user) {
       LOGGED_USER = js.user_id;
       USER_ROLE = js.role;
       document.getElementById("login_backdrop").classList.remove("show-modal");
@@ -226,7 +232,94 @@ async function checkDevicePermission(user_id, device_id, section_id) {
     return false;
   }
 }
-/* ==== FAN CONTROL ==== */
+// /* ==== FAN CONTROL ==== -----------OLD*/
+// function setToggle(on) {
+//   const t = document.getElementById("toggler");
+//   const label = document.getElementById("fan_label");
+//   if (on) {
+//     t.classList.add("on");
+//     label.textContent = "On";
+//   } else {
+//     t.classList.remove("on");
+//     label.textContent = "Off";
+//   }
+// }
+
+// // 🔹 Load trạng thái ban đầu của quạt
+// async function loadFan() {
+//   const user_id = getCurrentUserId();
+//   const dev = window.currentFanDevice;
+//   const gw = window.currentFanGateway;
+//   const card = document.querySelector("#tab-fan .card");
+
+//   if (!dev || !gw) {
+//     card.classList.add("device-disabled");
+//     // showFanMessage("🔒 Bạn không có quyền truy cập thiết bị này", "error");
+//     showDeviceMessage("fan_msg", "🔒 Bạn không có quyền truy cập", "error");
+//     return;
+//   }
+
+//   const granted = await checkDevicePermission(user_id, dev);
+//   if (!granted) {
+//     card.classList.add("device-disabled");
+//     // showFanMessage("🔒 Bạn không có quyền truy cập thiết bị này", "error");
+//     showDeviceMessage("fan_msg", "🔒 Bạn không có quyền truy cập", "error");
+//     return;
+//   }
+
+//   try {
+//     const r = await fetch(`/fan/${gw}/${dev}/state`);
+//     const js = await r.json();
+//     if (!r.ok || !js.ok) throw new Error("state load failed");
+
+//     setToggle(js.status === "on");
+//     card.classList.remove("device-disabled");
+//   } catch (err) {
+//     console.error(err);
+//     showDeviceMessage("fan_msg", "📡 Lỗi tải trạng thái quạt", "error");
+//   }
+// }
+
+// // 🔹 Bật / Tắt quạt
+// async function toggleFan() {
+//   const dev = window.currentFanDevice;
+//   const gateway = window.currentFanGateway;
+//   const user_id = getCurrentUserId();
+
+//   if (!user_id) {
+//     showToast(false, "⚠️ Bạn chưa đăng nhập");
+//     return;
+//   }
+//   if (!dev || !gateway) {
+//     showToast(false, "⚙️ Không tìm thấy thiết bị hoặc gateway hiện tại");
+//     return;
+//   }
+
+//   const isOn = document.getElementById("toggler").classList.contains("on");
+//   const next = !isOn;
+//   setToggle(next); // cập nhật giao diện trước cho mượt
+
+//   try {
+//     const res = await fetch(`/fan/${gateway}/${dev}/toggle`, {
+//       method: "POST",
+//       headers: { "Content-Type": "application/json" },
+//       body: JSON.stringify({ user_id }),
+//     });
+
+//     const js = await res.json();
+//     if (!js.ok) throw new Error(js.error);
+//     setToggle(js.state === "on");
+//     showToast(true, `💨 Quạt ${dev}: ${js.state.toUpperCase()}`);
+//   } catch (e) {
+//     // Nếu lỗi, revert lại trạng thái
+//     setToggle(isOn);
+//     console.error(e);
+//     showToast(false, "❌ Lỗi gửi lệnh bật/tắt quạt");
+//   }
+// }
+
+// /* ==== FAN CONTROL ==== -----------NEW*/
+// ==== ⚙️ Hàm setToggle giữ nguyên ====
 function setToggle(on) {
   const t = document.getElementById("toggler");
   const label = document.getElementById("fan_label");
@@ -239,7 +332,7 @@ function setToggle(on) {
   }
 }
 
-// 🔹 Load trạng thái ban đầu của quạt
+// ==== 📡 Load trạng thái ban đầu của quạt ====
 async function loadFan() {
   const user_id = getCurrentUserId();
   const dev = window.currentFanDevice;
@@ -248,25 +341,30 @@ async function loadFan() {
 
   if (!dev || !gw) {
     card.classList.add("device-disabled");
-    // showFanMessage("🔒 Bạn không có quyền truy cập thiết bị này", "error");
-    showDeviceMessage("fan_msg", "🔒 Bạn không có quyền truy cập", "error");
+    showDeviceMessage("fan_msg", "⚙️ Không tìm thấy thiết bị", "error");
     return;
   }
 
   const granted = await checkDevicePermission(user_id, dev);
   if (!granted) {
     card.classList.add("device-disabled");
-    // showFanMessage("🔒 Bạn không có quyền truy cập thiết bị này", "error");
     showDeviceMessage("fan_msg", "🔒 Bạn không có quyền truy cập", "error");
     return;
   }
 
   try {
-    const r = await fetch(`/fan/${gw}/${dev}/state`);
-    const js = await r.json();
-    if (!r.ok || !js.ok) throw new Error("state load failed");
+    // 🟢 Gọi trạng thái từ API server (FastAPI)
+    const res = await fetch(
+      `${window.API_URL}/api/devices/${gw}/${dev}/state`,
+      {
+        headers: { Authorization: `Bearer ${getAuthToken()}` },
+      }
+    );
 
-    setToggle(js.status === "on");
+    const js = await res.json();
+    if (!js.success) throw new Error(js.detail || "state load failed");
+
+    setToggle(js.data.status === "on");
     card.classList.remove("device-disabled");
   } catch (err) {
     console.error(err);
@@ -274,38 +372,43 @@ async function loadFan() {
   }
 }
 
-// 🔹 Bật / Tắt quạt
+// ==== 💨 Bật / Tắt quạt (FastAPI) ====
 async function toggleFan() {
   const dev = window.currentFanDevice;
   const gateway = window.currentFanGateway;
-  const user_id = getCurrentUserId();
 
-  if (!user_id) {
-    showToast(false, "⚠️ Bạn chưa đăng nhập");
-    return;
-  }
   if (!dev || !gateway) {
-    showToast(false, "⚙️ Không tìm thấy thiết bị hoặc gateway hiện tại");
+    showToast(false, "⚙️ Không tìm thấy thiết bị hoặc gateway");
     return;
   }
 
   const isOn = document.getElementById("toggler").classList.contains("on");
   const next = !isOn;
-  setToggle(next); // cập nhật giao diện trước cho mượt
+  setToggle(next); // cập nhật UI trước cho mượt
+
+  // Xác định command cần gửi
+  const command = next ? "fan_on" : "fan_off";
 
   try {
-    const res = await fetch(`/fan/${gateway}/${dev}/toggle`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ user_id }),
-    });
+    const res = await fetch(
+      `${window.API_URL}/api/commands/${gateway}/${dev}/${command}`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${getAuthToken()}`,
+        },
+      }
+    );
 
     const js = await res.json();
-    if (!js.ok) throw new Error(js.error);
-    setToggle(js.state === "on");
-    showToast(true, `💨 Quạt ${dev}: ${js.state.toUpperCase()}`);
+    if (!js.success) throw new Error(js.detail || "Gửi lệnh thất bại");
+
+    // ✅ Cập nhật lại giao diện theo phản hồi thật
+    setToggle(command === "fan_on");
+    showToast(true, `💨 Quạt ${dev}: ${command === "fan_on" ? "ON" : "OFF"}`);
   } catch (e) {
-    // Nếu lỗi, revert lại trạng thái
+    // Nếu lỗi, revert UI
     setToggle(isOn);
     console.error(e);
     showToast(false, "❌ Lỗi gửi lệnh bật/tắt quạt");
