@@ -17,171 +17,173 @@ export default function DashboardPage() {
   const [loading, setLoading] = useState(true);
   const [wsConnected, setWsConnected] = useState(false);
 
+  // -------------------- Lifecycle --------------------
   useEffect(() => {
-      if (!authLoading && !user) {
-          router.push('/login');
-          return;
-      }
+    if (!authLoading && !user) {
+      router.push('/login');
+      return;
+    }
 
-      if (user) {
-          loadDashboardData();
-          wsClient.connect();
+    if (user) {
+      loadDashboardData();
+      wsClient.connect();
 
-          const unsubscribe = wsClient.subscribe((message) => {
-              // Track connection status
-              if (message.type === 'connection') {
-                  setWsConnected(message.status === 'connected');
-              }
-              
-              handleWebSocketMessage(message);
-          });
+      const unsubscribe = wsClient.subscribe((message) => {
+        if (message.type === 'connection') {
+          setWsConnected(message.status === 'connected');
+        }
+        handleWebSocketMessage(message);
+      });
 
-          return () => {
-              unsubscribe();
-              wsClient.disconnect();
-          };
-      }
+      return () => {
+        unsubscribe();
+        wsClient.disconnect();
+      };
+    }
   }, [user, authLoading]);
 
+  // -------------------- Load initial data --------------------
   const loadDashboardData = async () => {
-      try {
-          // Use Promise.allSettled for partial failure handling
-          const [overviewRes, devicesRes, activitiesRes] = await Promise.allSettled([
-              apiClient.getDashboardOverview(),
-              apiClient.getDevices(),
-              apiClient.getRecentActivities(24),
-          ]);
+    try {
+      const [overviewRes, devicesRes, activitiesRes] = await Promise.allSettled([
+        apiClient.getDashboardOverview(),
+        apiClient.getDevices(),
+        apiClient.getRecentActivities(24),
+      ]);
 
-          // Handle overview
-          if (overviewRes.status === 'fulfilled' && overviewRes.value.success) {
-              setOverview(overviewRes.value.data!);
-          } else {
-              console.error('Failed to load overview:', overviewRes);
-          }
-
-          // Handle devices - check for success field
-          if (devicesRes.status === 'fulfilled') {
-              if (devicesRes.value.success && devicesRes.value.data) {
-                  setDevices(devicesRes.value.data);
-              } else if (Array.isArray(devicesRes.value)) {
-                  // Fallback: if server returns array directly
-                  setDevices(devicesRes.value);
-              }
-          } else {
-              console.error('Failed to load devices:', devicesRes);
-          }
-
-          // Handle activities
-          if (activitiesRes.status === 'fulfilled' && activitiesRes.value.success) {
-              setRecentActivities(activitiesRes.value.data!);
-          } else {
-              console.error('Failed to load activities:', activitiesRes);
-          }
-      } catch (error) {
-          console.error('Failed to load dashboard:', error);
-      } finally {
-          setLoading(false);
+      if (overviewRes.status === 'fulfilled' && overviewRes.value.success) {
+        setOverview(overviewRes.value.data!);
+      } else {
+        console.error('Failed to load overview:', overviewRes);
       }
+
+      if (devicesRes.status === 'fulfilled') {
+        const val = devicesRes.value;
+        if (val.success && val.data) setDevices(val.data);
+        else if (Array.isArray(val)) setDevices(val);
+      } else {
+        console.error('Failed to load devices:', devicesRes);
+      }
+
+      if (activitiesRes.status === 'fulfilled' && activitiesRes.value.success) {
+        setRecentActivities(activitiesRes.value.data!);
+      } else {
+        console.error('Failed to load activities:', activitiesRes);
+      }
+    } catch (error) {
+      console.error('Failed to load dashboard:', error);
+    } finally {
+      setLoading(false);
+    }
   };
+
+  // -------------------- Handle WebSocket messages --------------------
   const handleWebSocketMessage = (message: WebSocketMessage) => {
-      console.log('WebSocket message:', message);
+    switch (message.type) {
+      case 'device_status':
+        if (message.device_id && message.data) {
+          setDevices((prevDevices) => {
+            const updatedDevices = prevDevices.map((dev) =>
+              dev.device_id === message.device_id
+                ? { ...dev, status: message.data.status, last_seen: message.data.timestamp }
+                : dev
+            );
 
-      switch (message.type) {
-          case 'device_status':
-              if (message.device_id && message.data) {
-                  // Update device status
-                  setDevices((prev) =>
-                      prev.map((dev) =>
-                          dev.device_id === message.device_id
-                              ? {
-                                  ...dev,
-                                  status: message.data.status,
-                                  last_seen: message.data.timestamp,
-                              }
-                              : dev
-                      )
-                  );
+            // Update overview counts if available
+            setOverview((prev) => {
+              if (!prev?.devices) return prev;
+              const oldDevice = prevDevices.find((d) => d.device_id === message.device_id);
+              if (!oldDevice || oldDevice.status === message.data.status) return prev;
 
-                  // Update overview counts
-                  setOverview((prev) => {
-                      if (!prev) return prev;
-                      const oldStatus = devices.find(
-                          (d) => d.device_id === message.device_id
-                      )?.status;
-
-                      if (oldStatus === message.data.status) return prev;
-
-                      let onlineChange = 0;
-                      let offlineChange = 0;
-
-                      if (message.data.status === 'online') {
-                          onlineChange = 1;
-                          offlineChange = -1;
-                      } else if (message.data.status === 'offline') {
-                          onlineChange = -1;
-                          offlineChange = 1;
-                      }
-
-                      return {
-                          ...prev,
-                          online_devices: Math.max(0, prev.online_devices + onlineChange),
-                          offline_devices: Math.max(0, prev.offline_devices + offlineChange),
-                      };
-                  });
+              let onlineChange = 0;
+              let offlineChange = 0;
+              if (message.data.status === 'online') {
+                onlineChange = 1;
+                offlineChange = -1;
+              } else if (message.data.status === 'offline') {
+                onlineChange = -1;
+                offlineChange = 1;
               }
-              break;
 
-          case 'access_event':
-              // Only prepend new activity, don't reload everything
-              if (message.data) {
-                  setRecentActivities((prev) => [message.data, ...prev].slice(0, 100));
-                  
-                  // Optionally update overview access count
-                  setOverview((prev) => prev ? {
-                      ...prev,
-                      recent_access_count: (prev.recent_access_count || 0) + 1
-                  } : prev);
-              }
-              break;
+              return {
+                ...prev,
+                devices: {
+                  ...prev.devices,
+                  online_devices: Math.max(0, prev.devices.online_devices + onlineChange),
+                  offline_devices: Math.max(0, prev.devices.offline_devices + offlineChange),
+                },
+              };
+            });
 
-          case 'telemetry':
-              // Handle real-time telemetry updates if needed
-              console.log('Telemetry update:', message.data);
-              break;
+            return updatedDevices;
+          });
+        }
+        break;
 
-          case 'alert':
-              // Handle alerts
-              console.warn('Alert received:', message.data);
-              // Could show a toast notification here
-              break;
+      case 'access_event':
+        if (message.data) {
+          setRecentActivities((prev) => [message.data, ...prev].slice(0, 100));
+          setOverview((prev) =>
+            prev
+              ? {
+                  ...prev,
+                  recent_access_count: (prev.recent_access_count || 0) + 1,
+                }
+              : prev
+          );
+        }
+        break;
 
-          case 'connection':
-              console.log('Connection status:', message.message);
-              break;
+      case 'telemetry':
+        console.log('Telemetry update:', message.data);
+        break;
 
-          default:
-              console.log('Unknown message type:', message.type);
-      }
+      case 'alert':
+        console.warn('Alert received:', message.data);
+        break;
+
+      case 'connection':
+        console.log('Connection status:', message.message);
+        break;
+
+      default:
+        console.log('Unknown message type:', message.type);
+    }
   };
 
+  // -------------------- Logout --------------------
   const handleLogout = async () => {
     await logout();
     router.push('/login');
   };
 
+  // -------------------- Loading --------------------
   if (authLoading || loading) {
     return (
       <div className="min-h-screen bg-slate-900 flex items-center justify-center">
-        <div className="text-white">Đang tải...</div>
+        <div className="flex flex-col items-center text-white">
+          <div className="animate-spin h-8 w-8 border-4 border-blue-500 border-t-transparent rounded-full mb-3" />
+          <p>Đang tải dữ liệu...</p>
+        </div>
       </div>
     );
   }
 
+  // -------------------- Render --------------------
   return (
     <div className="min-h-screen bg-slate-900 text-white">
+      {/* Header */}
       <header className="bg-slate-800 border-b border-slate-700 px-6 py-4">
         <div className="max-w-7xl mx-auto flex justify-between items-center">
-          <h1 className="text-2xl font-bold">IoT Dashboard</h1>
+          <div className="flex items-center gap-4">
+            <h1 className="text-2xl font-bold">IoT Dashboard</h1>
+            <div className="flex items-center gap-2">
+              <div className={`w-2 h-2 rounded-full ${wsConnected ? 'bg-green-500' : 'bg-red-500'}`} />
+              <span className="text-sm text-slate-400">
+                {wsConnected ? 'Đang kết nối' : 'Mất kết nối'}
+              </span>
+            </div>
+          </div>
           <div className="flex items-center gap-4">
             <span className="text-slate-400">Xin chào, {user?.username}</span>
             <button
@@ -193,31 +195,18 @@ export default function DashboardPage() {
           </div>
         </div>
       </header>
-      <header className="bg-slate-800 border-b border-slate-700 px-6 py-4">
-        <div className="max-w-7xl mx-auto flex justify-between items-center">
-            <div className="flex items-center gap-4">
-                <h1 className="text-2xl font-bold">IoT Dashboard</h1>
-                <div className="flex items-center gap-2">
-                    <div className={`w-2 h-2 rounded-full ${wsConnected ? 'bg-green-500' : 'bg-red-500'}`} />
-                    <span className="text-sm text-slate-400">
-                        {wsConnected ? 'Đang kết nối' : 'Mất kết nối'}
-                    </span>
-                </div>
-            </div>
-            <div className="flex items-center gap-4">
-                <span className="text-slate-400">Xin chào, {user?.username}</span>
-                <button onClick={handleLogout}>Đăng xuất</button>
-            </div>
-        </div>
-    </header>
 
+      {/* Main content */}
       <main className="max-w-7xl mx-auto p-6">
+        {/* Overview cards */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
           <div className="bg-slate-800 p-6 rounded-lg border border-slate-700">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-slate-400 text-sm">Tổng thiết bị</p>
-                <p className="text-3xl font-bold mt-1">{overview?.devices?.total_devices || 0}</p>
+                <p className="text-3xl font-bold mt-1">
+                  {overview?.devices?.total_devices || 0}
+                </p>
               </div>
               <Activity className="text-blue-500" size={40} />
             </div>
@@ -248,7 +237,9 @@ export default function DashboardPage() {
           </div>
         </div>
 
+        {/* Device list + activity log */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          {/* Device list */}
           <div className="bg-slate-800 p-6 rounded-lg border border-slate-700">
             <h2 className="text-xl font-semibold mb-4">Thiết bị của tôi</h2>
             <div className="space-y-3">
@@ -282,6 +273,7 @@ export default function DashboardPage() {
             </div>
           </div>
 
+          {/* Recent activities */}
           <div className="bg-slate-800 p-6 rounded-lg border border-slate-700">
             <h2 className="text-xl font-semibold mb-4">Hoạt động gần đây</h2>
             <div className="space-y-3">
@@ -295,7 +287,8 @@ export default function DashboardPage() {
                   >
                     <div>
                       <p className="text-sm">
-                        <span className="font-semibold">{activity.device_id}</span> - {activity.method}
+                        <span className="font-semibold">{activity.device_id}</span> -{' '}
+                        {activity.method}
                       </p>
                       <p className="text-xs text-slate-400 flex items-center gap-1 mt-1">
                         <Clock size={12} />
