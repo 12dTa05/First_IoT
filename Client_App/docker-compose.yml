@@ -1,0 +1,50 @@
+version: '3.8'
+
+services:
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: iot_client_backend
+    ports:
+      - "8090:8090"
+    environment:
+      - BFF_HOST=0.0.0.0
+      - BFF_PORT=8090
+      - VPS_API_URL=http://vps-server:3000
+      - VPS_WS_URL=ws://vps-server:3000
+      - FRONTEND_URL=http://localhost:3001
+      - SESSION_SECRET=your-production-secret-key-here
+      - ENVIRONMENT=production
+      - DEBUG=false
+    networks:
+      - iot_network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8090/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+      args:
+        - NEXT_PUBLIC_BFF_URL=http://localhost:8090
+        - NEXT_PUBLIC_WS_URL=ws://localhost:8090/ws
+    container_name: iot_client_frontend
+    ports:
+      - "3001:3001"
+    environment:
+      - NODE_ENV=production
+    depends_on:
+      - backend
+    networks:
+      - iot_network
+    restart: unless-stopped
+
+networks:
+  iot_network:
+    name: iot_network
+    external: true
