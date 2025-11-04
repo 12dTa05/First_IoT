@@ -284,7 +284,7 @@ class MQTTService:
             status = data.get('status') or data.get('state', 'unknown')
             
             # Normalize status values to 'online' or 'offline'
-            if status.lower() in ['on', 'online', 'locked', 'unlocked', 'opened', 'closed', 'active', 'ready']:
+            if status.lower() in ['on', 'online', 'locked', 'unlocked', 'opened', 'closed', 'active', 'ready', 'alive']:
                 normalized_status = 'online'
             elif status.lower() in ['off', 'offline', 'error', 'disconnected']:
                 normalized_status = 'offline'
@@ -359,12 +359,12 @@ class MQTTService:
             
             # Update gateway status and last_seen atomically
             query = """
-                UPDATE gateways 
+                UPDATE gateways
                 SET status = %s, last_seen = %s::timestamptz, updated_at = %s::timestamptz
                 WHERE gateway_id = %s
                 RETURNING gateway_id, user_id, name
             """
-            
+
             result = db.query(query, (normalized_status, timestamp, timestamp, gateway_id))
             
             if result and len(result) > 0:

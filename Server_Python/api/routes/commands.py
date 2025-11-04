@@ -4,7 +4,7 @@ from typing import Optional
 from datetime import datetime
 from services.mqtt_service import mqtt_service
 from services.database import db
-from middleware.auth import get_current_user, check_device_ownership
+from middleware.auth import get_current_user, verify_device_ownership
 import json
 import uuid
 
@@ -22,7 +22,7 @@ async def send_command(gateway_id: str, device_id: str, req: CommandRequest, cur
     """Send command to device and log to command_logs"""
     try:
         # Verify ownership
-        await check_device_ownership(device_id, current_user)
+        verify_device_ownership(device_id, current_user.get('user_id'))
         
         # Generate command ID
         command_id = str(uuid.uuid4())

@@ -28,6 +28,8 @@ Servo gate;
 
 // ============= STATE =============
 uint16_t seq = 0;
+unsigned long lastHeartbeat = 0;
+const unsigned long HEARTBEAT_INTERVAL = 60000; // 60 seconds
 
 // ============= CRC32 (giống Gateway Python) =============
 uint32_t crc32(const uint8_t* data, size_t len) {
@@ -450,6 +452,12 @@ void sendRemoteResponse(String command_id, bool success, const char* status) {
     Serial.println(response);
 }
 
+// ============= HEARTBEAT =============
+void sendHeartbeat() {
+  sendStatusMessage("ALIVE");
+  Serial.println(F("[HEARTBEAT] Sent to Gateway"));
+}
+
 // ============= SETUP =============
 void setup() {
   Serial.begin(9600);
@@ -482,16 +490,24 @@ void setup() {
 
   remoteCtrl.listening_for_command = false;
   remoteCtrl.listen_start = 0;
-  
+
   // Send online status
   sendStatusMessage("ONLINE");
-  
+  lastHeartbeat = millis();
+
   Serial.println(F("\n[READY] Waiting for RFID cards...\n"));
   
 }
 
 // ============= MAIN LOOP =============
 void loop() {
+  // Send periodic heartbeat
+  unsigned long currentMillis = millis();
+  if (currentMillis - lastHeartbeat >= HEARTBEAT_INTERVAL) {
+    sendHeartbeat();
+    lastHeartbeat = currentMillis;
+  }
+
   if (checkForRemoteCommand()) {
     delay(100);
   }

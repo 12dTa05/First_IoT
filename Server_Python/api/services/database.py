@@ -71,20 +71,25 @@ class Database:
         try:
             cursor = conn.cursor(cursor_factory=RealDictCursor)
             cursor.execute(query_text, params)
-            
+
             # Check if query returns data
             if cursor.description:
                 result = cursor.fetchall()
             else:
-                conn.commit()
                 result = []
-            
+
+            # Commit for non-SELECT queries (INSERT, UPDATE, DELETE)
+            # even if they have RETURNING clause
+            query_type = query_text.strip().upper().split()[0]
+            if query_type in ('INSERT', 'UPDATE', 'DELETE'):
+                conn.commit()
+
             cursor.close()
-            
+
             # Only log non-SELECT queries or errors
-            if not query_text.strip().upper().startswith('SELECT'):
+            if query_type != 'SELECT':
                 logger.debug(f'Query executed: {query_text[:80]}...')
-            
+
             return result
             
         except psycopg2.IntegrityError as e:

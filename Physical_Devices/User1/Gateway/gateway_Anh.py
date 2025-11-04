@@ -45,6 +45,7 @@ CONFIG = {
         'vps_status': 'gateway/Gateway1/status/{device_id}',
         'vps_gateway_status': 'gateway/Gateway1/status/gateway',
         'sync_trigger': 'gateway/Gateway1/sync/trigger',
+        'command': 'gateway/Gateway1/command/#',
     },
     
     'db_path': './data',
@@ -116,6 +117,7 @@ class VPSMQTTManager:
     def __init__(self, config, sync_manager=None):
         self.config = config
         self.sync_manager = sync_manager
+        self.lora_handler = None
         self.vps_client = None
         self.connected_vps = False
         self.connection_lost_time = None
@@ -164,6 +166,10 @@ class VPSMQTTManager:
             sync_topic = self.config['topics']['sync_trigger']
             client.subscribe(sync_topic)
             logger.info(f" Subscribed to sync trigger: {sync_topic}")
+
+            command_topic = self.config['topics']['command']
+            client.subscribe(command_topic)
+            logger.info(f" Subscribed to command topic: {command_topic}")
             
             # Send immediate online status upon connection
             self.publish_gateway_status('online')
@@ -203,12 +209,16 @@ class VPSMQTTManager:
     def on_vps_message(self, client, userdata, msg):
         try:
             logger.info(f" VPS message: {msg.topic}")
-            
+
             if 'sync/trigger' in msg.topic and self.sync_manager:
                 data = json.loads(msg.payload.decode())
                 logger.info(f" Sync trigger received: {data.get('reason', 'unknown')}")
                 self.sync_manager.trigger_immediate_sync()
-                
+
+            elif 'command' in msg.topic:
+                data = json.loads(msg.payload.decode())
+                self.handle_command(msg.topic, data)
+
         except Exception as e:
             logger.error(f"Error processing VPS message: {e}")
     
@@ -241,6 +251,46 @@ class VPSMQTTManager:
         }
         topic = self.config['topics']['vps_gateway_status']
         return self.publish_to_vps(topic, payload)
+
+    def set_lora_handler(self, lora_handler):
+        """Set LoRa handler reference for sending commands"""
+        self.lora_handler = lora_handler
+        logger.info(" LoRa Handler reference set")
+
+    def handle_command(self, topic, data):
+        """Handle incoming command from VPS"""
+        try:
+            # Parse topic: gateway/Gateway1/command/rfid_gate_01
+            parts = topic.split('/')
+            if len(parts) < 4:
+                logger.warning(f" Invalid command topic: {topic}")
+                return
+
+            device_id = parts[3]
+            command = data.get('command')
+            command_id = data.get('command_id')
+            params = data.get('params', {})
+
+            logger.info(f" Command received: {command} for {device_id} (ID: {command_id})")
+
+            if not self.lora_handler:
+                logger.error(" LoRa handler not available")
+                return
+
+            # Send command via LoRa
+            if device_id == 'rfid_gate_01':
+                if command == 'unlock':
+                    duration = params.get('duration', 5)
+                    self.lora_handler.send_remote_unlock(command_id, data.get('user_id', 'unknown'), duration)
+                elif command == 'lock':
+                    self.lora_handler.send_remote_lock(command_id, data.get('user_id', 'unknown'))
+                else:
+                    logger.warning(f" Unknown command: {command}")
+            else:
+                logger.warning(f" Unknown device: {device_id}")
+
+        except Exception as e:
+            logger.error(f"Error handling command: {e}")
 
 # ============= LORA HANDLER =============
 class LoRaHandler:
@@ -378,10 +428,47 @@ class LoRaHandler:
             'sequence': sequence,
             'timestamp': now_compact()
         }
-        
+
         topic = self.config['topics']['vps_status'].format(device_id='rfid_gate_01')
         self.mqtt_manager.publish_to_vps(topic, payload)
-    
+
+    def send_remote_unlock(self, command_id, user_id, duration):
+        """Send remote unlock command via LoRa"""
+        try:
+            # Convert duration from seconds to milliseconds
+            duration_ms = duration * 1000
+
+            # Format: REMOTE_UNLOCK:{command_id}:{user}:{duration_ms}
+            command = f"REMOTE_UNLOCK:{command_id}:{user_id}:{duration_ms}"
+            command_bytes = command.encode('utf-8')
+
+            # Build LoRa packet
+            packet = bytearray([0xC0, 0x00, 0x00, 0x00, 0x00, 0x17, len(command_bytes)])
+            packet.extend(command_bytes)
+
+            self.serial_port.write(packet)
+            logger.info(f"[LoRa] Remote unlock sent: {command_id} (user: {user_id}, duration: {duration}s)")
+
+        except Exception as e:
+            logger.error(f"[LoRa] Error sending remote unlock: {e}")
+
+    def send_remote_lock(self, command_id, user_id):
+        """Send remote lock command via LoRa"""
+        try:
+            # Format: REMOTE_LOCK:{command_id}:{user}
+            command = f"REMOTE_LOCK:{command_id}:{user_id}"
+            command_bytes = command.encode('utf-8')
+
+            # Build LoRa packet
+            packet = bytearray([0xC0, 0x00, 0x00, 0x00, 0x00, 0x17, len(command_bytes)])
+            packet.extend(command_bytes)
+
+            self.serial_port.write(packet)
+            logger.info(f"[LoRa] Remote lock sent: {command_id} (user: {user_id})")
+
+        except Exception as e:
+            logger.error(f"[LoRa] Error sending remote lock: {e}")
+
     def stop(self):
         self.running = False
         if self.serial_port:
@@ -464,9 +551,11 @@ def main():
     
     logger.info(" Starting LoRa Handler...")
     lora_handler = LoRaHandler(CONFIG, db_manager, mqtt_manager)
-    
+
     if lora_handler.connect():
         lora_handler.start()
+        # Set LoRa handler reference in MQTT manager for command handling
+        mqtt_manager.set_lora_handler(lora_handler)
     else:
         logger.error("Failed to start LoRa handler. Exiting.")
         return

@@ -1573,7 +1573,14 @@
     const supportedActions = ['fan_on', 'fan_off', 'unlock', 'lock'];
     if (supportedActions.includes(action)) {
       endpoint += `/${action}`;
-      const res = await apiFetch(endpoint, { method: 'POST' });
+      
+      // Thêm body cho unlock
+      const options = { method: 'POST' };
+      if (action === 'unlock') {
+        options.body = { duration: 5 };  // Hoặc giá trị duration mong muốn
+      }
+      
+      const res = await apiFetch(endpoint, options);
       if (res?.success === false) {
         throw new Error(res.detail || res.message || 'Thiết bị phản hồi thất bại');
       }
