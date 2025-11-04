@@ -10,7 +10,7 @@ from services.websocket_manager import ws_manager
 logger = logging.getLogger(__name__)
 
 # Queue for WebSocket broadcasts (thread-safe)
-ws_broadcast_queue = Queue()
+ws_broadcast_queue = Queue(maxsize=1000)
 
 class MQTTService:
     def __init__(self, config):

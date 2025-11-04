@@ -1,0 +1,328 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>IoT Control Center</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/ui.css') }}">
+</head>
+<body>
+  <div id="toast" class="toast hidden"></div>
+
+  <div id="login_modal" class="modal-backdrop">
+    <div class="modal">
+      <h2>Đăng nhập hệ thống</h2>
+      <form id="login_form">
+        <label class="input-label" for="login_user">Tài khoản</label>
+        <input id="login_user" name="username" placeholder="Ví dụ: user_001" autocomplete="username">
+
+        <label class="input-label" for="login_pass">Mật khẩu</label>
+        <input id="login_pass" name="password" type="password" placeholder="••••••" autocomplete="current-password">
+
+        <button id="login_btn" type="submit">Đăng nhập</button>
+        <div id="login_hint" class="muted"></div>
+      </form>
+    </div>
+  </div>
+
+  <header id="app_header" class="app-header hidden">
+    <div class="brand">
+      <span class="brand-icon">🛰️</span>
+      <span>IoT Control Center</span>
+    </div>
+    <div class="user-section">
+      <div class="user-name" id="user_name">--</div>
+      <button id="btn_logout" type="button">Đăng xuất</button>
+    </div>
+  </header>
+
+  <main id="app_content" class="app-content hidden">
+    <section class="card-grid" id="stats_section">
+      <article class="stat-card">
+        <div class="stat-title">Thiết bị</div>
+        <div class="stat-value" id="stat_devices_total">--</div>
+        <div class="stat-meta">Online: <span id="stat_devices_online">--</span></div>
+      </article>
+      <article class="stat-card">
+        <div class="stat-title">Gateway</div>
+        <div class="stat-value" id="stat_gateways_total">--</div>
+        <div class="stat-meta">Online: <span id="stat_gateways_online">--</span></div>
+      </article>
+      <article class="stat-card">
+        <div class="stat-title">Lượt vào/ra (24h)</div>
+        <div class="stat-value" id="stat_access_total">--</div>
+        <div class="stat-meta">Được phép: <span id="stat_access_granted">--</span></div>
+      </article>
+      <article class="stat-card">
+        <div class="stat-title">Cảnh báo (24h)</div>
+        <div class="stat-value" id="stat_alerts_total">--</div>
+        <div class="stat-meta" id="stat_alerts_detail">--</div>
+      </article>
+    </section>
+
+    <section class="panel" data-feature="climate">
+      <div class="panel-header">
+        <div>
+          <h2 class="panel-title">Nhiệt độ &amp; Độ ẩm</h2>
+          <p class="panel-subtitle" id="temperature_subtitle">Chọn cảm biến để xem biểu đồ</p>
+        </div>
+        <div class="panel-actions">
+          <select id="sensor_select"></select>
+          <select id="sensor_period">
+            <option value="24">24 giờ</option>
+            <option value="72">3 ngày</option>
+            <option value="168">7 ngày</option>
+          </select>
+        </div>
+      </div>
+      <div class="panel-body">
+        <div class="latest-reading">
+          <div>Nhiệt độ: <span id="latest_temp">--</span></div>
+          <div>Độ ẩm: <span id="latest_humidity">--</span></div>
+          <div>Cập nhật: <span id="latest_time">--</span></div>
+        </div>
+        <div class="chart-wrapper">
+          <canvas id="temperature_chart" height="280"></canvas>
+        </div>
+        <div class="panel-empty hidden" id="temperature_empty">
+          Chưa có dữ liệu cảm biến để hiển thị.
+        </div>
+      </div>
+    </section>
+
+    <section class="panel">
+      <div class="panel-header">
+        <h2 class="panel-title">Lượt vào/ra gần đây</h2>
+        <div class="panel-actions">
+          <button id="refresh_access" type="button" class="secondary-btn">Tải lại</button>
+        </div>
+      </div>
+      <div class="panel-body">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Thời gian</th>
+              <th>Thiết bị</th>
+              <th>Phương thức</th>
+              <th>Kết quả</th>
+              <th>Người dùng</th>
+            </tr>
+          </thead>
+          <tbody id="access_table_body">
+            <tr>
+              <td colspan="5" class="empty-cell">Đang tải dữ liệu...</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="panel passkey-control" data-feature="passkey">
+      <div class="panel-header">
+        <div>
+          <h2 class="panel-title">Passkey mở cửa</h2>
+          <p class="panel-subtitle">Nhập mã 6 số để gửi lệnh mở khoá đến thiết bị passkey.</p>
+        </div>
+        <div class="panel-actions passkey-header-actions">
+          <span id="passkey_device_label" class="device-chip">Thiết bị: —</span>
+        </div>
+      </div>
+      <div class="panel-body passkey-body">
+        <div class="passkey-display-wrapper">
+          <div id="passkey_display" class="passkey-display">······</div>
+          <div id="passkey_status" class="passkey-status muted"></div>
+        </div>
+        <div class="passkey-keypad" id="passkey_keypad">
+          <button type="button" data-digit="1">1</button>
+          <button type="button" data-digit="2">2</button>
+          <button type="button" data-digit="3">3</button>
+          <button type="button" data-digit="4">4</button>
+          <button type="button" data-digit="5">5</button>
+          <button type="button" data-digit="6">6</button>
+          <button type="button" data-digit="7">7</button>
+          <button type="button" data-digit="8">8</button>
+          <button type="button" data-digit="9">9</button>
+          <button type="button" data-action="backspace">⌫</button>
+          <button type="button" data-digit="0">0</button>
+          <button type="button" data-action="clear">C</button>
+        </div>
+        <div class="passkey-footer">
+          <button id="passkey_enter_btn" type="button" class="primary-btn">Gửi lệnh</button>
+          <button id="passkey_clear" type="button" class="secondary-btn">Xoá</button>
+        </div>
+      </div>
+    </section>
+
+    <section class="panel grid-2">
+      <div class="panel" data-feature="passkey-table">
+        <div class="panel-header">
+          <h2 class="panel-title">Passkey</h2>
+          <div class="panel-actions">
+            <button id="refresh_passkey" type="button" class="secondary-btn">Tải lại</button>
+            <button id="add_passkey_btn" type="button" class="primary-btn hidden">Thêm passkey</button>
+          </div>
+        </div>
+        <div class="panel-body">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Chủ thẻ</th>
+                <th>Trạng thái</th>
+                <th>Hết hạn</th>
+                <th>Ghi chú</th>
+                <th>Hành động</th>
+              </tr>
+            </thead>
+            <tbody id="passkey_table_body">
+              <tr>
+                <td colspan="6" class="empty-cell">Đang tải dữ liệu...</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <div class="panel" data-feature="rfid">
+        <div class="panel-header">
+          <h2 class="panel-title">Danh sách thẻ RFID</h2>
+          <div class="panel-actions">
+            <button id="refresh_rfid" type="button" class="secondary-btn">Tải lại</button>
+            <button id="add_rfid_btn" type="button" class="primary-btn hidden">Thêm thẻ</button>
+          </div>
+        </div>
+        <div class="panel-body">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>UID</th>
+                <th>Chủ thẻ</th>
+                <th>Trạng thái</th>
+                <th>Cập nhật</th>
+                <th>Hành động</th>
+              </tr>
+            </thead>
+            <tbody id="rfid_table_body">
+              <tr>
+                <td colspan="5" class="empty-cell">Đang tải dữ liệu...</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+    <section class="panel" data-feature="devices">
+      <div class="panel-header">
+        <h2 class="panel-title">Thiết bị</h2>
+        <div class="panel-actions">
+          <button id="refresh_devices" type="button" class="secondary-btn">Tải lại</button>
+        </div>
+      </div>
+      <div class="panel-body">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Thiết bị</th>
+              <th>Gateway</th>
+              <th>Loại</th>
+              <th>Trạng thái</th>
+              <th>Lần cuối</th>
+              <th>Hành động</th>
+            </tr>
+          </thead>
+          <tbody id="devices_table_body">
+            <tr>
+              <td colspan="6" class="empty-cell">Đang tải dữ liệu...</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+  </main>
+
+  <div id="passkey_modal" class="modal-backdrop">
+    <div class="modal">
+      <h2 id="passkey_modal_title">Thêm passkey</h2>
+      <form id="passkey_form">
+        <div class="form-grid">
+          <label>
+            ID passkey
+            <input id="passkey_id" name="id" placeholder="Để trống khi thêm mới" readonly>
+          </label>
+          <label>
+            Chủ sở hữu (user_id)
+            <input id="passkey_owner" name="owner" placeholder="VD: 00001">
+          </label>
+          <label>
+            Passcode (6 số)
+            <input id="passkey_value" name="passcode" maxlength="6" placeholder="VD: 123456" autocomplete="off">
+          </label>
+          <label>
+            Mô tả
+            <input id="passkey_desc" name="description" placeholder="Ghi chú (tuỳ chọn)">
+          </label>
+          <label>
+            Hết hạn
+            <input id="passkey_expire" name="expires_at" type="datetime-local">
+          </label>
+          <label class="checkbox-field">
+            <input id="passkey_active" name="active" type="checkbox" checked>
+            Hoạt động
+          </label>
+        </div>
+
+        <div id="passkey_hint" class="muted"></div>
+
+        <div class="modal-actions">
+          <button id="passkey_cancel" type="button" class="secondary-btn">Huỷ</button>
+          <button id="passkey_submit" type="submit">Lưu</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div id="rfid_modal" class="modal-backdrop">
+    <div class="modal">
+      <h2 id="rfid_modal_title">Thêm thẻ RFID</h2>
+      <form id="rfid_form">
+        <div class="form-grid">
+          <label>
+            UID thẻ
+            <input id="rfid_uid" name="uid" placeholder="VD: A1B2C3D4" autocomplete="off">
+          </label>
+          <label>
+            Chủ thẻ (user_id)
+            <input id="rfid_owner" name="user_id" placeholder="VD: 00001">
+          </label>
+          <label>
+            Loại thẻ
+            <input id="rfid_type" name="card_type" value="MIFARE Classic">
+          </label>
+          <label>
+            Mô tả
+            <input id="rfid_desc" name="description" placeholder="Ghi chú (tuỳ chọn)">
+          </label>
+          <label>
+            Hết hạn
+            <input id="rfid_expire" name="expires_at" type="datetime-local">
+          </label>
+          <label class="checkbox-field">
+            <input id="rfid_active" name="active" type="checkbox" checked>
+            Hoạt động
+          </label>
+        </div>
+
+        <div id="rfid_hint" class="muted"></div>
+
+        <div class="modal-actions">
+          <button id="rfid_cancel" type="button" class="secondary-btn">Huỷ</button>
+          <button id="rfid_submit" type="submit">Thêm thẻ</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script src="/config.js" defer></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js" defer></script>
+  <script src="{{ url_for('static', filename='js/ui.js') }}" defer></script>
+</body>
+</html>

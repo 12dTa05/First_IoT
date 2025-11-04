@@ -1,0 +1,586 @@
+:root {
+  --bg: #f1f5f9;
+  --surface: #ffffff;
+  --border: #e2e8f0;
+  --text: #0f172a;
+  --text-muted: #64748b;
+  --primary: #2563eb;
+  --primary-hover: #1d4ed8;
+  --success: #059669;
+  --danger: #dc2626;
+  --shadow: 0 12px 24px rgba(15, 23, 42, 0.06);
+  font-family: "Inter", system-ui, -apple-system, sans-serif;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  min-height: 100%;
+  background: var(--bg);
+  color: var(--text);
+}
+
+.feature-hidden {
+  display: none !important;
+}
+
+body {
+  line-height: 1.6;
+}
+
+.hidden {
+  display: none !important;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+button {
+  font: inherit;
+  cursor: pointer;
+  border: none;
+  border-radius: 10px;
+  padding: 10px 18px;
+  background: var(--primary);
+  color: #fff;
+  transition: background 0.2s ease, transform 0.15s ease;
+}
+
+button.primary-btn {
+  background: var(--primary);
+  color: #fff;
+}
+
+button:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+button:not(:disabled):hover {
+  background: var(--primary-hover);
+  transform: translateY(-1px);
+}
+
+.secondary-btn {
+  background: transparent;
+  color: var(--text-muted);
+  border: 1px solid var(--border);
+}
+
+.secondary-btn:hover {
+  background: rgba(37, 99, 235, 0.08);
+  color: var(--primary);
+}
+
+.app-header {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  background: rgba(241, 245, 249, 0.88);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 18px 32px;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 20px;
+  font-weight: 600;
+}
+
+.brand-icon {
+  font-size: 24px;
+}
+
+.user-section {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.user-name {
+  font-weight: 600;
+  color: var(--text-muted);
+}
+
+.app-content {
+  max-width: 1120px;
+  margin: 48px auto 64px;
+  padding: 0 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+}
+
+.card-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 20px;
+}
+
+.stat-card {
+  background: var(--surface);
+  border-radius: 18px;
+  padding: 20px 24px;
+  box-shadow: var(--shadow);
+  border: 1px solid transparent;
+  transition: border-color 0.2s ease, transform 0.2s ease;
+}
+
+.stat-card:hover {
+  border-color: rgba(37, 99, 235, 0.18);
+  transform: translateY(-2px);
+}
+
+.stat-title {
+  color: var(--text-muted);
+  font-size: 14px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.stat-value {
+  font-size: 32px;
+  font-weight: 700;
+  margin: 10px 0;
+}
+
+.stat-meta {
+  color: var(--text-muted);
+  font-size: 14px;
+}
+
+.panel {
+  background: var(--surface);
+  border-radius: 22px;
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow);
+  display: flex;
+  flex-direction: column;
+}
+
+.panel.grid-2 {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 24px;
+  background: transparent;
+  border: none;
+  box-shadow: none;
+}
+
+.device-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border-radius: 999px;
+  background: rgba(37, 99, 235, 0.12);
+  color: var(--primary);
+  font-weight: 600;
+  font-size: 14px;
+}
+
+.passkey-body {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 24px;
+  align-items: stretch;
+}
+
+.passkey-display-wrapper {
+  flex: 1 1 220px;
+  min-width: 200px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.passkey-display {
+  font-size: 36px;
+  letter-spacing: 12px;
+  text-align: center;
+  padding: 18px 20px;
+  border-radius: 16px;
+  background: linear-gradient(135deg, rgba(37, 99, 235, 0.08), rgba(37, 99, 235, 0.02));
+  border: 1px solid rgba(37, 99, 235, 0.15);
+  font-family: 'SFMono-Regular', 'Consolas', 'Liberation Mono', monospace;
+}
+
+.passkey-status {
+  min-height: 20px;
+  font-size: 14px;
+  color: var(--text-muted);
+}
+
+.passkey-status.success {
+  color: var(--success);
+  font-weight: 600;
+}
+
+.passkey-status.error {
+  color: var(--danger);
+  font-weight: 600;
+}
+
+.passkey-keypad {
+  flex: 1 1 260px;
+  min-width: 220px;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(64px, 1fr));
+  gap: 14px;
+}
+
+.passkey-keypad button {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 16px 0;
+  font-size: 22px;
+  font-weight: 600;
+  color: var(--text);
+  box-shadow: var(--shadow);
+  transition: transform 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
+}
+
+.passkey-keypad button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 16px 24px rgba(37, 99, 235, 0.18);
+  background: rgba(37, 99, 235, 0.12);
+}
+
+.passkey-keypad button[data-action='backspace'],
+.passkey-keypad button[data-action='clear'] {
+  font-size: 18px;
+}
+
+.passkey-footer {
+  flex: 1 1 100%;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: center;
+}
+
+.passkey-footer button {
+  flex: 1 1 160px;
+}
+
+.passkey-header-actions {
+  gap: 12px;
+}
+
+.passkey-control.no-device .passkey-keypad button,
+.passkey-control.no-device .passkey-footer button {
+  pointer-events: none;
+  opacity: 0.4;
+}
+
+.passkey-control.no-device .passkey-display {
+  opacity: 0.6;
+}
+
+.panel-header {
+  padding: 24px 28px 12px;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  border-bottom: 1px solid var(--border);
+}
+
+.panel-title {
+  margin: 0;
+  font-size: 20px;
+}
+
+.panel-subtitle {
+  margin: 4px 0 0;
+  font-size: 14px;
+  color: var(--text-muted);
+}
+
+.panel-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.panel-actions select {
+  padding: 8px 12px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: #fff;
+  font: inherit;
+  color: var(--text);
+}
+
+.panel-body {
+  padding: 20px 28px 28px;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.latest-reading {
+  display: flex;
+  gap: 34px;
+  flex-wrap: wrap;
+  color: var(--text-muted);
+  font-size: 15px;
+}
+
+.latest-reading span {
+  color: var(--text);
+  font-weight: 600;
+}
+
+.chart-wrapper {
+  position: relative;
+  width: 100%;
+  min-height: 220px;
+}
+
+.panel-empty {
+  padding: 18px;
+  background: #f8fafc;
+  border-radius: 12px;
+  text-align: center;
+  color: var(--text-muted);
+  border: 1px dashed var(--border);
+}
+
+.data-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+}
+
+.data-table thead {
+  background: #f8fafc;
+}
+
+.data-table th,
+.data-table td {
+  padding: 12px 16px;
+  text-align: left;
+  border-bottom: 1px solid var(--border);
+}
+
+.data-table tbody tr:hover {
+  background: rgba(37, 99, 235, 0.04);
+}
+
+.data-table .empty-cell {
+  text-align: center;
+  color: var(--text-muted);
+  padding: 36px 16px;
+}
+
+.status-pill {
+  display: inline-block;
+  padding: 4px 10px;
+  border-radius: 14px;
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.status-online {
+  background: rgba(5, 150, 105, 0.12);
+  color: var(--success);
+}
+
+.status-offline {
+  background: rgba(220, 38, 38, 0.12);
+  color: var(--danger);
+}
+
+.action-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.action-buttons button {
+  padding: 6px 12px;
+  font-size: 12px;
+  border-radius: 8px;
+}
+
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s ease;
+}
+
+.modal-backdrop.show {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.modal {
+  width: min(420px, 100%);
+  background: var(--surface);
+  border-radius: 20px;
+  padding: 32px;
+  box-shadow: 0 24px 64px rgba(15, 23, 42, 0.22);
+}
+
+.modal h2 {
+  margin-top: 0;
+  margin-bottom: 18px;
+  font-size: 22px;
+}
+
+.modal form label {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 14px;
+  color: var(--text-muted);
+}
+
+form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 16px;
+}
+
+.checkbox-field {
+  flex-direction: row !important;
+  align-items: center;
+  gap: 10px !important;
+}
+
+.checkbox-field input[type='checkbox'] {
+  width: auto;
+  height: auto;
+}
+
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 8px;
+}
+
+.input-label {
+  font-size: 14px;
+  color: var(--text-muted);
+}
+
+input {
+  padding: 12px 14px;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  font: inherit;
+  transition: border 0.2s ease, box-shadow 0.2s ease;
+}
+
+input:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.18);
+}
+
+.muted {
+  color: var(--text-muted);
+  font-size: 13px;
+  min-height: 18px;
+}
+
+.toast {
+  position: fixed;
+  top: 24px;
+  right: 24px;
+  min-width: 240px;
+  padding: 14px 18px;
+  border-radius: 12px;
+  background: var(--text);
+  color: #fff;
+  box-shadow: 0 18px 36px rgba(15, 23, 42, 0.18);
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(-10px);
+  transition: opacity 0.2s ease, transform 0.2s ease;
+  z-index: 20;
+}
+
+.toast.show {
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: auto;
+}
+
+.toast.success {
+  background: var(--success);
+}
+
+.toast.error {
+  background: var(--danger);
+}
+
+@media (max-width: 768px) {
+  .app-header {
+    padding: 16px 20px;
+  }
+
+  .app-content {
+    margin-top: 32px;
+    padding: 0 16px;
+  }
+
+  .panel-header {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .panel-actions {
+    justify-content: flex-start;
+  }
+
+  .latest-reading {
+    gap: 18px;
+  }
+
+  .passkey-display {
+    font-size: 28px;
+    letter-spacing: 8px;
+  }
+
+  .passkey-keypad {
+    grid-template-columns: repeat(3, minmax(56px, 1fr));
+    gap: 12px;
+  }
+
+  .passkey-footer button {
+    flex: 1 1 120px;
+  }
+}
