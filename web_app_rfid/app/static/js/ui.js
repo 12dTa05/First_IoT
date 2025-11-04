@@ -18,6 +18,48 @@
 
   const elements = {};
 
+  const FEATURE_ACCESS = {
+    rfid: ['00001'],
+    passkey: ['00002'],
+    passkeyManagement: ['00002'],
+    climate: ['00003'],
+    fan: ['00003']
+  };
+
+
+  function isAdminUser() {
+    return (currentUser?.role || '').toLowerCase() === 'admin';
+  }
+
+  function isFeatureAllowed(feature) {
+    if (!feature) return true;
+    if (isAdminUser()) return true;
+    const allowed = FEATURE_ACCESS[feature];
+    if (!allowed) return true;
+    const userId = currentUser?.user_id;
+    return Boolean(userId && allowed.includes(userId));
+  }
+
+  function setFeatureVisibility(element, feature) {
+    if (!element) return;
+    const allowed = isFeatureAllowed(feature);
+    element.classList.toggle('feature-hidden', !allowed);
+  }
+
+  function applyFeatureAccessControl() {
+    const climateAllowed = isFeatureAllowed('climate');
+    setFeatureVisibility(elements.climatePanel, 'climate');
+    if (!climateAllowed) {
+      currentSensorId = null;
+      latestReadings = [];
+      destroyTemperatureChart();
+    }
+
+    setFeatureVisibility(elements.passkeySection, 'passkey');
+    setFeatureVisibility(elements.passkeyTablePanel, 'passkeyManagement');
+    setFeatureVisibility(elements.rfidPanel, 'rfid');
+  }
+
   document.addEventListener('DOMContentLoaded', () => {
     cacheElements();
     bindEvents();
@@ -81,8 +123,12 @@
     elements.passkeyEnterBtn = document.getElementById('passkey_enter_btn');
     elements.passkeyClearBtn = document.getElementById('passkey_clear');
     elements.passkeyDeviceLabel = document.getElementById('passkey_device_label');
-    elements.passkeySection = document.querySelector('.passkey-control');
+    elements.passkeySection = document.querySelector('[data-feature="passkey"]');
     elements.passkeyBody = document.querySelector('.passkey-body');
+    elements.passkeyTablePanel = document.querySelector('[data-feature="passkey-table"]');
+    elements.rfidPanel = document.querySelector('[data-feature="rfid"]');
+    elements.climatePanel = document.querySelector('[data-feature="climate"]');
+    elements.devicesPanel = document.querySelector('[data-feature="devices"]');
 
     elements.addRfidBtn = document.getElementById('add_rfid_btn');
     elements.rfidModal = document.getElementById('rfid_modal');
@@ -168,8 +214,7 @@
         const uid = button.dataset.uid;
         if (!action || !uid) return;
 
-        const role = (currentUser?.role || '').toLowerCase();
-        if (role !== 'admin' && role !== 'owner') {
+        if (!isFeatureAllowed('rfid')) {
           showToast('error', 'Bạn không có quyền quản lý thẻ RFID');
           return;
         }
@@ -217,6 +262,11 @@
         const action = button.dataset.action;
         const passkeyId = button.dataset.passkeyId;
         if (!action || !passkeyId) return;
+
+        if (!isFeatureAllowed('passkeyManagement')) {
+          showToast('error', 'Bạn không có quyền quản lý passkey');
+          return;
+        }
 
         if (action === 'edit') {
           const passkey = passkeysCache.find((item) => item.id === passkeyId);
@@ -491,6 +541,14 @@
   }
 
   function refreshPasskeyContext() {
+    if (!isFeatureAllowed('passkey')) {
+      elements.passkeySection?.classList.add('no-device');
+      setPasskeyInputsDisabled(true);
+      passkeyContext.deviceId = null;
+      passkeyContext.gatewayId = null;
+      return;
+    }
+
     const candidate = devicesCache.find((device) => {
       const type = String(device.device_type || '').toLowerCase();
       return type.includes('passkey') || type.includes('keypad') || type.includes('door');
@@ -516,7 +574,7 @@
       elements.passkeySection?.classList.add('no-device');
       setPasskeyInputsDisabled(true);
       resetPasskeyState(true);
-      setPasskeyStatus('Bạn không có quyền sử dụng passkey', 'error');
+      setPasskeyStatus('Không tìm thấy thiết bị passkey phù hợp', 'error');
       return;
     }
 
@@ -581,7 +639,7 @@
   }
 
   function appendPasskeyDigit(digit) {
-    if (passkeySubmitting || !passkeyContext.deviceId) return;
+    if (!isFeatureAllowed('passkey') || passkeySubmitting || !passkeyContext.deviceId) return;
     if (passkeyBuffer.length >= PASSKEY_CODE_LENGTH) return;
     passkeyBuffer += digit;
     updatePasskeyDisplay();
@@ -593,7 +651,7 @@
   }
 
   function removePasskeyDigit() {
-    if (passkeySubmitting) return;
+    if (!isFeatureAllowed('passkey') || passkeySubmitting) return;
     if (!passkeyBuffer.length) return;
     passkeyBuffer = passkeyBuffer.slice(0, -1);
     updatePasskeyDisplay();
@@ -605,6 +663,7 @@
   function handlePasskeyKeypadClick(event) {
     const button = event.target.closest('button');
     if (!button || button.disabled) return;
+    if (!isFeatureAllowed('passkey')) return;
 
     if (button.dataset.digit !== undefined) {
       appendPasskeyDigit(button.dataset.digit);
@@ -711,21 +770,32 @@
   }
 
   function updatePasskeyControls() {
-    refreshPasskeyContext();
+    const controlAllowed = isFeatureAllowed('passkey');
+    const managementAllowed = isFeatureAllowed('passkeyManagement');
 
-    if (!elements.addPasskeyBtn) return;
+    setFeatureVisibility(elements.passkeySection, 'passkey');
+    setFeatureVisibility(elements.passkeyTablePanel, 'passkeyManagement');
 
-    const role = (currentUser?.role || '').toLowerCase();
-    const allowed = role === 'admin' || role === 'owner';
-    elements.addPasskeyBtn.classList.toggle('hidden', !allowed);
-
-    if (!allowed) {
+    if (!controlAllowed) {
       closePasskeyModal(true);
-      return;
+      resetPasskeyState(true);
+      setPasskeyInputsDisabled(true);
+      elements.passkeySection?.classList.add('no-device');
+      setPasskeyStatus('Bạn không có quyền sử dụng passkey', 'error');
+    } else {
+      refreshPasskeyContext();
     }
 
-    if (elements.passkeyOwner && currentUser?.user_id) {
+    if (elements.addPasskeyBtn) {
+      elements.addPasskeyBtn.classList.toggle('hidden', !managementAllowed);
+    }
+
+    if (elements.passkeyOwner && currentUser?.user_id && managementAllowed) {
       elements.passkeyOwner.value = currentUser.user_id;
+    }
+
+    if (!managementAllowed) {
+      closePasskeyModal(true);
     }
   }
 
@@ -812,9 +882,7 @@
   }
 
   function openPasskeyModal(passkey) {
-    const role = (currentUser?.role || '').toLowerCase();
-    if (role !== 'admin' && role !== 'owner') return;
-    if (!elements.passkeyModal) return;
+    if (!isFeatureAllowed('passkeyManagement') || !elements.passkeyModal) return;
 
     if (elements.passkeyForm) {
       elements.passkeyForm.reset();
@@ -832,7 +900,7 @@
       elements.passkeyId.value = editing ? passkey.id : '';
     }
 
-    const isAdmin = (currentUser?.role || '').toLowerCase() === 'admin';
+    const isAdmin = isAdminUser();
 
     if (elements.passkeyOwner) {
       elements.passkeyOwner.value =
@@ -900,10 +968,12 @@
   async function submitPasskeyForm() {
     if (!elements.passkeyForm) return;
 
-    const role = (currentUser?.role || '').toLowerCase();
-    if (role !== 'admin' && role !== 'owner') {
+    if (!isFeatureAllowed('passkeyManagement')) {
       throw new Error('Bạn không có quyền quản lý passkey');
     }
+
+    const role = (currentUser?.role || '').toLowerCase();
+    const isAdmin = role === 'admin';
 
     const id = (elements.passkeyId?.value || '').trim();
     let owner = (elements.passkeyOwner?.value || '').trim();
@@ -911,7 +981,6 @@
     const description = (elements.passkeyDesc?.value || '').trim();
     const expiresRaw = elements.passkeyExpire?.value || '';
     const active = Boolean(elements.passkeyActive?.checked);
-    const isAdmin = role === 'admin';
 
     if (!isAdmin) {
       owner = currentUser?.user_id || owner;
@@ -983,16 +1052,20 @@
   }
 
   function updateRfidControls() {
-    if (!elements.addRfidBtn) return;
+    const allowed = isFeatureAllowed('rfid');
+    setFeatureVisibility(elements.rfidPanel, 'rfid');
 
-    const role = (currentUser?.role || '').toLowerCase();
-    const allowed = role === 'admin' || role === 'owner';
-
-    elements.addRfidBtn.classList.toggle('hidden', !allowed);
+    if (elements.addRfidBtn) {
+      elements.addRfidBtn.classList.toggle('hidden', !allowed);
+    }
 
     if (!allowed) {
       closeRfidModal(true);
       editingRfidUid = null;
+      rfidCardsCache = [];
+      if (elements.rfidTable) {
+        setTableMessage(elements.rfidTable, 5, 'Bạn không có quyền xem thẻ RFID');
+      }
       return;
     }
 
@@ -1002,9 +1075,7 @@
   }
 
   function openRfidModal(card) {
-    const role = (currentUser?.role || '').toLowerCase();
-    const allowed = role === 'admin' || role === 'owner';
-    if (!allowed || !elements.rfidModal) return;
+    if (!isFeatureAllowed('rfid') || !elements.rfidModal) return;
 
     if (elements.rfidForm) {
       elements.rfidForm.reset();
@@ -1087,8 +1158,7 @@
   async function submitRfidForm() {
     if (!elements.rfidForm) return;
 
-    const role = (currentUser?.role || '').toLowerCase();
-    if (role !== 'admin' && role !== 'owner') {
+    if (!isFeatureAllowed('rfid')) {
       throw new Error('Bạn không có quyền thêm thẻ RFID');
     }
 
@@ -1326,13 +1396,21 @@
       const list = Array.isArray(res) ? res : res?.data || [];
       devicesCache = list;
       renderDevices(list);
-      refreshPasskeyContext();
-      if (!latestReadings.length) {
+      if (isFeatureAllowed('passkey')) {
+        refreshPasskeyContext();
+      } else {
+        passkeyContext.deviceId = null;
+        passkeyContext.gatewayId = null;
+      }
+
+      if (!latestReadings.length && isFeatureAllowed('climate')) {
         refreshSensorOptions();
       }
     } catch (err) {
       setTableMessage(elements.devicesTable, 6, 'Không thể tải danh sách thiết bị');
-      refreshPasskeyContext();
+      if (isFeatureAllowed('passkey')) {
+        refreshPasskeyContext();
+      }
       throw err;
     }
   }
@@ -1372,8 +1450,9 @@
   function buildDeviceActions(device) {
     const actions = [];
     const type = String(device.device_type || '').toLowerCase();
+    const fanAllowed = isFeatureAllowed('fan');
 
-    if (type.includes('fan')) {
+    if (fanAllowed && type.includes('fan')) {
       actions.push(createActionButton('Bật', 'fan_on', device));
       actions.push(createActionButton('Tắt', 'fan_off', device));
     }
@@ -1432,6 +1511,15 @@
   }
 
   async function loadRfidCards(isRefresh) {
+    if (!elements.rfidTable) return;
+
+    if (!isFeatureAllowed('rfid')) {
+      rfidCardsCache = [];
+      setFeatureVisibility(elements.rfidPanel, 'rfid');
+      setTableMessage(elements.rfidTable, 5, 'Bạn không có quyền xem thẻ RFID');
+      return;
+    }
+
     if (isRefresh) {
       setTableMessage(elements.rfidTable, 5, 'Đang tải dữ liệu...');
     }
@@ -1446,8 +1534,7 @@
         return;
       }
 
-      const role = (currentUser?.role || '').toLowerCase();
-      const canManage = role === 'admin' || role === 'owner';
+      const canManage = isFeatureAllowed('rfid');
 
       elements.rfidTable.innerHTML = rows
         .map((card) => {
