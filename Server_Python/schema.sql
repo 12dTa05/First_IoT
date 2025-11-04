@@ -335,7 +335,7 @@ ON CONFLICT (uid) DO UPDATE SET
     updated_at = NOW();
 
 INSERT INTO passwords (password_id, user_id, hash, active, description, created_at, last_used, expires_at, updated_at)
-VALUES ('passwd_00002_001', '00002', '$2b$10$Qbctbhp.uV8WjJsygCGsCu42UGPyDr/8Y2R6bqY7UT8LbEi3himO2', TRUE, 'Vuong Linh Thao PIN - 251203', NOW() - INTERVAL '30 days', NOW() - INTERVAL '3 hours', NULL, NOW())
+VALUES ('passwd_00002_001', '00002', '9dc3bece812e7e35fcf534ea2191d969794e8a6c394613bf96c4a468eff062a7', TRUE, 'Vuong Linh Thao PIN - 251203', NOW() - INTERVAL '30 days', NOW() - INTERVAL '3 hours', NULL, NOW())
 ON CONFLICT (password_id) DO UPDATE SET
     active = EXCLUDED.active,
     last_used = EXCLUDED.last_used,

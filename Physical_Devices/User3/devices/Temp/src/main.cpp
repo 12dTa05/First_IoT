@@ -263,6 +263,10 @@ void setup() {
   lcd.print("Starting...");
   
   WiFi.mode(WIFI_STA);
+
+  uint8_t newMAC[] = {0xDE, 0xAD, 0xBE, 0xEF, 0x00, 0x02};
+  wifi_set_macaddr(STATION_IF, newMAC);
+
   WiFi.begin(ssid, wifiPass);
   Serial.print("[WiFi] Connecting");
   

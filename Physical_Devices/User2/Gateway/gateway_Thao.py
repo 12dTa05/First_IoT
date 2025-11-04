@@ -4,6 +4,8 @@ import json
 import os
 import time
 import logging
+import hmac
+import hashlib
 from datetime import datetime
 from threading import Thread, Event
 from database_sync_manager import DatabaseSyncManager
@@ -17,10 +19,18 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 # ============= CONFIGURATION =============
+# HMAC Key - must match ESP device
+HMAC_KEY = bytes([
+    0x5A, 0x5A, 0x2B, 0x3F, 0x87, 0xDA, 0x01, 0xF9,
+    0xDE, 0xE1, 0x83, 0xAD, 0x84, 0x54, 0xB5, 0x34,
+    0x77, 0x68, 0x47, 0x8C, 0xE8, 0xFD, 0x73, 0x1F,
+    0xBD, 0xE1, 0x3C, 0x42, 0x79, 0xB8, 0xFE, 0xA4
+])
+
 CONFIG = {
     'gateway_id': 'Gateway2',
     'user_id': '00002',
-    
+
     'local_broker': {
         'host': '192.168.1.205',
         'port': 1884,
@@ -277,12 +287,59 @@ class MQTTManager:
                 self.sync_manager.trigger_immediate_sync()
         except Exception as e:
             logger.error(f"Error processing VPS message: {e}")
-    
+
+    def verify_hmac(self, body_str, received_hmac):
+        """Verify HMAC-SHA256 signature"""
+        try:
+            # Calculate HMAC
+            calculated_hmac = hmac.new(
+                HMAC_KEY,
+                body_str.encode('utf-8'),
+                hashlib.sha256
+            ).hexdigest()
+
+            # Compare
+            return hmac.compare_digest(calculated_hmac, received_hmac)
+        except Exception as e:
+            logger.error(f"[HMAC] Verification error: {e}")
+            return False
+
     def handle_passkey_request(self, data):
         try:
-            password_hash = data.get('pw')
-            device_id = data.get('client_id', 'passkey_01')
-            
+            # Parse nested JSON body
+            body_str = data.get('body')
+            hmac_sig = data.get('hmac')
+
+            if not body_str:
+                logger.warning("[PASSKEY] Request missing body")
+                self.send_unlock_response('passkey_01', False, 'missing_body')
+                return
+
+            if not hmac_sig:
+                logger.warning("[PASSKEY] Request missing HMAC signature")
+                self.send_unlock_response('passkey_01', False, 'missing_hmac')
+                return
+
+            # Verify HMAC signature
+            if not self.verify_hmac(body_str, hmac_sig):
+                logger.error("[PASSKEY] HMAC verification failed - message rejected")
+                self.send_unlock_response('passkey_01', False, 'invalid_signature')
+                return
+
+            logger.debug("[PASSKEY] HMAC verification passed")
+
+            # Parse body JSON string
+            try:
+                body = json.loads(body_str)
+            except json.JSONDecodeError as e:
+                logger.error(f"[PASSKEY] Invalid JSON in body: {e}")
+                self.send_unlock_response('passkey_01', False, 'invalid_json')
+                return
+
+            # Extract fields from body
+            password_hash = body.get('pw')
+            device_id = body.get('client_id', 'passkey_01')
+
             if not password_hash:
                 logger.warning("[PASSKEY] Request missing password hash")
                 self.send_unlock_response(device_id, False, 'missing_password')
@@ -316,7 +373,7 @@ class MQTTManager:
     def send_unlock_response(self, device_id, granted, deny_reason):
         try:
             response = {
-                'cmd': 'GRANT' if granted else 'LOCK',
+                'cmd': 'OPEN' if granted else 'LOCK',
                 'reason': deny_reason if not granted else None,
                 'timestamp': now_compact()
             }

@@ -8,7 +8,7 @@
 #include <bearssl/bearssl_hash.h>
 #include <time.h>
 
-const char* ssid = "OpenWRT";
+const char* ssid = "OpenWrt";
 const char* wifiPass = "12052003A";
 
 const char* mqtt_host = "192.168.1.205";  
@@ -60,14 +60,15 @@ const int LED_ERR = D1;
 const int SERVO_PIN = D8;
 
 // Keypad configuration (3x3)
-const byte ROWS = 3;
+const byte ROWS = 4;
 const byte COLS = 3;
 char keys[ROWS][COLS] = {
   {'1','2','3'},
   {'4','5','6'},
-  {'7','8','9'}
+  {'7','8','9'},
+  {'*', '0', '#'}
 };
-byte rowPins[ROWS] = { D2, D3, D4 };
+byte rowPins[ROWS] = { D2, D3, D4, D1 };
 byte colPins[COLS] = { D5, D6, D7 };
 Keypad keypad = Keypad(makeKeymap(keys), rowPins, colPins, ROWS, COLS);
 
@@ -113,6 +114,16 @@ struct RemoteUnlockState {
 };
 
 RemoteUnlockState remoteState;
+
+// ============= FORWARD DECLARATIONS =============
+void handleRemoteUnlock(JsonDocument& doc);
+void handleRemoteLock(JsonDocument& doc);
+void handleConfigUpdate(JsonDocument& doc);
+void sendRemoteResponse(String command_id, bool success, const char* status);
+void logRemoteAccess(const char* action, String command_id, String initiated_by, String reason, unsigned long duration);
+void executeUnlock(const char* method, unsigned long duration_ms);
+void executeLock(const char* reason);
+void sendStatus(const char* state, const char* method = nullptr);
 
 // HMAC calculation using FULL hash (64 characters)
 String calc_hmac_sha256_hex(const String &data) {
@@ -315,7 +326,7 @@ void reconnectMQTT() {
         lwtPayload.c_str()      // LWT message
       )) {
     Serial.println(" connected");
-    mqtt.subscribe(topic_command, 1);
+    mqtt.subscribe(topic_cmd, 1);
     
     // Gửi online status
     StaticJsonDocument<128> st;
@@ -326,9 +337,9 @@ void reconnectMQTT() {
     String out;
     serializeJson(st, out);
     mqtt.publish(topic_status, out.c_str(), true);
-    
-    sendStatus("reconnect");
-    
+
+    sendStatus("reconnect", "mqtt_reconnect");
+
   } else {
     Serial.printf(" failed, rc=%d\n", mqtt.state());
   }
@@ -341,6 +352,7 @@ void sendUnlockRequest(String password) {
     return;
   }
   
+  Serial.print(password);
   String passwordHash = calc_sha256_hex(password);
   
   Serial.print("[DEBUG] Password hash (full): ");
@@ -689,7 +701,7 @@ void loop() {
     curPw += k;
     lastKeyPress = millis();
     Serial.print("[INPUT] Password: ");
-    for (int i = 0; i < curPw.length(); i++) {
+    for (unsigned int i = 0; i < curPw.length(); i++) {
       Serial.print("*");
     }
     Serial.println();
