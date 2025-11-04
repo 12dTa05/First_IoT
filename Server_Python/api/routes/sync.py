@@ -1,7 +1,6 @@
 from fastapi import APIRouter, HTTPException, Header
 from typing import Optional
 from services.database import db
-from services.mqtt_service import mqtt_service
 import json
 import hashlib
 from datetime import datetime
