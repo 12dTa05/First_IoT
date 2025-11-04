@@ -2,7 +2,6 @@ from fastapi import APIRouter, HTTPException, Depends
 from pydantic import BaseModel
 from typing import Optional
 from datetime import datetime
-from services.mqtt_service import mqtt_service
 from services.database import db
 from middleware.auth import get_current_user, verify_device_ownership
 import json
@@ -21,13 +20,16 @@ class UnlockRequest(BaseModel):
 async def send_command(gateway_id: str, device_id: str, req: CommandRequest, current_user: dict = Depends(get_current_user)):
     """Send command to device and log to command_logs"""
     try:
+        # Import mqtt_service inside function to avoid None at module load time
+        from services.mqtt_service import mqtt_service
+
         # Verify ownership
         verify_device_ownership(device_id, current_user.get('user_id'))
-        
+
         # Generate command ID
         command_id = str(uuid.uuid4())
         timestamp = datetime.utcnow().isoformat() + 'Z'
-        
+
         # Prepare MQTT message
         topic = f'gateway/{gateway_id}/command/{device_id}'
         message = {
@@ -38,17 +40,21 @@ async def send_command(gateway_id: str, device_id: str, req: CommandRequest, cur
             'timestamp': timestamp,
             'user_id': current_user.get('user_id')
         }
-        
+
         # Log command to database BEFORE sending
         log_query = """
             INSERT INTO command_logs (time, command_id, source, device_id, gateway_id, user_id, command_type, status, params, metadata)
             VALUES (%s::timestamptz, %s, 'client', %s, %s, %s, %s, 'sent', %s, %s)
         """
-        
+
         db.query(log_query, (
             timestamp, command_id, device_id, gateway_id, current_user.get('user_id'), req.command, json.dumps(req.params or {}), json.dumps({'source_ip': 'api'})
         ))
-        
+
+        # Check if MQTT service is available
+        if mqtt_service is None:
+            raise HTTPException(status_code=503, detail='MQTT service not available')
+
         # Publish to MQTT
         success = mqtt_service.publish(topic, message)
         
