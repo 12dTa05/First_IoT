@@ -92,15 +92,18 @@ class DatabaseManager:
     def verify_rfid(self, uid):
         rfid_cards = self.devices_data.get('rfid_cards', {})
         uid_lower = uid.lower()
-        
-        if uid_lower not in rfid_cards:
+
+        # Normalize all keys to lowercase for case-insensitive comparison
+        rfid_cards_normalized = {k.lower(): v for k, v in rfid_cards.items()}
+
+        if uid_lower not in rfid_cards_normalized:
             return False, 'unknown_card'
-        
-        card_data = rfid_cards[uid_lower]
-        
+
+        card_data = rfid_cards_normalized[uid_lower]
+
         if not card_data.get('active', False):
             return False, 'inactive_card'
-        
+
         expires_at = card_data.get('expires_at')
         if expires_at:
             try:
@@ -109,7 +112,7 @@ class DatabaseManager:
                     return False, 'expired_card'
             except:
                 pass
-        
+
         return True, None
 
 # ============= VPS MQTT MANAGER =============
@@ -377,8 +380,12 @@ class LoRaHandler:
                 logger.info(f"[RFID] Card detected: {uid} (seq: {sequence})")
                 
                 granted, deny_reason = self.db_manager.verify_rfid(uid)
-                
-                status = "GRANT" if granted else "DENY"
+
+                # CRITICAL: Delay to allow RFID device LoRa module to switch from TX to RX mode
+                # Without this delay, device cannot receive our response
+                time.sleep(0.15)  # 150ms delay
+
+                status = "GRANT" if granted else "DENY5"
                 self.send_access_response(status)
                 
                 access_log = {
@@ -415,10 +422,17 @@ class LoRaHandler:
             response_bytes = status.encode('utf-8')
             packet = bytearray([0xC0, 0x00, 0x00, 0x00, 0x00, 0x17, len(response_bytes)])
             packet.extend(response_bytes)
-            self.serial_port.write(packet)
-            logger.debug(f"[LoRa] Response sent: {status}")
+
+            # Debug: Print packet before sending
+            logger.info(f"[LoRa] Sending response: {status} ({len(packet)} bytes)")
+            logger.info(f"[LoRa] Packet: {' '.join([f'{b:02X}' for b in packet])}")
+
+            bytes_written = self.serial_port.write(packet)
+            self.serial_port.flush()  # Ensure data is sent immediately
+
+            logger.info(f"[LoRa] Response sent: {status} ({bytes_written} bytes written)")
         except Exception as e:
-            logger.error(f"[LoRa] Error sending response: {e}")
+            logger.error(f"[LoRa] Error sending response: {e}", exc_info=True)
     
     def publish_gate_status(self, status, sequence):
         payload = {

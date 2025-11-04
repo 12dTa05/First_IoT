@@ -1,6 +1,7 @@
 # app/routes/access.py
 from flask import Blueprint, request, jsonify
 from app.db_connect import get_db
+from app.utils.sync_trigger import trigger_sync_safe
 from ..utils.helpers import sha256_hex, now_iso
 import bcrypt
 access_bp = Blueprint("access", __name__, url_prefix="/access")
@@ -167,6 +168,10 @@ def manage_passkey():
         conn.commit()
 
         cur.close(); conn.close()
+
+        # 🔄 Trigger immediate sync cho gateway của user
+        trigger_sync_safe(owner)
+
         return jsonify(ok=True, message="Đã thêm passkey mới")
 
     # 🟢 Sửa passkey
@@ -179,6 +184,11 @@ def manage_passkey():
         if not pid:
             return jsonify(ok=False, error="Thiếu ID passkey"), 400
 
+        # Lấy user_id để trigger sync
+        cur.execute("SELECT user_id FROM passwords WHERE password_id=%s;", (pid,))
+        row = cur.fetchone()
+        user_id = row["user_id"] if row else None
+
         cur.execute("""
             UPDATE passwords
             SET description=%s, active=%s, expires_at=%s, updated_at=NOW()
@@ -186,6 +196,11 @@ def manage_passkey():
         """, (desc, active, expires_at, pid))
         conn.commit()
         cur.close(); conn.close()
+
+        # 🔄 Trigger immediate sync cho gateway của user
+        if user_id:
+            trigger_sync_safe(user_id)
+
         return jsonify(ok=True, message="Đã cập nhật passkey")
 
     # 🟢 Xoá passkey
@@ -194,9 +209,19 @@ def manage_passkey():
         if not pid:
             return jsonify(ok=False, error="Thiếu ID để xoá"), 400
 
+        # Lấy user_id trước khi xóa để trigger sync
+        cur.execute("SELECT user_id FROM passwords WHERE password_id=%s;", (pid,))
+        row = cur.fetchone()
+        user_id = row["user_id"] if row else None
+
         cur.execute("DELETE FROM passwords WHERE password_id = %s;", (pid,))
         conn.commit()
         cur.close(); conn.close()
+
+        # 🔄 Trigger immediate sync cho gateway của user
+        if user_id:
+            trigger_sync_safe(user_id)
+
         return jsonify(ok=True, message=f"Đã xoá passkey {pid}")
 
     # ❌ Action không hợp lệ

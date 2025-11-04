@@ -327,7 +327,7 @@ ON CONFLICT (device_id) DO UPDATE SET
     updated_at = NOW();
 
 INSERT INTO rfid_cards (uid, user_id, active, card_type, description, registered_at, last_used, expires_at, deactivated_at, deactivation_reason, updated_at)
-VALUES ('8675F205', '00001', TRUE, 'MIFARE Classic', 'Thai Thi Minh Tu - Main Card', NOW() - INTERVAL '30 days', NOW() - INTERVAL '1 hour', NULL, NULL, NULL, NOW())
+VALUES ('8675f205', '00001', TRUE, 'MIFARE Classic', 'Thai Thi Minh Tu - Main Card', NOW() - INTERVAL '30 days', NOW() - INTERVAL '1 hour', NULL, NULL, NULL, NOW())
 ON CONFLICT (uid) DO UPDATE SET
     active = EXCLUDED.active,
     description = EXCLUDED.description,

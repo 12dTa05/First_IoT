@@ -1,5 +1,6 @@
 from flask import Blueprint, request, jsonify
 from app.db_connect import get_db
+from app.utils.sync_trigger import trigger_sync_safe
 import json
 
 rfid_bp = Blueprint("rfid", __name__, url_prefix="/rfid")
@@ -12,7 +13,8 @@ rfid_bp = Blueprint("rfid", __name__, url_prefix="/rfid")
 def add_rfid_card():
     try:
         data = request.get_json(silent=True) or {}
-        uid = (data.get("uid") or "").strip().upper()
+        # Normalize UID to lowercase for consistency
+        uid = (data.get("uid") or "").strip().lower()
         user_id = (data.get("user_id") or "").strip()
         card_type = (data.get("card_type") or "MIFARE Classic").strip()
         description = (data.get("description") or "").strip() or None
@@ -52,6 +54,9 @@ def add_rfid_card():
         conn.commit()
         cur.close()
         conn.close()
+
+        # 🔄 Trigger immediate sync cho gateway của user
+        trigger_sync_safe(user_id)
 
         return jsonify({"ok": True, "msg": "Thêm thẻ mới thành công"})
 
@@ -96,6 +101,10 @@ def update_rfid_card(uid):
     conn.commit()
     conn.close()
 
+    # 🔄 Trigger immediate sync cho gateway của user
+    if user_id:
+        trigger_sync_safe(user_id)
+
     return jsonify({"ok": True, "msg": "RFID card updated successfully"})
 
 
@@ -104,9 +113,20 @@ def update_rfid_card(uid):
 def delete_rfid_card(uid):
     conn = get_db()
     cur = conn.cursor()
+
+    # Lấy user_id trước khi xóa để trigger sync
+    cur.execute("SELECT user_id FROM rfid_cards WHERE uid=%s;", (uid,))
+    row = cur.fetchone()
+    user_id = row["user_id"] if row else None
+
     cur.execute("DELETE FROM rfid_cards WHERE uid=%s;", (uid,))
     conn.commit()
     conn.close()
+
+    # 🔄 Trigger immediate sync cho gateway của user
+    if user_id:
+        trigger_sync_safe(user_id)
+
     return jsonify({"ok": True, "msg": "RFID card deleted"})
 
 

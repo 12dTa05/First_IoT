@@ -142,36 +142,39 @@ async def notify_database_change(user_id: str):
     This triggers immediate sync via MQTT
     """
     try:
+        # Import mqtt_service here to avoid circular import and None at module load
+        from services.mqtt_service import mqtt_service
+
         # Get all online gateways for this user
         gateways = db.query(
             'SELECT gateway_id FROM gateways WHERE user_id = %s AND status = %s',
             (user_id, 'online')
         )
-        
+
         if not gateways:
             return {'message': 'No online gateways found', 'notified': 0}
-        
+
         # Send MQTT notification to each gateway
         notified_count = 0
         for gateway in gateways:
             gateway_id = gateway['gateway_id']
             topic = f'gateway/{gateway_id}/sync/trigger'
-            
+
             message = {
                 'action': 'sync_database',
                 'reason': 'database_updated',
                 'timestamp': datetime.now().isoformat()
             }
-            
+
             if mqtt_service and mqtt_service.publish(topic, message):
                 notified_count += 1
-        
+
         return {
             'message': 'Sync notifications sent',
             'notified': notified_count,
             'total_gateways': len(gateways)
         }
-        
+
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 

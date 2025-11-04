@@ -59,6 +59,12 @@ struct RemoteControlState {
 
 RemoteControlState remoteCtrl;
 
+// ============= FORWARD DECLARATIONS =============
+void handleRemoteUnlockCommand(String command);
+void handleRemoteLockCommand(String command);
+void executeRemoteUnlock(unsigned long duration_ms);
+void sendRemoteResponse(String command_id, bool success, const char* status);
+
 // ============= MESSAGE BUILDING =============
 bool sendRFIDScan(const byte* uid, byte uidLen) {
   if (uidLen > 10) return false;
@@ -186,22 +192,41 @@ bool sendStatusMessage(const char* status) {
 // ============= RECEIVE ACK FROM GATEWAY =============
 bool receiveAckMessage(bool* accessGranted, unsigned long timeoutMs) {
   unsigned long startTime = millis();
-  
+
+  Serial.printf("[WAIT] Waiting for ACK (timeout: %lu ms)...\n", timeoutMs);
+
   while (millis() - startTime < timeoutMs) {
     if (lora.available() > 0) {
+      Serial.println(F("[WAIT] LoRa data available!"));
+
       ResponseContainer rsc = lora.receiveMessage();
-      
-      if (rsc.status.code != 1 || rsc.data.length() < 12) {
-        Serial.println(F("RX: invalid packet"));
+
+      Serial.printf("[WAIT] RX: status=%d, len=%d\n", rsc.status.code, rsc.data.length());
+
+      if (rsc.status.code != 1) {
+        Serial.printf("[WAIT] Invalid status code: %d\n", rsc.status.code);
+        continue;
+      }
+
+      if (rsc.data.length() < 7) {
+        Serial.printf("[WAIT] Packet too short: %d bytes (need >= 7)\n", rsc.data.length());
         continue;
       }
       
       const uint8_t* buffer = (const uint8_t*)rsc.data.c_str();
       int len = rsc.data.length();
-      
+
+      // Print raw packet
+      Serial.print(F("[WAIT] Raw RX packet: "));
+      for (int i = 0; i < min(len, 20); i++) {
+        Serial.printf("%02X ", buffer[i]);
+      }
+      Serial.println();
+
       // Verify header: 0xC0 0x00 0x00
       if (buffer[0] != 0xC0 || buffer[1] != 0x00 || buffer[2] != 0x00) {
-        Serial.println(F("RX: invalid header"));
+        Serial.printf("[WAIT] Invalid header: %02X %02X %02X (expected C0 00 00)\n",
+                      buffer[0], buffer[1], buffer[2]);
         continue;
       }
       
@@ -252,18 +277,37 @@ bool checkForRemoteCommand() {
     if (!lora.available()) {
         return false;
     }
-    
+
+    Serial.println(F("[DEBUG] LoRa data available"));
+
     ResponseContainer rsc = lora.receiveMessage();
-    
-    if (rsc.status.code != 1 || rsc.data.length() < 12) {
+
+    Serial.printf("[DEBUG] LoRa RX: status=%d, len=%d\n", rsc.status.code, rsc.data.length());
+
+    if (rsc.status.code != 1) {
+        Serial.printf("[DEBUG] Invalid status code: %d\n", rsc.status.code);
         return false;
     }
-    
+
+    if (rsc.data.length() < 7) {
+        Serial.printf("[DEBUG] Data too short: %d bytes (need >= 7)\n", rsc.data.length());
+        return false;
+    }
+
     const uint8_t* buffer = (const uint8_t*)rsc.data.c_str();
     int len = rsc.data.length();
-    
+
+    // Print raw packet
+    Serial.print(F("[DEBUG] Raw packet: "));
+    for (int i = 0; i < min(len, 20); i++) {
+        Serial.printf("%02X ", buffer[i]);
+    }
+    Serial.println();
+
     // Verify header: 0xC0 0x00 0x00
     if (buffer[0] != 0xC0 || buffer[1] != 0x00 || buffer[2] != 0x00) {
+        Serial.printf("[DEBUG] Invalid header: %02X %02X %02X (expected C0 00 00)\n",
+                      buffer[0], buffer[1], buffer[2]);
         return false;
     }
     
@@ -542,7 +586,12 @@ void loop() {
     delay(2000);
     return;
   }
-  
+
+  // CRITICAL: Delay to allow LoRa module to switch from TX to RX mode
+  // Without this delay, the module is still in TX mode and cannot receive Gateway response
+  Serial.println(F("[WAIT] Switching LoRa to RX mode..."));
+  delay(100);  // 100ms delay for TX->RX transition
+
   // Wait for ACK from Gateway
   bool accessGranted = false;
   if (receiveAckMessage(&accessGranted, RESPONSE_TIMEOUT_MS)) {

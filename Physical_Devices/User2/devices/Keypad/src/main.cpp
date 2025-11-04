@@ -8,7 +8,7 @@
 #include <bearssl/bearssl_hash.h>
 #include <time.h>
 
-const char* ssid = "Home";
+const char* ssid = "OpenWRT";
 const char* wifiPass = "12052003A";
 
 const char* mqtt_host = "192.168.1.205";  
@@ -597,6 +597,10 @@ void setup() {
   doorServo.write(0);
 
   WiFi.mode(WIFI_STA);
+
+  uint8_t newMAC[] = {0xDE, 0xAD, 0xBE, 0xEF, 0x00, 0x01};
+  wifi_set_macaddr(STATION_IF, newMAC);
+
   WiFi.begin(ssid, wifiPass);
   Serial.print("[WiFi] Connecting");
   
