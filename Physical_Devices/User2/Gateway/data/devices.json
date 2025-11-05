@@ -16,11 +16,11 @@
       "device_type": "passkey",
       "location": "Front Door",
       "communication": "Wifi",
-      "status": "online",
+      "status": "offline",
       "registered_at": "2025-11-05T00:18:38.856843+07:00",
       "last_seen": "2025-11-05T00:29:14.727658+07:00",
       "metadata": null,
-      "updated_at": "2025-11-05T00:29:14.727658+07:00"
+      "updated_at": "2025-11-05T00:30:46.572335+07:00"
     }
   }
 }

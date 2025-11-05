@@ -64,7 +64,7 @@ def access_by_passcode(gateway_id, device_id):
 
             # ✅ So sánh passcode bằng bcrypt
             try:
-                if bcrypt.checkpw(passcode.encode("utf-8"), db_hash):
+                if sha256_hex(passcode) == db_hash.decode() if isinstance(db_hash, (bytes, bytearray, memoryview)) else db_hash:
                     matched_pid = row["password_id"]
                     matched_uid = uid
                     break
