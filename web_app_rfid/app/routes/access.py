@@ -157,8 +157,7 @@ def manage_passkey():
         if not owner or not passcode:
             return jsonify(ok=False, error="Thiếu owner hoặc passkey"), 400
 
-        import bcrypt
-        hashed = bcrypt.hashpw(passcode.encode(), bcrypt.gensalt()).decode()
+        hashed = sha256_hex(passcode)
 
         new_id = f"passwd_{owner}_{int(__import__('time').time())}"
         cur.execute("""
