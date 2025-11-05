@@ -23,6 +23,8 @@ def access_by_passcode(gateway_id, device_id):
     passcode = (data.get("passcode") or "").strip()
     frontend_uid = data.get("user_id")  # 🧩 user đang đăng nhập gửi lên
 
+    SALT = "passkey_01_salt_2025"
+
     if not passcode:
         return jsonify({"ok": False, "error": "missing_passcode"}), 400
 
@@ -64,7 +66,7 @@ def access_by_passcode(gateway_id, device_id):
 
             # ✅ So sánh passcode bằng bcrypt
             try:
-                if sha256_hex(passcode) == db_hash.decode() if isinstance(db_hash, (bytes, bytearray, memoryview)) else db_hash:
+                if sha256_hex(SALT + passcode) == db_hash.decode() if isinstance(db_hash, (bytes, bytearray, memoryview)) else db_hash:
                     matched_pid = row["password_id"]
                     matched_uid = uid
                     break
