@@ -115,12 +115,55 @@ def access_by_passcode(gateway_id, device_id):
         conn.close()
         print(f"[PASSKEY CHECK] user={user_id_for_log} result={result}")
 
+        # 7️⃣ Nếu xác thực thành công, gửi lệnh unlock về gateway qua FastAPI server
+        unlock_success = False
+        if result == "granted":
+            try:
+                import requests
+                import jwt
+                from datetime import datetime, timedelta
+                from app.utils.sync_trigger import FASTAPI_SERVER_URL
+
+                # Tạo JWT token để xác thực với FastAPI server
+                JWT_SECRET = "ThaiVuongMinhThaoLinhTu@2003"
+                JWT_ALGORITHM = "HS256"
+
+                token_payload = {
+                    'user_id': user_id_for_log,
+                    'username': user_id_for_log,
+                    'role': 'user',
+                    'exp': datetime.utcnow() + timedelta(minutes=5)  # Token tạm thời 5 phút
+                }
+
+                access_token = jwt.encode(token_payload, JWT_SECRET, algorithm=JWT_ALGORITHM)
+
+                # Gọi API unlock của FastAPI server với token
+                unlock_url = f"{FASTAPI_SERVER_URL}/api/commands/{gateway_id}/{device_id}/unlock"
+                unlock_response = requests.post(
+                    unlock_url,
+                    json={"duration": 5},
+                    headers={"Authorization": f"Bearer {access_token}"},
+                    timeout=3
+                )
+
+                if unlock_response.status_code == 200:
+                    unlock_data = unlock_response.json()
+                    unlock_success = unlock_data.get("success", False)
+                    print(f"[UNLOCK] Sent unlock command: success={unlock_success}")
+                else:
+                    print(f"[UNLOCK] Failed to unlock: HTTP {unlock_response.status_code}")
+
+            except Exception as unlock_err:
+                print(f"[UNLOCK] Error sending unlock command: {unlock_err}")
+                # Không raise exception - vẫn return granted vì passkey đã đúng
+
         return jsonify({
             "ok": True,
             "result": result,
             "deny_reason": deny_reason,
             "gateway_id": gateway_id,
-            "device_id": device_id
+            "device_id": device_id,
+            "unlock_sent": unlock_success  # Thêm flag để frontend biết đã gửi lệnh unlock
         })
 
     except Exception as e:
