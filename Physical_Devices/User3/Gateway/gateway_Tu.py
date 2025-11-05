@@ -248,11 +248,17 @@ class MQTTManager:
             self.connection_lost_time = None
             self.reconnect_attempts = 0
             logger.info(" Connected to VPS Broker")
-            
+
+            # Subscribe to sync trigger
             sync_topic = self.config['topics']['sync_trigger']
             client.subscribe(sync_topic, qos=1)
             logger.info(f" Subscribed to sync trigger: {sync_topic}")
-            
+
+            # Subscribe to command topic to receive remote commands
+            command_topic = f"gateway/{self.config['gateway_id']}/command/+"
+            client.subscribe(command_topic, qos=1)
+            logger.info(f" Subscribed to command topic: {command_topic}")
+
             self.publish_gateway_status('online')
         else:
             logger.error(f" VPS Connection Failed: {rc}")
@@ -316,9 +322,45 @@ class MQTTManager:
                 data = json.loads(msg.payload.decode())
                 logger.info(f" Sync trigger received: {data.get('reason', 'unknown')}")
                 self.sync_manager.trigger_immediate_sync()
+
+            elif 'command' in msg.topic:
+                # Handle remote commands from VPS
+                data = json.loads(msg.payload.decode())
+                self.handle_remote_command(msg.topic, data)
         except Exception as e:
             logger.error(f"Error processing VPS message: {e}")
     
+    def handle_remote_command(self, topic, data):
+        """Handle remote fan control commands from VPS"""
+        try:
+            # Parse topic: gateway/Gateway3/command/fan_01
+            parts = topic.split('/')
+            if len(parts) < 4:
+                logger.warning(f"[REMOTE CMD] Invalid topic format: {topic}")
+                return
+
+            device_id = parts[3]
+            command = data.get('command', '').lower()
+            command_id = data.get('command_id')
+            user_id = data.get('user_id', 'unknown')
+
+            logger.info(f"[REMOTE CMD] Received {command} for {device_id} from user {user_id}")
+
+            # Handle fan commands
+            if command == 'fan_on':
+                logger.info(f"[REMOTE CMD] Turning fan ON for {device_id}")
+                self.control_fan('on', 'remote')
+
+            elif command == 'fan_off':
+                logger.info(f"[REMOTE CMD] Turning fan OFF for {device_id}")
+                self.control_fan('off', 'remote')
+
+            else:
+                logger.warning(f"[REMOTE CMD] Unknown command: {command}")
+
+        except Exception as e:
+            logger.error(f"[REMOTE CMD] Error handling remote command: {e}")
+
     def handle_temperature_data(self, data):
         try:
             logger.debug(f"Received temperature data: {data}")
